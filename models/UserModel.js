@@ -33,6 +33,13 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: new Date(),
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  verifyAt: {
+    type: Date,
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);
