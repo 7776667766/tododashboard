@@ -1,12 +1,13 @@
 const User = require("../models/UserModel");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
   try {
-    const { email, name, phone, image, role } = req.body;
-    if (!email || !name || !phone || !image) {
+    const { name, email, phone, password, image, role } = req.body;
+    if (!email || !name || !phone || !image || !password) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
@@ -27,6 +28,12 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Invalid image url" });
     }
 
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Password must be 8 characters" });
+    }
+
     const isEmailExist = await User.findOne({ email });
     if (isEmailExist) {
       return res
@@ -40,7 +47,7 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone number already in use" });
     }
 
-    await User.create({ email, name, phone, image, role });
+    await User.create({ email, name, phone, image, role, password });
     // generate otp
     const otp = Math.floor(100000 + Math.random() * 900000);
     // save otp in db
@@ -77,11 +84,11 @@ const registerApi = async (req, res, next) => {
 const loginApi = async (req, res, next) => {
   try {
     console.log("Login Api body", req.body);
-    const { phone } = req.body;
-    if (!phone) {
+    const { phone, password } = req.body;
+    if (!phone || !password) {
       return res
         .status(400)
-        .json({ status: "error", message: "Email or phone is required" });
+        .json({ status: "error", message: "All fields is required" });
     }
     const user = await User.findOne({
       $or: [{ email: phone }, { phone: phone }],
@@ -90,8 +97,10 @@ const loginApi = async (req, res, next) => {
     if (!user) {
       return res
         .status(400)
-        .json({ status: "error", message: "Invalid email or phone" });
-    } else {
+        .json({ status: "error", message: "Invalid phone number" });
+    }
+
+    if (user && (await bcrypt.compare(password, user.password))) {
       const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
       res.status(201).json({
@@ -116,6 +125,10 @@ const loginApi = async (req, res, next) => {
       //   },
       //   message: "Login successfull",
       // });
+    } else {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid credientials" });
     }
   } catch (error) {
     console.log("Error in login", error);
