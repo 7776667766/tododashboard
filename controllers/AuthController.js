@@ -203,6 +203,39 @@ const verifyOtpApi = async (req, res, next) => {
   }
 };
 
+const forgetPasswordApi = async (req, res, next) => {
+  try {
+    console.log("Forget Password Api body", req.body);
+    const { phone } = req.body;
+    if (!phone) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Phone is required" });
+    }
+    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid phone number" });
+    }
+    const user = await User.findOne({ phone });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Phone not exist" });
+    } else {
+      const otp = Math.floor(100000 + Math.random() * 900000);
+      await Otp.create({ otp, phone: user.phone });
+      res.status(201).json({
+        status: "success",
+        message: "OTP sent successfully",
+      });
+    }
+  } catch (error) {
+    console.log("Error in forget password", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 const userProfileApi = async (req, res, next) => {
   try {
     const { id } = req.user;
@@ -240,4 +273,10 @@ const userProfileApi = async (req, res, next) => {
   }
 };
 
-module.exports = { registerApi, loginApi, verifyOtpApi, userProfileApi };
+module.exports = {
+  registerApi,
+  loginApi,
+  verifyOtpApi,
+  forgetPasswordApi,
+  userProfileApi,
+};
