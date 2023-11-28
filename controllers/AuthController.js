@@ -7,8 +7,9 @@ const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
   try {
-    const { name, email, phone, password, image, role } = req.body;
-    if (!email || !name || !phone || !image || !password) {
+    const { name, email, phone, password, confirmPassword, image, role } =
+      req.body;
+    if (!email || !name || !phone || !image || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
@@ -33,6 +34,12 @@ const registerApi = async (req, res, next) => {
       return res
         .status(400)
         .json({ status: "error", message: "Password must be 8 characters" });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password and confirm password not match",
+      });
     }
 
     const isEmailExist = await User.findOne({ email });
@@ -147,10 +154,7 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
-    const otpDoc = await Otp.findOne({ phone })
-      .sort({ createdAt: -1 })
-      .limit(1);
-
+    const otpDoc = await Otp.findOne({ otp, phone });
     if (!otpDoc) {
       return res
         .status(400)
@@ -174,7 +178,6 @@ const verifyOtpApi = async (req, res, next) => {
     }
     if (user.verified === false) {
       await User.updateOne({ phone }, { verified: true, verifyAt: new Date() });
-      // user = await User.findOne({ phone });
       user.verified = true;
       user.verifyAt = new Date();
     }
@@ -236,6 +239,70 @@ const forgetPasswordApi = async (req, res, next) => {
   }
 };
 
+const resetPasswordApi = async (req, res, next) => {
+  try {
+    console.log("Reset Password Api body", req.body);
+    const { password, confirmPassword, otp, phone } = req.body;
+  } catch (error) {
+    console.log("Error in reset password", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+const changePasswordApi = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({ status: "error", message: "Invalid id" });
+    }
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "All fields are required" });
+    }
+    if (newPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Password must be 8 characters" });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password and confirm password not match",
+      });
+    }
+    if (oldPassword === newPassword) {
+      return res.status(400).json({
+        status: "error",
+        message: "Old password and new password should not be same",
+      });
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "User not found" });
+    }
+    if (!(await bcrypt.compare(oldPassword, user.password))) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid old password" });
+    }
+    await User.updateOne(
+      { _id: id },
+      { password: bcrypt.hashSync(newPassword, 10) }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.log("Error in change password", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 const userProfileApi = async (req, res, next) => {
   try {
     const { id } = req.user;
@@ -278,5 +345,6 @@ module.exports = {
   loginApi,
   verifyOtpApi,
   forgetPasswordApi,
+  changePasswordApi,
   userProfileApi,
 };
