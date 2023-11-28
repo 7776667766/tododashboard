@@ -2,7 +2,6 @@ const User = require("../models/UserModel");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
@@ -160,7 +159,6 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Invalid phone or otp" });
     }
-    console.log("otpDoc", otpDoc);
     if (otpDoc.otp !== otp) {
       return res
         .status(400)
@@ -242,7 +240,36 @@ const forgetPasswordApi = async (req, res, next) => {
 const resetPasswordApi = async (req, res, next) => {
   try {
     console.log("Reset Password Api body", req.body);
-    const { password, confirmPassword, otp, phone } = req.body;
+    const { password, confirmPassword, phone } = req.body;
+    if (!phone || !password || !confirmPassword) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "All fields are required" });
+    }
+    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid phone number" });
+    }
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Password must be 8 characters" });
+    }
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        status: "error",
+        message: "Password and confirm password not match",
+      });
+    }
+    await User.updateOne(
+      { phone },
+      { password: bcrypt.hashSync(password, 10) }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Password reset successfully",
+    });
   } catch (error) {
     console.log("Error in reset password", error);
     res.status(400).json({ status: "error", message: error.message });
@@ -306,7 +333,6 @@ const changePasswordApi = async (req, res, next) => {
 const userProfileApi = async (req, res, next) => {
   try {
     const { id } = req.user;
-    console.log("User id", id);
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });
     }
@@ -345,6 +371,7 @@ module.exports = {
   loginApi,
   verifyOtpApi,
   forgetPasswordApi,
+  resetPasswordApi,
   changePasswordApi,
   userProfileApi,
 };
