@@ -1,26 +1,32 @@
 const User = require("../models/UserModel");
 const Otp = require("../models/OtpModel");
+const validator = require("validator");
 const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
   try {
-    console.log("Register Api Body", req.body);
     const { email, name, phone, image, role } = req.body;
     if (!email || !name || !phone || !image) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
     }
-    if (phone.length !== 10) {
+    if (!validator.isEmail(email)) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone number must be 10 digits" });
+        .json({ status: "error", message: "Invalid email" });
     }
-    if (isNaN(phone)) {
+    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone number must be a number" });
+        .json({ status: "error", message: "Invalid phone number" });
     }
+    if (!validator.isURL(image)) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid image url" });
+    }
+
     const isEmailExist = await User.findOne({ email });
     if (isEmailExist) {
       return res
@@ -34,7 +40,7 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone number already in use" });
     }
 
-    const user = await User.create({ email, name, phone, image, role });
+    await User.create({ email, name, phone, image, role });
     // generate otp
     const otp = Math.floor(100000 + Math.random() * 900000);
     // save otp in db
@@ -70,14 +76,16 @@ const registerApi = async (req, res, next) => {
 
 const loginApi = async (req, res, next) => {
   try {
-    log("Login Api body", req.body);
-    const { email, phone } = req.body;
-    if (!email && !phone) {
+    console.log("Login Api body", req.body);
+    const { phone } = req.body;
+    if (!phone) {
       return res
         .status(400)
         .json({ status: "error", message: "Email or phone is required" });
     }
-    const user = await User.findOne({ $or: [{ email }, { phone }] });
+    const user = await User.findOne({
+      $or: [{ email: phone }, { phone: phone }],
+    });
 
     if (!user) {
       return res
@@ -124,27 +132,55 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Phone and otp are required" });
     }
-    const otpDoc = await Otp.findOne({ phone });
-    console.log("otpDoc", otpDoc);
+
+    const otpDoc = await Otp.findOne({ phone })
+      .sort({ createdAt: -1 })
+      .limit(1);
+
     if (!otpDoc) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid phone or otp" });
     }
+
     if (otpDoc.otp !== otp) {
       return res
         .status(400)
-        .json({ status: "error", message: "Invalid phone or otp" });
+        .json({ status: "error", message: "Otp not match" });
     }
-    const user = await User.findOne({ phone });
+
+    if (new Date() > otpDoc.expiredAt) {
+      return res.status(400).json({ status: "error", message: "OTP expired" });
+    }
+    let user = await User.findOne({ phone });
     if (!user) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid phone or otp" });
     }
-    await User.updateOne({ phone }, { verified: true, verifyAt: new Date() });
+    if (user.verified === false) {
+      await User.updateOne({ phone }, { verified: true, verifyAt: new Date() });
+      // user = await User.findOne({ phone });
+      user.verified = true;
+      user.verifyAt = new Date();
+    }
+    const token = createSecretToken({ id: user._id });
     res.status(200).json({
       status: "success",
+      data: {
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: user.image,
+          role: user.role,
+          createdAt: user.createdAt,
+          verified: user.verified,
+          verifyAt: user.verifyAt,
+        },
+      },
       message: "OTP verified successfully",
     });
   } catch (error) {
@@ -153,4 +189,46 @@ const verifyOtpApi = async (req, res, next) => {
   }
 };
 
-module.exports = { registerApi, loginApi, verifyOtpApi };
+const userProfileApi = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Id is required" });
+    }
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({ status: "error", message: "Invalid id" });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "User not found" });
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: user.image,
+          role: user.role,
+          createdAt: user.createdAt,
+          verified: user.verified,
+          verifyAt: user.verifyAt,
+        },
+      },
+      message: "User profile fetched successfully",
+    });
+  } catch (error) {
+    console.log("Error in user profile", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+module.exports = { registerApi, loginApi, verifyOtpApi, userProfileApi };

@@ -10,7 +10,6 @@ const otpSchema = new mongoose.Schema({
     type: String,
     required: [true, "Phone is required"],
     trim: true,
-    unique: true,
   },
   createdAt: {
     type: Date,
