@@ -2,6 +2,7 @@ const User = require("../models/UserModel");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
@@ -155,7 +156,7 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Invalid phone or otp" });
     }
-
+    console.log("otpDoc", otpDoc);
     if (otpDoc.otp !== otp) {
       return res
         .status(400)
@@ -204,18 +205,13 @@ const verifyOtpApi = async (req, res, next) => {
 
 const userProfileApi = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    if (!id) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Id is required" });
-    }
+    const { id } = req.user;
+    console.log("User id", id);
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });
     }
 
     const user = await User.findById(id);
-
     if (!user) {
       return res
         .status(400)
