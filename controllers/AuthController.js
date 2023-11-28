@@ -2,6 +2,7 @@ const User = require("../models/UserModel");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
@@ -55,11 +56,9 @@ const registerApi = async (req, res, next) => {
     }
 
     await User.create({ email, name, phone, image, role, password });
-    // generate otp
     const otp = Math.floor(100000 + Math.random() * 900000);
-    // save otp in db
     await Otp.create({ otp, phone });
-    // send otp to user
+
     res.status(201).json({
       status: "success",
       message: "User created successfully",
@@ -90,7 +89,6 @@ const registerApi = async (req, res, next) => {
 
 const loginApi = async (req, res, next) => {
   try {
-    console.log("Login Api body", req.body);
     const { phone, password } = req.body;
     if (!phone || !password) {
       return res
@@ -145,7 +143,6 @@ const loginApi = async (req, res, next) => {
 
 const verifyOtpApi = async (req, res, next) => {
   try {
-    console.log("Verify Otp Api body", req.body);
     const { phone, otp } = req.body;
     if (!phone || !otp) {
       return res
@@ -206,7 +203,6 @@ const verifyOtpApi = async (req, res, next) => {
 
 const forgetPasswordApi = async (req, res, next) => {
   try {
-    console.log("Forget Password Api body", req.body);
     const { phone } = req.body;
     if (!phone) {
       return res
@@ -239,7 +235,6 @@ const forgetPasswordApi = async (req, res, next) => {
 
 const resetPasswordApi = async (req, res, next) => {
   try {
-    console.log("Reset Password Api body", req.body);
     const { password, confirmPassword, phone } = req.body;
     if (!phone || !password || !confirmPassword) {
       return res
@@ -330,7 +325,17 @@ const changePasswordApi = async (req, res, next) => {
   }
 };
 
-const userProfileApi = async (req, res, next) => {
+const logoutApi = async (req, res, next) => {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({ status: "success", message: "Logout successfully" });
+  } catch (error) {
+    console.log("Error in logout", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+const getUserProfileApi = async (req, res, next) => {
   try {
     const { id } = req.user;
     if (!validator.isMongoId(id)) {
@@ -366,6 +371,44 @@ const userProfileApi = async (req, res, next) => {
   }
 };
 
+const updataUserProfileApi = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({ status: "error", message: "Invalid id" });
+    }
+    const { name, image } = req.body;
+
+    if (image && !validator.isURL(image)) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid image url" });
+    }
+    await User.updateOne({ _id: id }, { name, image });
+    const user = await User.findById(id);
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: user.image,
+          role: user.role,
+          createdAt: user.createdAt,
+          verified: user.verified,
+          verifyAt: user.verifyAt,
+        },
+      },
+      message: "User profile updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in update user profile", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   registerApi,
   loginApi,
@@ -373,5 +416,7 @@ module.exports = {
   forgetPasswordApi,
   resetPasswordApi,
   changePasswordApi,
-  userProfileApi,
+  logoutApi,
+  getUserProfileApi,
+  updataUserProfileApi,
 };
