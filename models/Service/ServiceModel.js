@@ -27,12 +27,14 @@ const serviceSchema = new mongoose.Schema({
     trim: true,
   },
   type: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ServiceType",
     required: [true, "Type is required"],
     trim: true,
   },
   specialist: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee",
     required: [true, "Specialist is required"],
     trim: true,
   },
