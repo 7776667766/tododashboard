@@ -24,7 +24,7 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Invalid phone number" });
     }
-    if (!validator.isURL(image)) {
+    if (!validator.isURL(image, { require_protocol: true })) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid image url" });
@@ -108,28 +108,28 @@ const loginApi = async (req, res, next) => {
     if (user && (await bcrypt.compare(password, user.password))) {
       const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
-      res.status(201).json({
-        status: "success",
-        message: "OTP sent successfully",
-      });
-      // const token = createSecretToken({ id: user._id });
       // res.status(201).json({
-      //   data: {
-      //     token,
-      //     user: {
-      //       id: user._id,
-      //       name: user.name,
-      //       email: user.email,
-      //       phone: user.phone,
-      //       image: user.image,
-      //       role: user.role,
-      //       createdAt: user.createdAt,
-      //       verified: user.verified,
-      //       verifyAt: user.verifyAt,
-      //     },
-      //   },
-      //   message: "Login successfull",
+      //   status: "success",
+      //   message: "OTP sent successfully",
       // });
+      const token = createSecretToken({ id: user._id });
+      res.status(201).json({
+        data: {
+          token,
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            image: user.image,
+            role: user.role,
+            createdAt: user.createdAt,
+            verified: user.verified,
+            verifyAt: user.verifyAt,
+          },
+        },
+        message: "Login successfull",
+      });
     } else {
       return res
         .status(400)

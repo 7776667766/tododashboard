@@ -6,6 +6,8 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 // Routes
 const authRoutes = require("./routes/AuthRoutes");
+const serviceRoutes = require("./routes/ServiceRoutes");
+const businessRoutes = require("./routes/BusinessRoutes");
 
 const dbConnect = require("./db/dbconnect");
 dbConnect();
@@ -33,3 +35,5 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api", authRoutes);
+app.use("/api", serviceRoutes);
+app.use("/api", businessRoutes);
