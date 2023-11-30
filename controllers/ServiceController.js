@@ -202,25 +202,8 @@ const getServicesApi = async (req, res, next) => {
       active: true,
     });
     services.forEach(async (service) => {
-      const { typeId, specialistId } = service;
-      const type = await ServiceType.findById(typeId);
-      const specialist = await Specialist.findById(specialistId);
-      const myService = {
-        id: service._id,
-        name: service.name,
-        description: service.description,
-        image: service.image,
-        price: service.price,
-        date: service.date,
-        type: { name: type.name, id: type._id },
-        specialist: {
-          name: specialist.name,
-          id: specialist._id,
-          email: specialist.email,
-        },
-        timeSlots: service.timeSlots,
-      };
-      myServices.push(myService);
+      const myServiceData = await getServiceData(service);
+      myServices.push(myServiceData);
       if (myServices.length === services.length) {
         res.status(200).json({
           status: "success",
@@ -237,8 +220,67 @@ const getServicesApi = async (req, res, next) => {
   }
 };
 
+const getServiceDetailApi = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Id is required",
+      });
+    }
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Id is invalid",
+      });
+    }
+    const service = await Service.findById(id);
+    if (!service) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service not found",
+      });
+    }
+    const myServiceData = await getServiceData(service);
+    res.status(200).json({
+      status: "success",
+      data: myServiceData,
+    });
+  } catch (error) {
+    console.log("Error in getting service detail", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addServiceTypeApi,
   addServiceApi,
   getServicesApi,
+  getServiceDetailApi,
+};
+
+const getServiceData = async (data) => {
+  const { typeId, specialistId } = data;
+  const type = await ServiceType.findById(typeId);
+  const specialist = await Specialist.findById(specialistId);
+  const myServiceData = {
+    id: data._id,
+    name: data.name,
+    description: data.description,
+    image: data.image,
+    price: data.price,
+    date: data.date,
+    type: { name: type.name, id: type._id },
+    specialist: {
+      name: specialist.name,
+      id: specialist._id,
+      email: specialist.email,
+    },
+    timeSlots: data.timeSlots,
+  };
+  return myServiceData;
 };
