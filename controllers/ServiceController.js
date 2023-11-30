@@ -200,6 +200,7 @@ const updateServiceApi = async (req, res, next) => {
   try {
     const { serviceId } = req.params;
     const { id } = req.user;
+    const { businessId, typeId, specialistId } = req.body;
     if (!serviceId) {
       return res.status(400).json({
         status: "error",
@@ -213,6 +214,53 @@ const updateServiceApi = async (req, res, next) => {
         message: "Service Id is invalid",
       });
     }
+    if (typeId) {
+      if (!validator.isMongoId(typeId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Type is invalid",
+        });
+      }
+      const isServiceTypeExist = await ServiceType.findById(typeId);
+      if (!isServiceTypeExist) {
+        return res.status(400).json({
+          status: "error",
+          message: "Service type does not exists",
+        });
+      }
+    }
+    if (specialistId) {
+      if (!validator.isMongoId(specialistId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Specialist is invalid",
+        });
+      }
+      const isSpecialistExist = await Specialist.findById(specialistId);
+      if (!isSpecialistExist) {
+        return res.status(400).json({
+          status: "error",
+          message: "Specialist does not exists",
+        });
+      }
+    }
+
+    if (businessId) {
+      if (!validator.isMongoId(businessId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business is invalid",
+        });
+      }
+      // const isBusinessExist = await Business.findById(businessId);
+      // if (!isBusinessExist) {
+      //   return res.status(400).json({
+      //     status: "error",
+      //     message: "Business does not exists",
+      //   });
+      // }
+    }
+
     const service = await Service.findById(serviceId);
     if (!service) {
       return res.status(400).json({
