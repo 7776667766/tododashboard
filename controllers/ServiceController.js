@@ -179,7 +179,66 @@ const addServiceApi = async (req, res, next) => {
   }
 };
 
+const getServicesApi = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const { businessId } = req.body;
+    if (!businessId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business Id is required",
+      });
+    }
+    if (!validator.isMongoId(businessId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business Id is invalid",
+      });
+    }
+    let myServices = [];
+    const services = await Service.find({
+      businessId,
+      shopkeeperId: id,
+      active: true,
+    });
+    services.forEach(async (service) => {
+      const { typeId, specialistId } = service;
+      const type = await ServiceType.findById(typeId);
+      const specialist = await Specialist.findById(specialistId);
+      const myService = {
+        id: service._id,
+        name: service.name,
+        description: service.description,
+        image: service.image,
+        price: service.price,
+        date: service.date,
+        type: { name: type.name, id: type._id },
+        specialist: {
+          name: specialist.name,
+          id: specialist._id,
+          email: specialist.email,
+        },
+        timeSlots: service.timeSlots,
+      };
+      myServices.push(myService);
+      if (myServices.length === services.length) {
+        res.status(200).json({
+          status: "success",
+          data: myServices,
+        });
+      }
+    });
+  } catch (error) {
+    console.log("Error in getting services", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addServiceTypeApi,
   addServiceApi,
+  getServicesApi,
 };
