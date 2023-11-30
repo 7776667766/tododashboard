@@ -56,8 +56,25 @@ const addServiceTypeApi = async (req, res, next) => {
   }
 };
 
+const getAllServicesTypeApi = async (req, res, next) => {
+  try {
+    const serviceTypes = await ServiceType.find().select("name _id");
+    res.status(200).json({
+      status: "success",
+      data: serviceTypes,
+    });
+  } catch (error) {
+    console.log("Error in getting all service types", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 const addServiceApi = async (req, res, next) => {
   try {
+    const { id } = req.user;
     const {
       name,
       description,
@@ -114,7 +131,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -163,7 +180,7 @@ const addServiceApi = async (req, res, next) => {
       date,
       businessId,
       timeSlots,
-      shopkeeperId: req.user.id,
+      shopkeeperId: id,
     });
 
     res.status(200).json({
@@ -172,6 +189,50 @@ const addServiceApi = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Error in creating service", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const updateServiceApi = async (req, res, next) => {
+  try {
+    const { serviceId } = req.params;
+    const { id } = req.user;
+    if (!serviceId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Id is required",
+      });
+    }
+
+    if (!validator.isMongoId(serviceId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Id is invalid",
+      });
+    }
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service not found",
+      });
+    }
+    if (service.shopkeeperId != id) {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to update this service",
+      });
+    }
+    await Service.updateOne({ _id: serviceId }, req.body);
+    res.status(200).json({
+      status: "success",
+      message: "Service updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in updating service", error);
     res.status(500).json({
       status: "error",
       message: error.message,
@@ -196,11 +257,24 @@ const getServicesApi = async (req, res, next) => {
       });
     }
     let myServices = [];
-    const services = await Service.find({
-      businessId,
-      shopkeeperId: id,
-      active: true,
-    });
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+    const services = await Service.find(
+      user.role === "admin"
+        ? {
+            active: true,
+          }
+        : {
+            businessId,
+            shopkeeperId: id,
+            active: true,
+          }
+    );
     services.forEach(async (service) => {
       const myServiceData = await getServiceData(service);
       myServices.push(myServiceData);
@@ -220,7 +294,7 @@ const getServicesApi = async (req, res, next) => {
   }
 };
 
-const getServiceDetailApi = async (req, res, next) => {
+const getServiceDetailByIdApi = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -258,9 +332,11 @@ const getServiceDetailApi = async (req, res, next) => {
 
 module.exports = {
   addServiceTypeApi,
+  getAllServicesTypeApi,
   addServiceApi,
+  updateServiceApi,
   getServicesApi,
-  getServiceDetailApi,
+  getServiceDetailByIdApi,
 };
 
 const getServiceData = async (data) => {
