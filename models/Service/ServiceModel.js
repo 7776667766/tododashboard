@@ -26,32 +26,33 @@ const serviceSchema = new mongoose.Schema({
     required: [true, "Date is required"],
     trim: true,
   },
-  type: {
+  typeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ServiceType",
     required: [true, "Type is required"],
     trim: true,
   },
-  specialist: {
+  specialistId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-    required: [true, "Specialist is required"],
+    ref: "Specialist",
+    required: [true, "Specialist Id is required"],
     trim: true,
+  },
+
+  shopkeeperId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "Shopkeeper Id is required"],
+  },
+  businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Business",
+    required: [true, "Business Id is required"],
   },
   timeSlots: {
     type: Array,
     required: [true, "TimeSlots is required"],
     trim: true,
-  },
-  shopkeeperId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: [true, "Shopkeeper is required"],
-  },
-  businessId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Business",
-    required: [true, "Business is required"],
   },
   createdAt: {
     type: Date,

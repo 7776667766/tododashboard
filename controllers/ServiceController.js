@@ -1,6 +1,7 @@
 const Service = require("../models/Service/ServiceModel");
 const User = require("../models/UserModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
+const Specialist = require("../models/SpecialistModel");
 const validator = require("validator");
 
 const addServiceTypeApi = async (req, res, next) => {
@@ -62,8 +63,8 @@ const addServiceApi = async (req, res, next) => {
       description,
       image,
       price,
-      type,
-      specialist,
+      typeId,
+      specialistId,
       date,
       businessId,
       timeSlots,
@@ -73,8 +74,8 @@ const addServiceApi = async (req, res, next) => {
       !description ||
       !image ||
       !price ||
-      !type ||
-      !specialist ||
+      !typeId ||
+      !specialistId ||
       !date ||
       !businessId ||
       !timeSlots
@@ -92,14 +93,14 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    if (!validator.isMongoId(type)) {
+    if (!validator.isMongoId(typeId)) {
       return res.status(400).json({
         status: "error",
         message: "Type is invalid",
       });
     }
 
-    if (!validator.isMongoId(specialist)) {
+    if (!validator.isMongoId(specialistId)) {
       return res.status(400).json({
         status: "error",
         message: "Specialist is invalid",
@@ -128,7 +129,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    const isServiceTypeExist = await ServiceType.findById(type);
+    const isServiceTypeExist = await ServiceType.findById(typeId);
     if (!isServiceTypeExist) {
       return res.status(400).json({
         status: "error",
@@ -136,7 +137,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    const isSpecialistExist = await Employee.findById(specialist);
+    const isSpecialistExist = await Specialist.findById(specialistId);
     if (!isSpecialistExist) {
       return res.status(400).json({
         status: "error",
@@ -144,21 +145,21 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    const isBusinessExist = await Business.findById(businessId);
-    if (!isBusinessExist) {
-      return res.status(400).json({
-        status: "error",
-        message: "Business does not exists",
-      });
-    }
+    // const isBusinessExist = await Business.findById(businessId);
+    // if (!isBusinessExist) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Business does not exists",
+    //   });
+    // }
 
     await Service.create({
       name,
       description,
       image,
       price,
-      type,
-      specialist,
+      typeId,
+      specialistId,
       date,
       businessId,
       timeSlots,

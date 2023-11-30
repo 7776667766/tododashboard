@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const auth = require("../middlewares/auth");
-const { addEmployeeApi } = require("../controllers/BusinessController");
+const { addSpecialistApi } = require("../controllers/BusinessController");
 
-router.post("/employee/add", auth, addEmployeeApi);
+router.post("/specialist/add", auth, addSpecialistApi);
 
 module.exports = router;

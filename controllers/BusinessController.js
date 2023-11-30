@@ -1,8 +1,8 @@
-const Employee = require("../models/EmployeeModel");
+const Specialist = require("../models/SpecialistModel");
 const validator = require("validator");
 const User = require("../models/UserModel");
 
-const addEmployeeApi = async (req, res, next) => {
+const addSpecialistApi = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { name, email, businessId } = req.body;
@@ -38,19 +38,19 @@ const addEmployeeApi = async (req, res, next) => {
     if (user.role === "user") {
       return res.status(400).json({
         status: "error",
-        message: "You are not authorized to add employee",
+        message: "You are not authorized to add specialist",
       });
     }
 
-    const isAlreadyEmployee = await Employee.findOne({ email });
-    if (isAlreadyEmployee) {
+    const isAlreadySpecialistExist = await Specialist.findOne({ email });
+    if (isAlreadySpecialistExist) {
       return res.status(400).json({
         status: "error",
-        message: "Employee email already exists",
+        message: "Specialist email already exists",
       });
     }
 
-    await Employee.create({
+    await Specialist.create({
       name,
       email,
       businessId,
@@ -58,14 +58,14 @@ const addEmployeeApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Employee added successfully",
+      message: "Specialist added successfully",
     });
   } catch (error) {
-    console.log("Error in addEmployee", error);
+    console.log("Error in add specialist", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
 
 module.exports = {
-  addEmployeeApi,
+  addSpecialistApi,
 };
