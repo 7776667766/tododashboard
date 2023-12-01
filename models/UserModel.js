@@ -22,12 +22,12 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, "Image is required"],
+    default: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
     trim: true,
   },
   role: {
     type: String,
-    enum: ["admin", "user", "shopkeeper", "manager"],
+    enum: ["admin", "user", "owner", "manager"],
     default: "user",
   },
   password: {
@@ -45,6 +45,9 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   verifyAt: {
+    type: Date,
+  },
+  deletedAt: {
     type: Date,
   },
 });

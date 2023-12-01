@@ -58,7 +58,13 @@ const addServiceTypeApi = async (req, res, next) => {
 
 const getAllServicesTypeApi = async (req, res, next) => {
   try {
-    const serviceTypes = await ServiceType.find().select("name _id");
+    const serviceTypes = await ServiceType.find().select({
+      _id: 0,
+      name: 1,
+      id: {
+        $toString: "$_id",
+      },
+    });
     res.status(200).json({
       status: "success",
       data: serviceTypes,
@@ -139,7 +145,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    if (user.role !== "shopkeeper") {
+    if (user.role !== "owner") {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to add service",
@@ -180,7 +186,7 @@ const addServiceApi = async (req, res, next) => {
       date,
       businessId,
       timeSlots,
-      shopkeeperId: id,
+      ownerId: id,
     });
 
     res.status(200).json({
@@ -268,7 +274,7 @@ const updateServiceApi = async (req, res, next) => {
         message: "Service not found",
       });
     }
-    if (service.shopkeeperId != id) {
+    if (service.ownerId != id) {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to update this service",
@@ -319,19 +325,27 @@ const getServicesApi = async (req, res, next) => {
           }
         : {
             businessId,
-            shopkeeperId: id,
+            ownerId: id,
             active: true,
           }
     );
-    services.forEach(async (service) => {
-      const myServiceData = await getServiceData(service);
-      myServices.push(myServiceData);
-      if (myServices.length === services.length) {
-        res.status(200).json({
-          status: "success",
-          data: myServices,
-        });
-      }
+
+    await Promise.all(
+      services.map(async (service) => {
+        const myServiceData = await getServiceData(service);
+        myServices.push(myServiceData);
+      })
+    );
+
+    // services.forEach(async (service) => {
+    //   const myServiceData = await getServiceData(service);
+    //   myServices.push(myServiceData);
+    //   if (myServices.length === services.length) {
+    // }
+    // });
+    res.status(200).json({
+      status: "success",
+      data: myServices,
     });
   } catch (error) {
     console.log("Error in getting services", error);
@@ -389,8 +403,21 @@ module.exports = {
 
 const getServiceData = async (data) => {
   const { typeId, specialistId } = data;
-  const type = await ServiceType.findById(typeId);
-  const specialist = await Specialist.findById(specialistId);
+  const type = await ServiceType.findById(typeId).select({
+    _id: 0,
+    name: 1,
+    id: {
+      $toString: "$_id",
+    },
+  });
+  const specialist = await Specialist.findById(specialistId).select({
+    _id: 0,
+    name: 1,
+    id: {
+      $toString: "$_id",
+    },
+    email: 1,
+  });
   const myServiceData = {
     id: data._id,
     name: data.name,
@@ -398,12 +425,8 @@ const getServiceData = async (data) => {
     image: data.image,
     price: data.price,
     date: data.date,
-    type: { name: type.name, id: type._id },
-    specialist: {
-      name: specialist.name,
-      id: specialist._id,
-      email: specialist.email,
-    },
+    type: type,
+    specialist: specialist,
     timeSlots: data.timeSlots,
   };
   return myServiceData;

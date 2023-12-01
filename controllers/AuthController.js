@@ -2,7 +2,6 @@ const User = require("../models/UserModel");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
@@ -106,6 +105,14 @@ const loginApi = async (req, res, next) => {
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      console.log("user", user.deletedAt);
+      if (user.deletedAt !== undefined) {
+        if (user.deletedAt !== null) {
+          return res
+            .status(400)
+            .json({ status: "error", message: "Account has been deleted" });
+        }
+      }
       const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
       // res.status(201).json({

@@ -39,10 +39,10 @@ const serviceSchema = new mongoose.Schema({
     trim: true,
   },
 
-  shopkeeperId: {
+  ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "Shopkeeper Id is required"],
+    required: [true, "owner Id is required"],
   },
   businessId: {
     type: mongoose.Schema.Types.ObjectId,
