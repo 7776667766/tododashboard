@@ -1,4 +1,5 @@
 const User = require("../models/UserModel");
+const Owner = require("../models/OwnerModel");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
@@ -6,8 +7,17 @@ const { createSecretToken } = require("../util/SecretToken");
 
 const registerApi = async (req, res, next) => {
   try {
-    const { name, email, phone, password, confirmPassword, image, role } =
-      req.body;
+    const {
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      image,
+      role,
+      websiteService,
+      bookingService,
+    } = req.body;
     if (!email || !name || !phone || !image || !password || !confirmPassword) {
       return res
         .status(400)
@@ -54,13 +64,32 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone number already in use" });
     }
 
-    await User.create({ email, name, phone, image, role, password });
+    if (role === "owner") {
+      if (!websiteService && !bookingService) {
+        return res.status(400).json({
+          status: "error",
+          message: "Website service or booking service are required",
+        });
+      }
+    }
+
+    const user = await User.create({
+      email,
+      name,
+      phone,
+      image,
+      role,
+      password,
+    });
+    if (role === "owner") {
+      await Owner.create({ ownerId: user._id, websiteService, bookingService });
+    }
     const otp = Math.floor(100000 + Math.random() * 900000);
     await Otp.create({ otp, phone });
 
     res.status(201).json({
       status: "success",
-      message: "User created successfully",
+      message: "Account created successfully",
     });
     // const token = createSecretToken({ id: user._id });
     // res.status(201).json({
