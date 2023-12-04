@@ -1,7 +1,8 @@
-const Specialist = require("../models/SpecialistModel");
 const validator = require("validator");
 const User = require("../models/UserModel");
 const Manager = require("../models/ManagerModel");
+const Specialist = require("../models/SpecialistModel");
+const Business = require("../models/BusinessModal");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -317,6 +318,121 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
   }
 };
 
+const registerBusinessApi = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const {
+      name,
+      email,
+      phone,
+      description,
+      address,
+      socialLinks,
+      images,
+      googleId,
+    } = req.body;
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !description ||
+      !address ||
+      !socialLinks ||
+      !images ||
+      !googleId
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email is invalid",
+      });
+    }
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "User Id is invalid",
+      });
+    }
+    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid phone number" });
+    }
+    images.map((image) => {
+      if (!validator.isURL(image)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Image url is invalid",
+        });
+      }
+    });
+    socialLinks.map((link) => {
+      if (!validator.isURL(link.link)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Social link is invalid",
+        });
+      }
+    });
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+    if (user.role !== "owner") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to register business",
+      });
+    }
+    await Business.create({
+      name,
+      email,
+      phone,
+      description,
+      address,
+      socialLinks,
+      images,
+      googleId,
+      createdBy: id,
+    });
+    res.status(200).json({
+      status: "success",
+      message: "Business registered successfully",
+    });
+  } catch (error) {
+    console.log("Error in register business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+const getBusinessByUserIdApi = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const business = await Business.findOne({ createdBy: id });
+    if (!business) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      data: business,
+    });
+  } catch (error) {
+    console.log("Error in get business by user id", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   addSpecialistApi,
   getSpecialistByBusinessIdApi,
@@ -324,4 +440,6 @@ module.exports = {
   updateManagerApi,
   deleteManagerApi,
   getManagersByBusinessIdApi,
+  registerBusinessApi,
+  getBusinessByUserIdApi,
 };

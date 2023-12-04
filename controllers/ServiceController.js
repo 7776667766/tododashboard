@@ -1,7 +1,8 @@
-const Service = require("../models/Service/ServiceModel");
 const User = require("../models/UserModel");
-const ServiceType = require("../models/Service/ServiceTypeModel");
+const Business = require("../models/BusinessModal");
 const Specialist = require("../models/SpecialistModel");
+const Service = require("../models/Service/ServiceModel");
+const ServiceType = require("../models/Service/ServiceTypeModel");
 const validator = require("validator");
 
 const addServiceTypeApi = async (req, res, next) => {
@@ -168,13 +169,13 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    // const isBusinessExist = await Business.findById(businessId);
-    // if (!isBusinessExist) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Business does not exists",
-    //   });
-    // }
+    const isBusinessExist = await Business.findById(businessId);
+    if (!isBusinessExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business does not exists",
+      });
+    }
 
     await Service.create({
       name,
@@ -258,13 +259,13 @@ const updateServiceApi = async (req, res, next) => {
           message: "Business is invalid",
         });
       }
-      // const isBusinessExist = await Business.findById(businessId);
-      // if (!isBusinessExist) {
-      //   return res.status(400).json({
-      //     status: "error",
-      //     message: "Business does not exists",
-      //   });
-      // }
+      const isBusinessExist = await Business.findById(businessId);
+      if (!isBusinessExist) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business does not exists",
+        });
+      }
     }
 
     const service = await Service.findById(serviceId);

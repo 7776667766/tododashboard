@@ -7,6 +7,8 @@ const {
   deleteManagerApi,
   updateManagerApi,
   getManagersByBusinessIdApi,
+  registerBusinessApi,
+  getBusinessByUserIdApi,
 } = require("../controllers/BusinessController");
 
 router.post("/specialist/add", auth, addSpecialistApi);
@@ -15,5 +17,7 @@ router.post("/manager/add", auth, addManagerApi);
 router.post("/manager/update/:managerId", auth, updateManagerApi);
 router.get("/manager/delete/:managerId", auth, deleteManagerApi);
 router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
+router.post("/register-business", auth, registerBusinessApi);
+router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
 
 module.exports = router;
