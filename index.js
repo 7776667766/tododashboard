@@ -19,19 +19,17 @@ app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
 
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-
-app.use(
-  cors({
-    origin: [`http://localhost:${PORT}`],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    exposedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
 
 app.use(cookieParser());
 app.use(express.json());

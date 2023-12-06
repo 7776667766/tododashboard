@@ -117,6 +117,7 @@ const registerApi = async (req, res, next) => {
 
 const loginApi = async (req, res, next) => {
   try {
+    console.log("Login req.body", req.body);
     const { phone, password } = req.body;
     if (!phone || !password) {
       return res
@@ -134,7 +135,6 @@ const loginApi = async (req, res, next) => {
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      console.log("user", user.deletedAt);
       if (user.deletedAt !== undefined) {
         if (user.deletedAt !== null) {
           return res
