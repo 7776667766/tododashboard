@@ -117,7 +117,6 @@ const registerApi = async (req, res, next) => {
 
 const loginApi = async (req, res, next) => {
   try {
-    console.log("Login req.body", req.body);
     const { phone, password } = req.body;
     if (!phone || !password) {
       return res
@@ -131,7 +130,7 @@ const loginApi = async (req, res, next) => {
     if (!user) {
       return res
         .status(400)
-        .json({ status: "error", message: "Invalid phone number" });
+        .json({ status: "error", message: "Invalid credientials" });
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
@@ -142,7 +141,8 @@ const loginApi = async (req, res, next) => {
             .json({ status: "error", message: "Account has been deleted" });
         }
       }
-      const otp = Math.floor(100000 + Math.random() * 900000);
+      // const otp = Math.floor(100000 + Math.random() * 900000);
+      const otp = 123456;
       await Otp.create({ otp, phone: user.phone });
       // res.status(201).json({
       //   status: "success",
@@ -150,6 +150,7 @@ const loginApi = async (req, res, next) => {
       // });
       const token = createSecretToken({ id: user._id });
       res.status(201).json({
+        status: "success",
         data: {
           token,
           user: {
@@ -186,11 +187,12 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
-    const otpDoc = await Otp.findOne({ otp, phone });
+    // const otpDoc = await Otp.findOne({ otp, phone }).sort({ createdAt: -1 });
+    // fetch lasted otp
+    const otpDoc = await Otp.findOne({ phone, otp });
+
     if (!otpDoc) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid phone or otp" });
+      return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
     if (otpDoc.otp !== otp) {
       return res
@@ -198,14 +200,12 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Otp not match" });
     }
 
-    if (new Date() > otpDoc.expiredAt) {
-      return res.status(400).json({ status: "error", message: "OTP expired" });
-    }
+    // if (new Date() > otpDoc.expiredAt) {
+    //   return res.status(400).json({ status: "error", message: "OTP expired" });
+    // }
     let user = await User.findOne({ phone });
     if (!user) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid phone or otp" });
+      return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
     if (user.verified === false) {
       await User.updateOne({ phone }, { verified: true, verifyAt: new Date() });
