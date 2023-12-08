@@ -309,6 +309,9 @@ const resetPasswordApi = async (req, res, next) => {
 
 const changePasswordApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });
@@ -373,6 +376,9 @@ const logoutApi = async (req, res, next) => {
 
 const getUserProfileApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });
@@ -409,6 +415,9 @@ const getUserProfileApi = async (req, res, next) => {
 
 const updataUserProfileApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });

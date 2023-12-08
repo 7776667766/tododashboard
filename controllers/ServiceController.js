@@ -7,6 +7,9 @@ const validator = require("validator");
 
 const addServiceTypeApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const { name } = req.body;
     if (!name) {
@@ -81,6 +84,9 @@ const getAllServicesTypeApi = async (req, res, next) => {
 
 const addServiceApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const {
       name,
@@ -205,6 +211,9 @@ const addServiceApi = async (req, res, next) => {
 
 const updateServiceApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { serviceId } = req.params;
     const { id } = req.user;
     const { businessId, typeId, specialistId } = req.body;
@@ -297,6 +306,9 @@ const updateServiceApi = async (req, res, next) => {
 
 const getServicesApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const { businessId } = req.body;
     if (!businessId) {

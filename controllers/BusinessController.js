@@ -6,6 +6,10 @@ const Business = require("../models/BusinessModal");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
     const { id } = req.user;
     const { name, email, businessId } = req.body;
     if (!name || !email || !businessId) {
@@ -103,6 +107,9 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
 
 const addManagerApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const { name, email, password, confirmPassword, phone, businessId } =
       req.body;
@@ -199,6 +206,9 @@ const addManagerApi = async (req, res, next) => {
 
 const updateManagerApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const { managerId } = req.params;
     if (!validator.isMongoId(managerId)) {
@@ -240,43 +250,51 @@ const updateManagerApi = async (req, res, next) => {
 };
 
 const deleteManagerApi = async (req, res, next) => {
-  const { id } = req.user;
-  const { managerId } = req.params;
-  if (!managerId) {
-    return res.status(400).json({
-      status: "error",
-      message: "Manager Id is required",
-    });
-  }
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+    const { id } = req.user;
+    const { managerId } = req.params;
+    if (!managerId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Manager Id is required",
+      });
+    }
 
-  if (!validator.isMongoId(managerId)) {
-    return res.status(400).json({
-      status: "error",
-      message: "Manager Id is invalid",
-    });
-  }
+    if (!validator.isMongoId(managerId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Manager Id is invalid",
+      });
+    }
 
-  const manager = await Manager.findOne({ managerId });
-  if (!manager) {
-    return res.status(400).json({
-      status: "error",
-      message: "Manager not found",
-    });
-  }
+    const manager = await Manager.findOne({ managerId });
+    if (!manager) {
+      return res.status(400).json({
+        status: "error",
+        message: "Manager not found",
+      });
+    }
 
-  if (manager.createdBy.toString() !== id) {
-    return res.status(400).json({
-      status: "error",
-      message: "You are not authorized to delete this manager",
-    });
-  }
+    if (manager.createdBy.toString() !== id) {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to delete this manager",
+      });
+    }
 
-  await User.findByIdAndUpdate(manager.managerId, { deletedAt: new Date() });
-  await Manager.findOneAndUpdate({ managerId }, { deletedAt: new Date() });
-  res.status(200).json({
-    status: "success",
-    message: "Manager deleted successfully",
-  });
+    await User.findByIdAndUpdate(manager.managerId, { deletedAt: new Date() });
+    await Manager.findOneAndUpdate({ managerId }, { deletedAt: new Date() });
+    res.status(200).json({
+      status: "success",
+      message: "Manager deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in delete manager", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
 };
 
 const getManagersByBusinessIdApi = async (req, res, next) => {
@@ -320,6 +338,9 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 
 const registerBusinessApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const {
       name,
@@ -415,6 +436,9 @@ const registerBusinessApi = async (req, res, next) => {
 
 const getBusinessByUserIdApi = async (req, res, next) => {
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
     const { id } = req.user;
     const business = await Business.findOne({ createdBy: id });
     if (!business) {
