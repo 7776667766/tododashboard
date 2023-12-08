@@ -56,7 +56,7 @@ const addSpecialistApi = async (req, res, next) => {
       });
     }
 
-    await Specialist.create({
+    const newSpecialist = await Specialist.create({
       name,
       email,
       businessId,
@@ -64,6 +64,11 @@ const addSpecialistApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
+      data: {
+        id: newSpecialist._id,
+        name: newSpecialist.name,
+        email: newSpecialist.email,
+      },
       message: "Specialist added successfully",
     });
   } catch (error) {
@@ -188,7 +193,7 @@ const addManagerApi = async (req, res, next) => {
       role: "manager",
     });
 
-    await Manager.create({
+    const newManager = await Manager.create({
       businessId,
       createdBy: id,
       managerId: newUser._id,
@@ -196,6 +201,12 @@ const addManagerApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
+      data: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+      },
       message: "Manager added successfully",
     });
   } catch (error) {
@@ -440,7 +451,20 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
-    const business = await Business.findOne({ createdBy: id });
+    const business = await Business.findOne({ createdBy: id }).select({
+      _id: 0,
+      id: {
+        $toString: "$_id",
+      },
+      name: 1,
+      email: 1,
+      phone: 1,
+      description: 1,
+      address: 1,
+      socialLinks: 1,
+      images: 1,
+      googleId: 1,
+    });
     if (!business) {
       return res.status(400).json({
         status: "error",

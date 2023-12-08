@@ -1,5 +1,6 @@
 const User = require("../models/UserModel");
 const Owner = require("../models/OwnerModel");
+const Business = require("../models/BusinessModal");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
@@ -83,6 +84,28 @@ const registerApi = async (req, res, next) => {
     });
     if (role === "owner") {
       await Owner.create({ ownerId: user._id, websiteService, bookingService });
+      await Business.create({
+        name,
+        email,
+        phone,
+        description: "description goes here",
+        address: "address goes here",
+        socialLinks: [
+          {
+            name: "facebook",
+            link: "https://www.facebook.com/",
+          },
+          {
+            name: "instagram",
+            link: "https://www.instagram.com/",
+          },
+        ],
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXVpCHxvk47P1nHKLZmIrKGOVe5G1Hjm0iOJZjwJrBw&s",
+        ],
+        googleId: "123456788",
+        createdBy: user._id,
+      });
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
     await Otp.create({ otp, phone });
