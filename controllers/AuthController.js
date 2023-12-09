@@ -477,6 +477,56 @@ const updataUserProfileApi = async (req, res, next) => {
   }
 };
 
+const getAllUsersApi = async (req, res, next) => {
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+    const { id } = req.user;
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({ status: "error", message: "Invalid id" });
+    }
+    const myUser = await User.findById(id);
+    if (!myUser) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "User not found" });
+    }
+    if (myUser.role !== "admin") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to access users",
+      });
+    }
+    const users = await User.find({
+      _id: { $ne: id },
+      deletedAt: null || undefined,
+    }).select({
+      _id: 0,
+      id: "$_id",
+      name: 1,
+      email: 1,
+      phone: 1,
+      image: 1,
+      role: 1,
+      createdAt: 1,
+      verified: 1,
+      verifyAt: 1,
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        users,
+      },
+      message: "Users fetched successfully",
+    });
+  } catch (error) {
+    console.log("Error in get all users", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   registerApi,
   loginApi,
@@ -487,4 +537,5 @@ module.exports = {
   logoutApi,
   getUserProfileApi,
   updataUserProfileApi,
+  getAllUsersApi,
 };

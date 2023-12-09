@@ -8,6 +8,7 @@ const {
   getUserProfileApi,
   updataUserProfileApi,
   logoutApi,
+  getAllUsersApi,
 } = require("../controllers/AuthController");
 const router = require("express").Router();
 const auth = require("../middlewares/auth");
@@ -21,5 +22,6 @@ router.post("/change-password", auth, changePasswordApi);
 router.get("/auth/logout", auth, logoutApi);
 router.get("/get-user-profile", auth, getUserProfileApi);
 router.post("/update-user-profile", auth, updataUserProfileApi);
+router.get("/all-users", auth, getAllUsersApi);
 
 module.exports = router;
