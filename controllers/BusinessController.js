@@ -324,7 +324,10 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
         message: "Business Id is invalid",
       });
     }
-    const managers = await Manager.find({ businessId });
+    const managers = await Manager.find({
+      businessId,
+      deletedAt: null || undefined,
+    });
     const users = [];
     await Promise.all(
       managers.map(async (manager) => {
