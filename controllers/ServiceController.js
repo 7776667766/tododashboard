@@ -3,6 +3,7 @@ const Business = require("../models/BusinessModal");
 const Specialist = require("../models/SpecialistModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
+const upload = require('../middlewares/uploadMiddleware');
 const validator = require("validator");
 
 const addServiceTypeApi = async (req, res, next) => {
@@ -119,6 +120,7 @@ const addServiceApi = async (req, res, next) => {
         message: "All fields are required",
       });
     }
+    
 
     if (!validator.isURL(image)) {
       return res.status(400).json({
@@ -186,8 +188,25 @@ const addServiceApi = async (req, res, next) => {
         message: "Business does not exists",
       });
     }
+    upload.single('file')(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'File upload failed',
+        });
+      }
 
-    await Service.create({
+      if (req.file) {
+        // If a file is uploaded, use req.file.buffer for file content
+        const fileBuffer = req.file.buffer;
+        // Now, you can save or process the fileBuffer as needed
+      }
+
+      // ... (your existing code)
+    });
+
+
+    const data= await Service.create({
       name,
       description,
       image,
@@ -199,9 +218,10 @@ const addServiceApi = async (req, res, next) => {
       timeSlots,
       ownerId: id,
     });
-
+    const myService = await getServiceData(data)
     res.status(200).json({
       status: "success",
+      data: myService,
       message: "Service added successfully",
     });
   } catch (error) {
