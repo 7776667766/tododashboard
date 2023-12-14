@@ -260,6 +260,7 @@ const updateManagerApi = async (req, res, next) => {
         name: updatedManagerData.name,
         email: updatedManagerData.email,
         phone: updatedManagerData.phone,
+        ...req.body,
       },
       message: "Manager updated successfully",
     });
