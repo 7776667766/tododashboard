@@ -43,13 +43,17 @@ const addServiceTypeApi = async (req, res, next) => {
       });
     }
 
-    await ServiceType.create({
+    const newService = await ServiceType.create({
       name,
       createdBy: id,
     });
 
     res.status(200).json({
       status: "success",
+      data: {
+        id: newService._id,
+        name: newService.name,
+      },
       message: "Service type added successfully",
     });
   } catch (error) {
