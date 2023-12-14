@@ -4,7 +4,25 @@ const Specialist = require("../models/SpecialistModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const validator = require("validator");
-const upload =require("../middlewares/uploadImage")
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+});
+
+
+const upload = multer({
+  storage: storage,
+});
+
+
 
 const addServiceTypeApi = async (req, res, next) => {
   try {
@@ -86,143 +104,126 @@ const getAllServicesTypeApi = async (req, res, next) => {
     });
   }
 };
+
 const addServiceApi = async (req, res, next) => {
   try {
-    upload.single('file')(req, res, async (err) => {
 
+    if (!req.file) {
+      return res.status(400).send('No image file uploaded');
+    }
+  
+  console.log(req.file)
 
-      if (err) {
-        console.error('Multer error:', err);
-        return res.status(500).json({
-          status: 'error',
-          message: 'Error uploading image',
-        });
-      }
-    
-      const filename = req.file.filename;
-      const fileUrl = path.join(filename);
-   
+    const { id } = req.user;
+    const {
+      name,
+      description,
+      price,
+      typeId,
+      specialistId,
+      date,
+      businessId,
+      timeSlots,
+    } = req.body;
 
-      const { id } = req.user;
-      const {
-        name,
-        description,
-        image,
-        price,
-        typeId,
-        specialistId,
-        date,
-        businessId,
-        timeSlots,
-      } = req.body;
-
-      if (
-        !name ||
-        !description ||
-        !price ||
-        !typeId ||
-        !specialistId ||
-        !date ||
-        !businessId ||
-        !timeSlots
-      ) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'All fields are required',
-        });
-      }
-
-      if (!validator.isURL(image)) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Image URL is invalid',
-        });
-      }
-
-      if (!validator.isMongoId(typeId)) {
-        return res.status(400).json({
-          status: "error",
-          message: "Type is invalid",
-        });
-      }
-
-      if (!validator.isMongoId(specialistId)) {
-        return res.status(400).json({
-          status: "error",
-          message: "Specialist is invalid",
-        });
-      }
-
-      if (!validator.isMongoId(businessId)) {
-        return res.status(400).json({
-          status: "error",
-          message: "Business is invalid",
-        });
-      }
-
-      const user = await User.findById(id);
-      if (!user) {
-        return res.status(400).json({
-          status: "error",
-          message: "User not found",
-        });
-      }
-
-      if (user.role !== "owner") {
-        return res.status(400).json({
-          status: "error",
-          message: "You are not authorized to add service",
-        });
-      }
-
-      const isServiceTypeExist = await ServiceType.findById(typeId);
-      if (!isServiceTypeExist) {
-        return res.status(400).json({
-          status: "error",
-          message: "Service type does not exists",
-        });
-      }
-
-      const isSpecialistExist = await Specialist.findById(specialistId);
-      if (!isSpecialistExist) {
-        return res.status(400).json({
-          status: "error",
-          message: "Specialist does not exists",
-        });
-      }
-
-      const isBusinessExist = await Business.findById(businessId);
-      if (!isBusinessExist) {
-        return res.status(400).json({
-          status: "error",
-          message: "Business does not exists",
-        });
-      }
-
-      const data = await Service.create({
-        name,
-        description,
-        image: fileUrl,
-        price,
-        typeId,
-        specialistId,
-        date,
-        businessId,
-        timeSlots,
-        ownerId: id,
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !typeId ||
+      !specialistId ||
+      !date ||
+      !businessId ||
+      !timeSlots
+    ) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'All fields are required',
       });
+    }
 
-      const myService = await getServiceData(data);
-
-      res.status(200).json({
-        status: 'success',
-        data: myService,
-        message: 'Service added successfully',
+    if (!validator.isMongoId(typeId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Type is invalid",
       });
+    }
+
+    if (!validator.isMongoId(specialistId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Specialist is invalid",
+      });
+    }
+
+    if (!validator.isMongoId(businessId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business is invalid",
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "owner") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to add service",
+      });
+    }
+
+    const isServiceTypeExist = await ServiceType.findById(typeId);
+    if (!isServiceTypeExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service type does not exists",
+      });
+    }
+
+    const isSpecialistExist = await Specialist.findById(specialistId);
+    if (!isSpecialistExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Specialist does not exists",
+      });
+    }
+
+    const isBusinessExist = await Business.findById(businessId);
+    if (!isBusinessExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business does not exists",
+      });
+    }
+
+    const data = await Service.create({
+      name,
+      description,
+      image:req.file.path,
+      price,
+      typeId,
+      specialistId,
+      date,
+      businessId,
+      timeSlots,
+      ownerId: id,
     });
+
+    const myService = await getServiceData(data);
+
+    res.status(200).json({
+      status: 'success',
+      data: myService,
+      message: 'Service added successfully',
+    });
+    ;
   } catch (error) {
-
-
     console.error('Error in creating service', error);
 
     res.status(500).json({
