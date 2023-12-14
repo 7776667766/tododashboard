@@ -12,7 +12,6 @@ dbConnect();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use("/",express.static("uploads"))
 
 const PORT = process.env.PORT || 8080;
 
