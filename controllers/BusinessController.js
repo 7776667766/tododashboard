@@ -249,9 +249,18 @@ const updateManagerApi = async (req, res, next) => {
         message: "Manager not found",
       });
     }
-    await User.findByIdAndUpdate(managerId, req.body);
+    const updatedManagerData = await User.findByIdAndUpdate(
+      managerId,
+      req.body
+    );
     res.status(200).json({
       status: "success",
+      data: {
+        id: updatedManagerData._id,
+        name: updatedManagerData.name,
+        email: updatedManagerData.email,
+        phone: updatedManagerData.phone,
+      },
       message: "Manager updated successfully",
     });
   } catch (error) {
