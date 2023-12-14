@@ -3,8 +3,8 @@ const Business = require("../models/BusinessModal");
 const Specialist = require("../models/SpecialistModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
-const upload = require('../middlewares/uploadMiddleware');
 const validator = require("validator");
+const upload =require("../middlewares/uploadImage")
 
 const addServiceTypeApi = async (req, res, next) => {
   try {
@@ -86,152 +86,151 @@ const getAllServicesTypeApi = async (req, res, next) => {
     });
   }
 };
-
 const addServiceApi = async (req, res, next) => {
   try {
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
-    const { id } = req.user;
-    const {
-      name,
-      description,
-      image,
-      price,
-      typeId,
-      specialistId,
-      date,
-      businessId,
-      timeSlots,
-    } = req.body;
-    if (
-      !name ||
-      !description ||
-      !image ||
-      !price ||
-      !typeId ||
-      !specialistId ||
-      !date ||
-      !businessId ||
-      !timeSlots
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "All fields are required",
-      });
-    }
-    
-
-    if (!validator.isURL(image)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Image URL is invalid",
-      });
-    }
-
-    if (!validator.isMongoId(typeId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Type is invalid",
-      });
-    }
-
-    if (!validator.isMongoId(specialistId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Specialist is invalid",
-      });
-    }
-
-    if (!validator.isMongoId(businessId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Business is invalid",
-      });
-    }
-
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(400).json({
-        status: "error",
-        message: "User not found",
-      });
-    }
-
-    if (user.role !== "owner") {
-      return res.status(400).json({
-        status: "error",
-        message: "You are not authorized to add service",
-      });
-    }
-
-    const isServiceTypeExist = await ServiceType.findById(typeId);
-    if (!isServiceTypeExist) {
-      return res.status(400).json({
-        status: "error",
-        message: "Service type does not exists",
-      });
-    }
-
-    const isSpecialistExist = await Specialist.findById(specialistId);
-    if (!isSpecialistExist) {
-      return res.status(400).json({
-        status: "error",
-        message: "Specialist does not exists",
-      });
-    }
-
-    const isBusinessExist = await Business.findById(businessId);
-    if (!isBusinessExist) {
-      return res.status(400).json({
-        status: "error",
-        message: "Business does not exists",
-      });
-    }
     upload.single('file')(req, res, async (err) => {
+
+
       if (err) {
+        console.error('Multer error:', err);
+        return res.status(500).json({
+          status: 'error',
+          message: 'Error uploading image',
+        });
+      }
+    
+      const filename = req.file.filename;
+      const fileUrl = path.join(filename);
+   
+
+      const { id } = req.user;
+      const {
+        name,
+        description,
+        image,
+        price,
+        typeId,
+        specialistId,
+        date,
+        businessId,
+        timeSlots,
+      } = req.body;
+
+      if (
+        !name ||
+        !description ||
+        !price ||
+        !typeId ||
+        !specialistId ||
+        !date ||
+        !businessId ||
+        !timeSlots
+      ) {
         return res.status(400).json({
           status: 'error',
-          message: 'File upload failed',
+          message: 'All fields are required',
         });
       }
 
-      if (req.file) {
-        // If a file is uploaded, use req.file.buffer for file content
-        const fileBuffer = req.file.buffer;
-        // Now, you can save or process the fileBuffer as needed
+      if (!validator.isURL(image)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Image URL is invalid',
+        });
       }
 
-      // ... (your existing code)
-    });
+      if (!validator.isMongoId(typeId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Type is invalid",
+        });
+      }
 
+      if (!validator.isMongoId(specialistId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Specialist is invalid",
+        });
+      }
 
-    const data= await Service.create({
-      name,
-      description,
-      image,
-      price,
-      typeId,
-      specialistId,
-      date,
-      businessId,
-      timeSlots,
-      ownerId: id,
-    });
-    const myService = await getServiceData(data)
-    res.status(200).json({
-      status: "success",
-      data: myService,
-      message: "Service added successfully",
+      if (!validator.isMongoId(businessId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business is invalid",
+        });
+      }
+
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(400).json({
+          status: "error",
+          message: "User not found",
+        });
+      }
+
+      if (user.role !== "owner") {
+        return res.status(400).json({
+          status: "error",
+          message: "You are not authorized to add service",
+        });
+      }
+
+      const isServiceTypeExist = await ServiceType.findById(typeId);
+      if (!isServiceTypeExist) {
+        return res.status(400).json({
+          status: "error",
+          message: "Service type does not exists",
+        });
+      }
+
+      const isSpecialistExist = await Specialist.findById(specialistId);
+      if (!isSpecialistExist) {
+        return res.status(400).json({
+          status: "error",
+          message: "Specialist does not exists",
+        });
+      }
+
+      const isBusinessExist = await Business.findById(businessId);
+      if (!isBusinessExist) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business does not exists",
+        });
+      }
+
+      const data = await Service.create({
+        name,
+        description,
+        image: fileUrl,
+        price,
+        typeId,
+        specialistId,
+        date,
+        businessId,
+        timeSlots,
+        ownerId: id,
+      });
+
+      const myService = await getServiceData(data);
+
+      res.status(200).json({
+        status: 'success',
+        data: myService,
+        message: 'Service added successfully',
+      });
     });
   } catch (error) {
-    console.log("Error in creating service", error);
+
+
+    console.error('Error in creating service', error);
+
     res.status(500).json({
-      status: "error",
+      status: 'error',
       message: error.message,
     });
   }
-};
+}
 
 const updateServiceApi = async (req, res, next) => {
   try {
@@ -358,13 +357,13 @@ const getServicesApi = async (req, res, next) => {
     const services = await Service.find(
       user.role === "admin"
         ? {
-            active: true,
-          }
+          active: true,
+        }
         : {
-            businessId,
-            ownerId: id,
-            active: true,
-          }
+          businessId,
+          ownerId: id,
+          active: true,
+        }
     );
 
     await Promise.all(
