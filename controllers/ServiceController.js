@@ -93,8 +93,6 @@ const addServiceApi = async (req, res, next) => {
       return res.status(400).send("No image file uploaded");
     }
 
-    console.log(req.file);
-
     const { id } = req.user;
     const {
       name,
