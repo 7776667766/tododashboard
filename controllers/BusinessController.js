@@ -437,7 +437,7 @@ const registerBusinessApi = async (req, res, next) => {
         message: "You are not authorized to register business",
       });
     }
-    await Business.create({
+    const myBusiness = await Business.create({
       name,
       email,
       phone,
@@ -450,6 +450,17 @@ const registerBusinessApi = async (req, res, next) => {
     });
     res.status(200).json({
       status: "success",
+      data: {
+        id: myBusiness._id,
+        name: myBusiness.name,
+        email: myBusiness.email,
+        phone: myBusiness.phone,
+        description: myBusiness.description,
+        address: myBusiness.address,
+        socialLinks: myBusiness.socialLinks,
+        images: myBusiness.images,
+        googleId: myBusiness.googleId,
+      },
       message: "Business registered successfully",
     });
   } catch (error) {
@@ -464,30 +475,72 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
-    const business = await Business.findOne({ createdBy: id }).select({
-      _id: 0,
-      id: {
-        $toString: "$_id",
-      },
-      name: 1,
-      email: 1,
-      phone: 1,
-      description: 1,
-      address: 1,
-      socialLinks: 1,
-      images: 1,
-      googleId: 1,
-    });
-    if (!business) {
+    const user = await User.findById(id);
+    if (!user) {
       return res.status(400).json({
         status: "error",
-        message: "Business not found",
+        message: "User not found",
       });
     }
-    res.status(200).json({
-      status: "success",
-      data: business,
-    });
+
+    if (user.role === "manager") {
+      const manager = await Manager.findOne({ managerId: id });
+      if (!manager) {
+        return res.status(400).json({
+          status: "error",
+          message: "Manager not found",
+        });
+      }
+      const business = await Business.findById(manager.businessId).select({
+        _id: 0,
+        id: {
+          $toString: "$_id",
+        },
+        name: 1,
+        email: 1,
+        phone: 1,
+        description: 1,
+        address: 1,
+        socialLinks: 1,
+        images: 1,
+        googleId: 1,
+      });
+      if (!business) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business not found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        data: business,
+      });
+    } else {
+      const business = await Business.findOne({ createdBy: id }).select({
+        _id: 0,
+        id: {
+          $toString: "$_id",
+        },
+        name: 1,
+        email: 1,
+        phone: 1,
+        description: 1,
+        address: 1,
+        socialLinks: 1,
+        images: 1,
+        googleId: 1,
+      });
+      if (!business) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business not found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        data: business,
+      });
+    }
   } catch (error) {
     console.log("Error in get business by user id", error);
     res.status(400).json({ status: "error", message: error.message });
