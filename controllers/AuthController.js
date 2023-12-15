@@ -501,7 +501,12 @@ const getUserProfileApi = async (req, res, next) => {
 };
 
 const updataUserProfileApi = async (req, res, next) => {
+  console.log(req)
   try {
+    if (!req.file) {
+      return res.status(400).send("No image file uploaded");
+    }
+
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
@@ -511,11 +516,6 @@ const updataUserProfileApi = async (req, res, next) => {
     }
     const { name, image } = req.body;
 
-    if (image && !validator.isURL(image)) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid image url" });
-    }
     await User.updateOne({ _id: id }, { name, image });
     const user = await User.findById(id);
     res.status(200).json({
@@ -526,7 +526,7 @@ const updataUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
+          image: req.file.path,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
