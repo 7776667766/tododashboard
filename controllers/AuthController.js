@@ -6,6 +6,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
+require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
   try {
@@ -146,7 +147,7 @@ Thank You
     //       name: user.name,
     //       email: user.email,
     //       phone: user.phone,
-    //       image: user.image,
+    //       image: process.env.SERVER_URL +user.image,
     //       role: user.role,
     //       verified: user.verified,
     //       createdAt: user.createdAt,
@@ -227,7 +228,7 @@ Thank You
             name: user.name,
             email: user.email,
             phone: user.phone,
-            image: user.image,
+            image: process.env.SERVER_URL + user.image,
             role: user.role,
             createdAt: user.createdAt,
             verified: user.verified,
@@ -289,7 +290,7 @@ const verifyOtpApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
+          image: process.env.SERVER_URL + user.image,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -485,7 +486,7 @@ const getUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
+          image: process.env.SERVER_URL + user.image,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -501,7 +502,7 @@ const getUserProfileApi = async (req, res, next) => {
 };
 
 const updataUserProfileApi = async (req, res, next) => {
-  console.log(req)
+  console.log(req);
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -526,7 +527,7 @@ const updataUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: req.file.path,
+          image: process.env.SERVER_URL + req.file.path,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
