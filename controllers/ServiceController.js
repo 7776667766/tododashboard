@@ -4,25 +4,7 @@ const Specialist = require("../models/SpecialistModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const validator = require("validator");
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  },
-});
-
-
-const upload = multer({
-  storage: storage,
-});
-
-
+require("dotenv").config();
 
 const addServiceTypeApi = async (req, res, next) => {
   try {
@@ -107,12 +89,11 @@ const getAllServicesTypeApi = async (req, res, next) => {
 
 const addServiceApi = async (req, res, next) => {
   try {
-
     if (!req.file) {
-      return res.status(400).send('No image file uploaded');
+      return res.status(400).send("No image file uploaded");
     }
-  
-  console.log(req.file)
+
+    console.log(req.file);
 
     const { id } = req.user;
     const {
@@ -137,8 +118,8 @@ const addServiceApi = async (req, res, next) => {
       !timeSlots
     ) {
       return res.status(400).json({
-        status: 'error',
-        message: 'All fields are required',
+        status: "error",
+        message: "All fields are required",
       });
     }
 
@@ -205,7 +186,7 @@ const addServiceApi = async (req, res, next) => {
     const data = await Service.create({
       name,
       description,
-      image:req.file.path,
+      image: req.file.path,
       price,
       typeId,
       specialistId,
@@ -218,20 +199,19 @@ const addServiceApi = async (req, res, next) => {
     const myService = await getServiceData(data);
 
     res.status(200).json({
-      status: 'success',
+      status: "success",
       data: myService,
-      message: 'Service added successfully',
+      message: "Service added successfully",
     });
-    ;
   } catch (error) {
-    console.error('Error in creating service', error);
+    console.error("Error in creating service", error);
 
     res.status(500).json({
-      status: 'error',
+      status: "error",
       message: error.message,
     });
   }
-}
+};
 
 const updateServiceApi = async (req, res, next) => {
   try {
@@ -358,13 +338,13 @@ const getServicesApi = async (req, res, next) => {
     const services = await Service.find(
       user.role === "admin"
         ? {
-          active: true,
-        }
+            active: true,
+          }
         : {
-          businessId,
-          ownerId: id,
-          active: true,
-        }
+            businessId,
+            ownerId: id,
+            active: true,
+          }
     );
 
     await Promise.all(
@@ -459,7 +439,7 @@ const getServiceData = async (data) => {
     id: data._id,
     name: data.name,
     description: data.description,
-    image: data.image,
+    image: process.env.SERVER_URL + data.image,
     price: data.price,
     date: data.date,
     type: type,
