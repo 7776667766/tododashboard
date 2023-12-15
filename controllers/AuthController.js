@@ -5,6 +5,7 @@ const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
+const { sendEmail } = require("../util/sendEmail");
 
 const registerApi = async (req, res, next) => {
   try {
@@ -110,6 +111,28 @@ const registerApi = async (req, res, next) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
     await Otp.create({ otp, phone });
 
+    const mailSend = await sendEmail({
+      email: user.email,
+      subject: "OTP for signup",
+      text: `Your OTP for signup is ${otp}`,
+      html: `<p>
+      Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
+      <br />
+OTP Is Valid For 05 Mins
+<br />
+Please Don't Share Your OTP With Anyone For Your Account Security
+<br />
+Thank You
+      </p>`,
+    });
+
+    if (!mailSend) {
+      return res.status(400).json({
+        status: "error",
+        message: "Error in sending email",
+      });
+    }
+
     res.status(201).json({
       status: "success",
       message: "Account created successfully",
@@ -164,9 +187,32 @@ const loginApi = async (req, res, next) => {
             .json({ status: "error", message: "Account has been deleted" });
         }
       }
-      // const otp = Math.floor(100000 + Math.random() * 900000);
-      const otp = 123456;
+      const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
+      const mailSend = await sendEmail({
+        email: user.email,
+        subject: "OTP for login",
+        text: `Your OTP for login is ${otp}`,
+        html: `<p>
+        Your Makely Pro OTP ( One Time Passcode ) For Login is : <b>${otp}</b>.
+        <br />
+OTP Is Valid For 05 Mins
+<br />
+Please Don't Share Your OTP With Anyone For Your Account Security
+<br />
+Thank You
+        </p>`,
+      });
+      // res.status(201).json({
+      //   status: "success",
+      //   message: "OTP sent successfully",
+      // });
+      if (!mailSend) {
+        return res.status(400).json({
+          status: "error",
+          message: "Error in sending email",
+        });
+      }
       // res.status(201).json({
       //   status: "success",
       //   message: "OTP sent successfully",
@@ -210,9 +256,7 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
-    // const otpDoc = await Otp.findOne({ otp, phone }).sort({ createdAt: -1 });
-    // fetch lasted otp
-    const otpDoc = await Otp.findOne({ phone, otp });
+    const otpDoc = await Otp.findOne({ otp, phone }).sort({ createdAt: -1 });
 
     if (!otpDoc) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
@@ -223,9 +267,9 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Otp not match" });
     }
 
-    // if (new Date() > otpDoc.expiredAt) {
-    //   return res.status(400).json({ status: "error", message: "OTP expired" });
-    // }
+    if (new Date() > otpDoc.expiredAt) {
+      return res.status(400).json({ status: "error", message: "OTP expired" });
+    }
     let user = await User.findOne({ phone });
     if (!user) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
@@ -281,6 +325,26 @@ const forgetPasswordApi = async (req, res, next) => {
     } else {
       const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
+      const mailSend = await sendEmail({
+        email: user.email,
+        subject: "OTP for forget password",
+        text: `Your OTP for forget password is ${otp}`,
+        html: `<p>
+        Your Makely Pro OTP ( One Time Passcode ) For Forget Password is : <b>${otp}</b>.
+        <br />
+OTP Is Valid For 05 Mins
+<br />
+Please Don't Share Your OTP With Anyone For Your Account Security
+<br />
+Thank You
+        </p>`,
+      });
+      if (!mailSend) {
+        return res.status(400).json({
+          status: "error",
+          message: "Error in sending email",
+        });
+      }
       res.status(201).json({
         status: "success",
         message: "OTP sent successfully",
