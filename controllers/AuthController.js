@@ -190,6 +190,7 @@ const loginApi = async (req, res, next) => {
       }
       const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
+      console.log("otp", otp);
       const mailSend = await sendEmail({
         email: "m.tahiridrees27@gmail.com", // user.email,
         subject: "OTP for login",
@@ -268,9 +269,9 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Otp not match" });
     }
 
-    if (new Date() > otpDoc.expiredAt) {
-      return res.status(400).json({ status: "error", message: "OTP expired" });
-    }
+    // if (new Date() > otpDoc.expiredAt) {
+    //   return res.status(400).json({ status: "error", message: "OTP expired" });
+    // }
     let user = await User.findOne({ phone });
     if (!user) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
