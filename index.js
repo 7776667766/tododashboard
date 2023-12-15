@@ -6,12 +6,14 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 // Routes
 const routes = require("./routes/index");
+const path = require("path")
 
 const dbConnect = require("./db/dbconnect");
 dbConnect();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/services/uploads', express.static('uploads'));
 
 const PORT = process.env.PORT || 8080;
 
