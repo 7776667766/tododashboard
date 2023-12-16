@@ -6,8 +6,10 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
+require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
+  console.log(req)
   try {
     const {
       name,
@@ -15,12 +17,11 @@ const registerApi = async (req, res, next) => {
       phone,
       password,
       confirmPassword,
-      image,
       role,
       websiteService,
       bookingService,
     } = req.body;
-    if (!email || !name || !phone || !image || !password || !confirmPassword) {
+    if (!email || !name || !phone || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
@@ -34,11 +35,6 @@ const registerApi = async (req, res, next) => {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid phone number" });
-    }
-    if (!validator.isURL(image, { require_protocol: true })) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid image url" });
     }
 
     if (password.length < 8) {
@@ -79,7 +75,7 @@ const registerApi = async (req, res, next) => {
       email,
       name,
       phone,
-      image,
+      image: req.file.path,
       role,
       password,
     });
@@ -485,7 +481,7 @@ const getUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
+          image: process.env.SERVER_URL + user.image,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
