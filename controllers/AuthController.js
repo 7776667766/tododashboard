@@ -84,31 +84,6 @@ const registerApi = async (req, res, next) => {
       role,
       password,
     });
-    // if (role === "owner") {
-    //   await Owner.create({ ownerId: user._id, websiteService, bookingService });
-    //   await Business.create({
-    //     name,
-    //     email,
-    //     phone,
-    //     description: "description goes here",
-    //     address: "address goes here",
-    //     socialLinks: [
-    //       {
-    //         name: "facebook",
-    //         link: "https://www.facebook.com/",
-    //       },
-    //       {
-    //         name: "instagram",
-    //         link: "https://www.instagram.com/",
-    //       },
-    //     ],
-    //     images: [
-    //       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXVpCHxvk47P1nHKLZmIrKGOVe5G1Hjm0iOJZjwJrBw&s",
-    //     ],
-    //     googleId: "123456788",
-    //     createdBy: user._id,
-    //   });
-    // }
     const otp = Math.floor(100000 + Math.random() * 900000);
     await Otp.create({ otp, phone });
 
@@ -138,24 +113,6 @@ Thank You
       status: "success",
       message: "Account created successfully",
     });
-    // const token = createSecretToken({ id: user._id });
-    // res.status(201).json({
-    //   data: {
-    //     token,
-    //     user: {
-    //       id: user._id,
-    //       name: user.name,
-    //       email: user.email,
-    //       phone: user.phone,
-    //       image: process.env.SERVER_URL +user.image,
-    //       role: user.role,
-    //       verified: user.verified,
-    //       createdAt: user.createdAt,
-    //       verifyAt: user.verifyAt,
-    //     },
-    //   },
-    //   message: "Signup successfull",
-    // });
   } catch (error) {
     console.log("Error in signup", error);
     res.status(400).json({ status: "error", message: error.message });
@@ -190,9 +147,8 @@ const loginApi = async (req, res, next) => {
       }
       const otp = Math.floor(100000 + Math.random() * 900000);
       await Otp.create({ otp, phone: user.phone });
-      console.log("otp", otp);
       const mailSend = await sendEmail({
-        email: "m.tahiridrees27@gmail.com", // user.email,
+        email: user.email,
         subject: "OTP for login",
         text: `Your OTP for login is ${otp}`,
         html: `<p>
@@ -258,8 +214,10 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
-    const otpDoc = await Otp.findOne({ otp, phone }).sort({ createdAt: -1 });
-
+    const otpDoc = await Otp.findOne({
+      phone,
+      otp,
+    }).sort({ $natural: 1 });
     if (!otpDoc) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
@@ -269,9 +227,9 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Otp not match" });
     }
 
-    // if (new Date() > otpDoc.expiredAt) {
-    //   return res.status(400).json({ status: "error", message: "OTP expired" });
-    // }
+    if (new Date() > otpDoc.expiredAt) {
+      return res.status(400).json({ status: "error", message: "OTP expired" });
+    }
     let user = await User.findOne({ phone });
     if (!user) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
