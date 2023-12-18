@@ -31,11 +31,11 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Invalid email" });
     }
-    // if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-    //   return res
-    //     .status(400)
-    //     .json({ status: "error", message: "Invalid phone number" });
-    // }
+    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid phone number" });
+    }
 
     if (password.length < 8) {
       return res
@@ -108,27 +108,27 @@ const registerApi = async (req, res, next) => {
     const otp = Math.floor(100000 + Math.random() * 900000);
     await Otp.create({ otp, phone });
 
-//     const mailSend = await sendEmail({
-//       email: user.email,
-//       subject: "OTP for signup",
-//       text: `Your OTP for signup is ${otp}`,
-//       html: `<p>
-//       Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
-//       <br />
-// OTP Is Valid For 05 Mins
-// <br />
-// Please Don't Share Your OTP With Anyone For Your Account Security
-// <br />
-// Thank You
-//       </p>`,
-//     });
+    const mailSend = await sendEmail({
+      email: user.email,
+      subject: "OTP for signup",
+      text: `Your OTP for signup is ${otp}`,
+      html: `<p>
+      Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
+      <br />
+OTP Is Valid For 05 Mins
+<br />
+Please Don't Share Your OTP With Anyone For Your Account Security
+<br />
+Thank You
+      </p>`,
+    });
 
-    // if (!mailSend) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Error in sending email",
-    //   });
-    // }
+    if (!mailSend) {
+      return res.status(400).json({
+        status: "error",
+        message: "Error in sending email",
+      });
+    }
 
     res.status(201).json({
       status: "success",
