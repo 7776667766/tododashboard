@@ -9,7 +9,7 @@ const { sendEmail } = require("../util/sendEmail");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
-  console.log(req)
+  console.log(req);
   try {
     const {
       name,
@@ -87,14 +87,14 @@ const registerApi = async (req, res, next) => {
       subject: "OTP for signup",
       text: `Your OTP for signup is ${otp}`,
       html: `<p>
-      Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
-      <br />
-OTP Is Valid For 05 Mins
-<br />
-Please Don't Share Your OTP With Anyone For Your Account Security
-<br />
-Thank You
-      </p>`,
+          Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
+          <br />
+    OTP Is Valid For 05 Mins
+    <br />
+    Please Don't Share Your OTP With Anyone For Your Account Security
+    <br />
+    Thank You
+          </p>`,
     });
 
     if (!mailSend) {
@@ -106,6 +106,7 @@ Thank You
 
     res.status(201).json({
       status: "success",
+      user,
       message: "Account created successfully",
     });
   } catch (error) {
