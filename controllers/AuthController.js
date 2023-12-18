@@ -106,7 +106,19 @@ const registerApi = async (req, res, next) => {
 
     res.status(201).json({
       status: "success",
-      user,
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: process.env.SERVER_URL + user.image,
+          role: user.role,
+          createdAt: user.createdAt,
+          verified: user.verified,
+          verifyAt: user.verifyAt,
+        },
+      },
       message: "Account created successfully",
     });
   } catch (error) {
