@@ -6,7 +6,6 @@ const Service = require('../models/Service/ServiceModel')
 
 const addBookingApi = async (req, res, next) => {
     try {
-        const { id } = req.user;
         const {
             serviceId,
             specialistId,
@@ -56,13 +55,13 @@ const addBookingApi = async (req, res, next) => {
             });
         }
 
-        const isServiceExist = await Service.findById(serviceId);
-        if (!isServiceExist) {
-            return res.status(400).json({
-                status: "error",
-                message: "Service id does not exist",
-            });
-        }
+        // const isServiceExist = await Service.findById(serviceId);
+        // if (!isServiceExist) {
+        //     return res.status(400).json({
+        //         status: "error",
+        //         message: "Service id does not exist",
+        //     });
+        // }
 
         const isSpecialistExist = await Specialist.findById(specialistId);
         if (!isSpecialistExist) {
