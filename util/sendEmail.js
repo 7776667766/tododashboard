@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports.sendEmail = async ({ email, subject, text, html }) => {
+  console.log("text", text);
   try {
     const info = await transporter.sendMail(
       {
@@ -24,8 +25,7 @@ module.exports.sendEmail = async ({ email, subject, text, html }) => {
       function error(err, info) {
         if (err) {
           console.log("Error in sending Email", err);
-        } else {
-          console.log("Info Msg", info);
+          return false;
         }
       }
     );

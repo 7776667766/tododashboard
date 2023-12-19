@@ -215,7 +215,7 @@ Thank You
 
 const verifyOtpApi = async (req, res, next) => {
   try {
-    const { phone, otp } = req.body;
+    const { phone, otp, type } = req.body;
     if (!phone || !otp) {
       return res
         .status(400)
@@ -238,6 +238,13 @@ const verifyOtpApi = async (req, res, next) => {
     if (new Date() > otpDoc.expiredAt) {
       return res.status(400).json({ status: "error", message: "OTP expired" });
     }
+
+    if (type === "reset") {
+      return res
+        .status(200)
+        .json({ status: "success", message: "OTP verified successfully" });
+    }
+
     let user = await User.findOne({ phone });
     if (!user) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
