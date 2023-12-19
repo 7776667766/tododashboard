@@ -8,11 +8,16 @@ const {
   updateServiceApi,
 } = require("../controllers/ServiceController");
 const auth = require("../middlewares/auth");
-const upload = require("../middlewares/uploadImage"); 
+const upload = require("../middlewares/uploadImage");
 
 router.post("/services/types/add", auth, addServiceTypeApi);
 router.get("/services/types", getAllServicesTypeApi);
-router.post("/services/add", auth, upload.single('image'), addServiceApi);
+router.post(
+  "/services/add",
+  auth,
+  upload("service").single("image"),
+  addServiceApi
+);
 router.post("/services/update/:serviceId", auth, updateServiceApi);
 router.post("/services/all-services", auth, getServicesApi);
 router.get("/services/detail/:id", auth, getServiceDetailByIdApi);
