@@ -7,9 +7,7 @@ const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
 require("dotenv").config();
-
 const registerApi = async (req, res, next) => {
-  console.log(req)
   try {
     const {
       name,
@@ -18,19 +16,21 @@ const registerApi = async (req, res, next) => {
       password,
       confirmPassword,
       role,
-      websiteService,
-      bookingService,
+      services,
     } = req.body;
+
     if (!email || !name || !phone || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
     }
+
     if (!validator.isEmail(email)) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid email" });
     }
+
     if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
       return res
         .status(400)
@@ -42,10 +42,11 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Password must be 8 characters" });
     }
+
     if (password !== confirmPassword) {
       return res.status(400).json({
         status: "error",
-        message: "Password and confirm password not match",
+        message: "Password and confirm password do not match",
       });
     }
 
@@ -55,18 +56,31 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Email already in use" });
     }
+
     const isPhoneExist = await User.findOne({ phone });
     if (isPhoneExist) {
       return res
         .status(400)
         .json({ status: "error", message: "Phone number already in use" });
     }
+    console.log("Role:", role);
+    console.log("Services:", services);
 
-    if (role === "owner") {
+
+    let websiteService = false;
+    let bookingService = false;
+
+    if (role === "owner" && services && services.length > 0) {
+      const websiteServiceObj = services.find((service) => service.name === "Website");
+      const bookingServiceObj = services.find((service) => service.name === "Booking");
+
+      websiteService = websiteServiceObj ? websiteServiceObj.selected : false;
+      bookingService = bookingServiceObj ? bookingServiceObj.selected : false;
+
       if (!websiteService && !bookingService) {
         return res.status(400).json({
           status: "error",
-          message: "Website service or booking service are required",
+          message: "Website service or booking service is required",
         });
       }
     }
@@ -75,11 +89,11 @@ const registerApi = async (req, res, next) => {
       email,
       name,
       phone,
-      image: req.file.path,
+      image: req.file.path, // Assuming you are using multer for file uploads
       role,
       password,
     });
-    console.log(user)
+
     if (role === "owner") {
       await Owner.create({ ownerId: user._id, websiteService, bookingService });
       await Business.create({
@@ -105,6 +119,7 @@ const registerApi = async (req, res, next) => {
         createdBy: user._id,
       });
     }
+
     const otp = Math.floor(100000 + Math.random() * 900000);
     await Otp.create({ otp, phone });
 
@@ -112,15 +127,10 @@ const registerApi = async (req, res, next) => {
       email: user.email,
       subject: "OTP for signup",
       text: `Your OTP for signup is ${otp}`,
-      html: `<p>
-      Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
-      <br />
-OTP Is Valid For 05 Mins
-<br />
-Please Don't Share Your OTP With Anyone For Your Account Security
-<br />
-Thank You
-      </p>`,
+      html: `<p>Your Makely Pro OTP (One Time Passcode) For Signup is : <b>${otp}</b>.<br />
+              OTP Is Valid For 05 Mins<br />
+              Please Don't Share Your OTP With Anyone For Your Account Security<br />
+              Thank You</p>`,
     });
 
     if (!mailSend) {
@@ -135,29 +145,12 @@ Thank You
       user,
       message: "Account created successfully",
     });
-    // const token = createSecretToken({ id: user._id });
-    // res.status(201).json({
-    //   data: {
-    //     token,
-    //     user: {
-    //       id: user._id,
-    //       name: user.name,
-    //       email: user.email,
-    //       phone: user.phone,
-    //       image: user.image,
-    //       role: user.role,
-    //       verified: user.verified,
-    //       createdAt: user.createdAt,
-    //       verifyAt: user.verifyAt,
-    //     },
-    //   },
-    //   message: "Signup successfull",
-    // });
   } catch (error) {
     console.log("Error in signup", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
 
 const loginApi = async (req, res, next) => {
   try {

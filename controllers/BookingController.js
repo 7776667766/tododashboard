@@ -63,21 +63,21 @@ const addBookingApi = async (req, res, next) => {
         //     });
         // }
 
-        const isSpecialistExist = await Specialist.findById(specialistId);
-        if (!isSpecialistExist) {
-            return res.status(400).json({
-                status: "error",
-                message: "Specialis id does not exist",
-            });
-        }
+        // const isSpecialistExist = await Specialist.findById(specialistId);
+        // if (!isSpecialistExist) {
+        //     return res.status(400).json({
+        //         status: "error",
+        //         message: "Specialis id does not exist",
+        //     });
+        // }
 
-        const isBusinessExist = await Business.findById(businessId);
-        if (!isBusinessExist) {
-            return res.status(400).json({
-                status: "error",
-                message: "Business does not exist",
-            });
-        }
+        // const isBusinessExist = await Business.findById(businessId);
+        // if (!isBusinessExist) {
+        //     return res.status(400).json({
+        //         status: "error",
+        //         message: "Business does not exist",
+        //     });
+        // }
 
         const newBooking = await Booking.create({
             serviceId,
