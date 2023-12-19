@@ -6,6 +6,7 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
+const createOTPFun = require("../util/otp");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
@@ -79,9 +80,8 @@ const registerApi = async (req, res, next) => {
       role,
       password,
     });
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    await Otp.create({ otp, phone });
 
+    const otp = await createOTPFun(user.phone);
     const mailSend = await sendEmail({
       email: user.email,
       subject: "OTP for signup",
@@ -153,8 +153,8 @@ const loginApi = async (req, res, next) => {
             .json({ status: "error", message: "Account has been deleted" });
         }
       }
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      await Otp.create({ otp, phone: user.phone });
+
+      const otp = await createOTPFun(user.phone);
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for login",
@@ -234,7 +234,8 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Otp not match" });
     }
-
+    console.log("Otp doc", otpDoc);
+    console.log("Current date", new Date());
     if (new Date() > otpDoc.expiredAt) {
       return res.status(400).json({ status: "error", message: "OTP expired" });
     }
@@ -298,8 +299,7 @@ const forgetPasswordApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Phone not exist" });
     } else {
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      await Otp.create({ otp, phone: user.phone });
+      const otp = await createOTPFun(user.phone);
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for forget password",
