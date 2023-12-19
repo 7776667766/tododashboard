@@ -16,7 +16,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, `uploads/${path}`);
   },
   filename: (req, file, cb) => {
     const sanitizedFileName = file.originalname.replace(/\s+/g, '_');
@@ -24,6 +24,9 @@ const storage = multer.diskStorage({
     cb(null, fullFileName);
   }
 });
+
 const upload = multer({ storage: storage });
 
 module.exports = upload;
+
+
