@@ -1,20 +1,25 @@
-const mongooes = require("mongoose");
+const mongoose = require("mongoose");
 
-const ownerSchema = new mongooes.Schema({
+const ownerSchema = new mongoose.Schema({
   ownerId: {
-    type: mongooes.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Owner Id is required"],
     trim: true,
   },
-  bookingService: {
-    type: Boolean,
-    default: false,
-  },
-  websiteService: {
-    type: Boolean,
-    default: false,
-  },
+  services: [
+    {
+      name: {
+        type: String,
+        required: true,
+        enum: ["booking", "website"], 
+      },
+      selected: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: new Date(),
@@ -24,4 +29,4 @@ const ownerSchema = new mongooes.Schema({
   },
 });
 
-module.exports = mongooes.model("Owner", ownerSchema);
+module.exports = mongoose.model("Owner", ownerSchema);

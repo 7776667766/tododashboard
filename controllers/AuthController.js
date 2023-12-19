@@ -8,30 +8,23 @@ const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
 require("dotenv").config();
-
 const registerApi = async (req, res, next) => {
-  console.log(req);
   try {
-    const {
-      name,
-      email,
-      phone,
-      password,
-      confirmPassword,
-      role,
-      websiteService,
-      bookingService,
-    } = req.body;
+    const { name, email, phone, password, confirmPassword, role, services } =
+      req.body;
+
     if (!email || !name || !phone || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
     }
+
     if (!validator.isEmail(email)) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid email" });
     }
+
     if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
       return res
         .status(400)
@@ -43,10 +36,11 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Password must be 8 characters" });
     }
+
     if (password !== confirmPassword) {
       return res.status(400).json({
         status: "error",
-        message: "Password and confirm password not match",
+        message: "Password and confirm password do not match",
       });
     }
 
@@ -56,18 +50,34 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Email already in use" });
     }
+
     const isPhoneExist = await User.findOne({ phone });
     if (isPhoneExist) {
       return res
         .status(400)
         .json({ status: "error", message: "Phone number already in use" });
     }
+    console.log("Role:", role);
+    console.log("Services:", services);
 
-    if (role === "owner") {
+    let websiteService = false;
+    let bookingService = false;
+
+    if (role === "owner" && services && services.length > 0) {
+      const websiteServiceObj = services.find(
+        (service) => service.name === "Website"
+      );
+      const bookingServiceObj = services.find(
+        (service) => service.name === "Booking"
+      );
+
+      websiteService = websiteServiceObj ? websiteServiceObj.selected : false;
+      bookingService = bookingServiceObj ? bookingServiceObj.selected : false;
+
       if (!websiteService && !bookingService) {
         return res.status(400).json({
           status: "error",
-          message: "Website service or booking service are required",
+          message: "Website service or booking service is required",
         });
       }
     }
@@ -76,7 +86,7 @@ const registerApi = async (req, res, next) => {
       email,
       name,
       phone,
-      image: req.file.path,
+      image: req.file.path, // Assuming you are using multer for file uploads
       role,
       password,
     });
