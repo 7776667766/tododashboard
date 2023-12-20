@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+    default: "/uploads/user-image.jpg",
     trim: true,
   },
   role: {

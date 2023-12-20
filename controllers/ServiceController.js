@@ -312,20 +312,6 @@ const getServicesApi = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
-    const { businessId } = req.body;
-    if (!businessId) {
-      return res.status(400).json({
-        status: "error",
-        message: "Business Id is required",
-      });
-    }
-    if (!validator.isMongoId(businessId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Business Id is invalid",
-      });
-    }
-    let myServices = [];
     const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({
@@ -333,6 +319,24 @@ const getServicesApi = async (req, res, next) => {
         message: "User not found",
       });
     }
+
+    const { businessId } = req.body;
+    if (user.role !== "admin") {
+      if (!businessId) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business Id is required",
+        });
+      }
+      if (!validator.isMongoId(businessId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business Id is invalid",
+        });
+      }
+    }
+
+    let myServices = [];
     const services = await Service.find(
       user.role === "admin"
         ? {
@@ -352,12 +356,6 @@ const getServicesApi = async (req, res, next) => {
       })
     );
 
-    // services.forEach(async (service) => {
-    //   const myServiceData = await getServiceData(service);
-    //   myServices.push(myServiceData);
-    //   if (myServices.length === services.length) {
-    // }
-    // });
     res.status(200).json({
       status: "success",
       data: myServices,

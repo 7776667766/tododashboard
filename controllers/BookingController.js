@@ -108,6 +108,54 @@ const addBookingApi = async (req, res, next) => {
 
 const getAllBookingsApi = async (req, res, next) => {
     try {
+    //    if (req.user === undefined) {
+    //   return res.status(400).json({ status: "error", message: "Invalid user" });
+    // }
+    // const { id } = req.user;
+    // const user = await User.findById(id);
+    // if (!user) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "User not found",
+    //   });
+    // }
+
+    // const { businessId } = req.body;
+    // if (user.role !== "manager" || user.role !== "owner") {
+    //   if (!businessId) {
+    //     return res.status(400).json({
+    //       status: "error",
+    //       message: "Business Id is required",
+    //     });
+    //   }
+    //   if (!validator.isMongoId(businessId)) {
+    //     return res.status(400).json({
+    //       status: "error",
+    //       message: "Business Id is invalid",
+    //     });
+    //   }
+    // }
+
+    // let myServices = [];
+    // const bookings = await Service.find(
+    //   user.role === "owner" || user.role === "manager"
+    //     ? {
+    //         active: true,
+    //       }
+    //     : {
+    //         businessId,
+    //         ownerId: id,
+    //         active: true,
+    //       }
+    // );
+    
+    // await Promise.all(
+    //   bookings.map(async (service) => {
+    //     const myServiceData = await getServiceData(service);
+    //     myServices.push(myServiceData);
+    //   })
+    // );
+
         const bookings = await Booking.find();
 
         res.status(200).json({
@@ -130,7 +178,6 @@ const getAllBookingsApi = async (req, res, next) => {
     
       const { bookingId } = req.params;
       const { id } = req.user;
-
       const { serviceId, specialistId, businessId, name, phone, date, timeSlot, price,status } = req.body;
 
       if (!bookingId) {
@@ -233,3 +280,35 @@ module.exports = {
     updateBookingApi,
     getAllBookingsApi
 };
+
+
+// const getServiceData = async (data) => {
+//   const { typeId, specialistId } = data;
+//   const type = await ServiceType.findById(typeId).select({
+//     _id: 0,
+//     name: 1,
+//     id: {
+//       $toString: "$_id",
+//     },
+//   });
+//   const specialist = await Specialist.findById(specialistId).select({
+//     _id: 0,
+//     name: 1,
+//     id: {
+//       $toString: "$_id",
+//     },
+//     email: 1,
+//   });
+//   const myServiceData = {
+//     id: data._id,
+//     name: data.name,
+//     description: data.description,
+//     image: process.env.SERVER_URL + data.image,
+//     price: data.price,
+//     date: data.date,
+//     type: type,
+//     specialist: specialist,
+//     timeSlots: data.timeSlots,
+//   };
+//   return myServiceData;
+// };

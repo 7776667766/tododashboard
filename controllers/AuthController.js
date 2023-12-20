@@ -6,18 +6,12 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
+const createOTPFun = require("../util/otp");
 require("dotenv").config();
 const registerApi = async (req, res, next) => {
   try {
-    const {
-      name,
-      email,
-      phone,
-      password,
-      confirmPassword,
-      role,
-      services,
-    } = req.body;
+    const { name, email, phone, password, confirmPassword, role, services } =
+      req.body;
 
     if (!email || !name || !phone || !password || !confirmPassword) {
       return res
@@ -66,13 +60,16 @@ const registerApi = async (req, res, next) => {
     console.log("Role:", role);
     console.log("Services:", services);
 
-
     let websiteService = false;
     let bookingService = false;
 
     if (role === "owner" && services && services.length > 0) {
-      const websiteServiceObj = services.find((service) => service.name === "Website");
-      const bookingServiceObj = services.find((service) => service.name === "Booking");
+      const websiteServiceObj = services.find(
+        (service) => service.name === "Website"
+      );
+      const bookingServiceObj = services.find(
+        (service) => service.name === "Booking"
+      );
 
       websiteService = websiteServiceObj ? websiteServiceObj.selected : false;
       bookingService = bookingServiceObj ? bookingServiceObj.selected : false;
@@ -94,43 +91,20 @@ const registerApi = async (req, res, next) => {
       password,
     });
 
-    if (role === "owner") {
-      await Owner.create({ ownerId: user._id, websiteService, bookingService });
-      await Business.create({
-        name,
-        email,
-        phone,
-        description: "description goes here",
-        address: "address goes here",
-        socialLinks: [
-          {
-            name: "facebook",
-            link: "https://www.facebook.com/",
-          },
-          {
-            name: "instagram",
-            link: "https://www.instagram.com/",
-          },
-        ],
-        images: [
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdXVpCHxvk47P1nHKLZmIrKGOVe5G1Hjm0iOJZjwJrBw&s",
-        ],
-        googleId: "123456788",
-        createdBy: user._id,
-      });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    await Otp.create({ otp, phone });
-
+    const otp = await createOTPFun(user.phone);
     const mailSend = await sendEmail({
       email: user.email,
       subject: "OTP for signup",
       text: `Your OTP for signup is ${otp}`,
-      html: `<p>Your Makely Pro OTP (One Time Passcode) For Signup is : <b>${otp}</b>.<br />
-              OTP Is Valid For 05 Mins<br />
-              Please Don't Share Your OTP With Anyone For Your Account Security<br />
-              Thank You</p>`,
+      html: `<p>
+          Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
+          <br />
+    OTP Is Valid For 05 Mins
+    <br />
+    Please Don't Share Your OTP With Anyone For Your Account Security
+    <br />
+    Thank You
+          </p>`,
     });
 
     if (!mailSend) {
@@ -142,7 +116,19 @@ const registerApi = async (req, res, next) => {
 
     res.status(201).json({
       status: "success",
-      user,
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          image: process.env.SERVER_URL + user.image,
+          role: user.role,
+          createdAt: user.createdAt,
+          verified: user.verified,
+          verifyAt: user.verifyAt,
+        },
+      },
       message: "Account created successfully",
     });
   } catch (error) {
@@ -150,7 +136,6 @@ const registerApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 const loginApi = async (req, res, next) => {
   try {
@@ -178,8 +163,8 @@ const loginApi = async (req, res, next) => {
             .json({ status: "error", message: "Account has been deleted" });
         }
       }
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      await Otp.create({ otp, phone: user.phone });
+
+      const otp = await createOTPFun(user.phone);
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for login",
@@ -218,7 +203,7 @@ Thank You
             name: user.name,
             email: user.email,
             phone: user.phone,
-            image: user.image,
+            image: process.env.SERVER_URL + user.image,
             role: user.role,
             createdAt: user.createdAt,
             verified: user.verified,
@@ -240,15 +225,17 @@ Thank You
 
 const verifyOtpApi = async (req, res, next) => {
   try {
-    const { phone, otp } = req.body;
+    const { phone, otp, type } = req.body;
     if (!phone || !otp) {
       return res
         .status(400)
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
-    const otpDoc = await Otp.findOne({ otp, phone }).sort({ createdAt: -1 });
-
+    const otpDoc = await Otp.findOne({
+      phone,
+      otp,
+    }).sort({ $natural: 1 });
     if (!otpDoc) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
@@ -257,10 +244,18 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Otp not match" });
     }
-
+    console.log("Otp doc", otpDoc);
+    console.log("Current date", new Date());
     if (new Date() > otpDoc.expiredAt) {
       return res.status(400).json({ status: "error", message: "OTP expired" });
     }
+
+    if (type === "reset") {
+      return res
+        .status(200)
+        .json({ status: "success", message: "OTP verified successfully" });
+    }
+
     let user = await User.findOne({ phone });
     if (!user) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
@@ -280,7 +275,7 @@ const verifyOtpApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
+          image: process.env.SERVER_URL + user.image,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -314,8 +309,7 @@ const forgetPasswordApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Phone not exist" });
     } else {
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      await Otp.create({ otp, phone: user.phone });
+      const otp = await createOTPFun(user.phone);
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for forget password",
@@ -492,7 +486,7 @@ const getUserProfileApi = async (req, res, next) => {
 };
 
 const updataUserProfileApi = async (req, res, next) => {
-  console.log(req)
+  console.log(req);
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -517,7 +511,7 @@ const updataUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: req.file.path,
+          image: process.env.SERVER_URL + req.file.path,
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
