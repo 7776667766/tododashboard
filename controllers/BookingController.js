@@ -3,6 +3,8 @@ const Booking = require("../models/BookingModal");
 const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
 const Service = require('../models/Service/ServiceModel')
+const User = require("../models/UserModel");
+
 
 const addBookingApi = async (req, res, next) => {
     try {
@@ -107,60 +109,64 @@ const addBookingApi = async (req, res, next) => {
 };
 
 const getAllBookingsApi = async (req, res, next) => {
+ 
     try {
-    //    if (req.user === undefined) {
-    //   return res.status(400).json({ status: "error", message: "Invalid user" });
-    // }
-    // const { id } = req.user;
-    // const user = await User.findById(id);
-    // if (!user) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "User not found",
-    //   });
-    // }
+      console.log(req.user)
+       if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+    const { id } = req.user;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
 
-    // const { businessId } = req.body;
-    // if (user.role !== "manager" || user.role !== "owner") {
-    //   if (!businessId) {
-    //     return res.status(400).json({
-    //       status: "error",
-    //       message: "Business Id is required",
-    //     });
-    //   }
-    //   if (!validator.isMongoId(businessId)) {
-    //     return res.status(400).json({
-    //       status: "error",
-    //       message: "Business Id is invalid",
-    //     });
-    //   }
-    // }
+    const { businessId } = req.body;
 
-    // let myServices = [];
-    // const bookings = await Service.find(
-    //   user.role === "owner" || user.role === "manager"
-    //     ? {
-    //         active: true,
-    //       }
-    //     : {
-    //         businessId,
-    //         ownerId: id,
-    //         active: true,
-    //       }
-    // );
+    console.log("buisness Id",businessId)
+
+    if (user.role !== "manager" && user.role !== "owner") {
+      if (businessId === undefined || !businessId) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business Id is required",
+        });
+      }
+      if (!validator.isMongoId(businessId)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business Id is invalid",
+        });
+      }
+    }
     
-    // await Promise.all(
-    //   bookings.map(async (service) => {
-    //     const myServiceData = await getServiceData(service);
-    //     myServices.push(myServiceData);
-    //   })
-    // );
-
-        const bookings = await Booking.find();
+    let myBookings = [];
+    const bookings = await Booking.find(
+      user.role === "owner"
+        ? {
+            active: true,
+          }
+        : {
+            businessId,
+            ownerId: id,
+            active: true,
+          }
+    );
+    console.log("boookingg--return",bookings)
+    
+    await Promise.all(
+      bookings.map(async (service) => {
+        const myServiceData = await getServiceData(service);
+        myBookings.push(myServiceData);
+      })
+    );
 
         res.status(200).json({
             status: "success",
-            data: bookings,
+            data: myBookings,
             message: "All bookings retrieved successfully",
         });
     } catch (error) {
@@ -282,33 +288,24 @@ module.exports = {
 };
 
 
-// const getServiceData = async (data) => {
-//   const { typeId, specialistId } = data;
-//   const type = await ServiceType.findById(typeId).select({
-//     _id: 0,
-//     name: 1,
-//     id: {
-//       $toString: "$_id",
-//     },
-//   });
-//   const specialist = await Specialist.findById(specialistId).select({
-//     _id: 0,
-//     name: 1,
-//     id: {
-//       $toString: "$_id",
-//     },
-//     email: 1,
-//   });
-//   const myServiceData = {
-//     id: data._id,
-//     name: data.name,
-//     description: data.description,
-//     image: process.env.SERVER_URL + data.image,
-//     price: data.price,
-//     date: data.date,
-//     type: type,
-//     specialist: specialist,
-//     timeSlots: data.timeSlots,
-//   };
-//   return myServiceData;
-// };
+const getServiceData = async (data) => {
+  const {  specialistId } = data;
+  const specialist = await Specialist.findById(specialistId).select({
+    _id: 0,
+    name: 1,
+    id: {
+      $toString: "$_id",
+    },
+    phone: 1,
+  });
+  const myServiceData = {
+    id: data._id,
+    name: data.name,
+    phone: data.phone,
+    price: data.price,
+    date: data.date,
+    specialist: specialist,
+    timeSlot: data.timeSlot,
+  };
+  return myServiceData;
+};

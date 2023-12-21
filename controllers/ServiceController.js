@@ -307,6 +307,7 @@ const updateServiceApi = async (req, res, next) => {
 };
 
 const getServicesApi = async (req, res, next) => {
+  console.log(req.user)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });

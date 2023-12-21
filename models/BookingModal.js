@@ -2,23 +2,29 @@ const mongoose = require("mongoose");
 
 
 const bookingSchema = new mongoose.Schema({
-    // service: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Service",
-    //     required: [true, "Service is required"],
-    //   },
+    service: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+        required: [true, "Service is required"],
+      },
       specialistId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Specialist",
         required: [true, "Specialist Id is required"],
         trim: true,
       },
-    
+      ownerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: [true, "owner Id is required"],
+      },
+
       businessId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Business",
         required: [true, "Business Id is required"],
       },
+      
     name: {
         type: String,
         required: [true, "Customer name is required"],
