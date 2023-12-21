@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 
 const bookingSchema = new mongoose.Schema({
-    service: {
+    serviceId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Service",
         required: [true, "Service is required"],
@@ -12,11 +12,6 @@ const bookingSchema = new mongoose.Schema({
         ref: "Specialist",
         required: [true, "Specialist Id is required"],
         trim: true,
-      },
-      ownerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: [true, "owner Id is required"],
       },
 
       businessId: {
@@ -63,8 +58,8 @@ const bookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Delivered", "Pending","Cancelled"],
-        default: "Pending",
+        enum: ["completed", "pending","cancelled"],
+        default: "pending",
     },
 });
 
