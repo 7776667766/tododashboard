@@ -15,6 +15,7 @@ const addBookingApi = async (req, res, next) => {
       name,
       phone,
       date,
+      serialNumber,
       timeSlot,
       status,
       price,
@@ -24,6 +25,7 @@ const addBookingApi = async (req, res, next) => {
       !serviceId ||
       !specialistId ||
       !businessId ||
+      !serialNumber ||
       !name ||
       !phone ||
       !date ||
@@ -85,6 +87,7 @@ const addBookingApi = async (req, res, next) => {
       serviceId,
       specialistId,
       businessId,
+      serialNumber,
       name,
       phone,
       date,

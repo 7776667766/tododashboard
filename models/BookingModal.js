@@ -54,9 +54,15 @@ const bookingSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+
+  serialNumber: {
+    type: Number,
+    required: true,
+  },
+
   status: {
     type: String,
-    enum: ["completed", "pending", "cacncelled"],
+    enum: ["completed", "pending", "cancelled"],
     default: "pending",
   },
 });
