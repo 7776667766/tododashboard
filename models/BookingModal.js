@@ -6,6 +6,13 @@ const bookingSchema = new mongoose.Schema({
     ref: "Service",
     required: [true, "Service is required"],
   },
+
+  userId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "Service is required"],
+  },
+
   specialistId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Specialist",
@@ -55,7 +62,7 @@ const bookingSchema = new mongoose.Schema({
     default: true,
   },
 
-  serialNumber: {
+  token: {
     type: Number,
     required: true,
   },

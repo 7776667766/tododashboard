@@ -86,7 +86,7 @@ const registerApi = async (req, res, next) => {
       email,
       name,
       phone,
-      image: req.file.path, // Assuming you are using multer for file uploads
+      image: req.file.path, 
       role,
       password,
     });

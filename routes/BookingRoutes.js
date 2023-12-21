@@ -7,7 +7,7 @@ const {
   getBookingByBusinessApi,
 } = require("../controllers/BookingController");
 
-router.post("/booking/add", addBookingApi);
+router.post("/booking/add",auth, addBookingApi);
 // router.update('/booking/update',updateBookingApi)
 router.post("/get-my-business-booking", auth, getBookingByBusinessApi);
 

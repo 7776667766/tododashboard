@@ -5,9 +5,30 @@ const Business = require("../models/BusinessModal");
 const Service = require("../models/Service/ServiceModel");
 const User = require("../models/UserModel");
 const Manager = require("../models/ManagerModel");
+const { sendEmail } = require("../util/sendEmail");
+
 
 const addBookingApi = async (req, res, next) => {
   try {
+
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    const latestBooking = await Booking.findOne({}, {}, { sort: { token: -1 } });
+    const nextSerialNumber = (latestBooking && latestBooking.token + 1) || 1;
+
     const {
       serviceId,
       specialistId,
@@ -15,7 +36,6 @@ const addBookingApi = async (req, res, next) => {
       name,
       phone,
       date,
-      serialNumber,
       timeSlot,
       status,
       price,
@@ -25,7 +45,6 @@ const addBookingApi = async (req, res, next) => {
       !serviceId ||
       !specialistId ||
       !businessId ||
-      !serialNumber ||
       !name ||
       !phone ||
       !date ||
@@ -59,35 +78,39 @@ const addBookingApi = async (req, res, next) => {
       });
     }
 
-    // const isServiceExist = await Service.findById(serviceId);
-    // if (!isServiceExist) {
-    //     return res.status(400).json({
-    //         status: "error",
-    //         message: "Service id does not exist",
-    //     });
-    // }
+    const business = await Business.findById(businessId);
 
-    // const isSpecialistExist = await Specialist.findById(specialistId);
-    // if (!isSpecialistExist) {
-    //     return res.status(400).json({
-    //         status: "error",
-    //         message: "Specialis id does not exist",
-    //     });
-    // }
+    if (!business) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Business not found',
+      });
+    }
+    console.log("business", business)
 
-    // const isBusinessExist = await Business.findById(businessId);
-    // if (!isBusinessExist) {
-    //     return res.status(400).json({
-    //         status: "error",
-    //         message: "Business does not exist",
-    //     });
-    // }
+    
+
+    const businessOwner = await User.findById(business.createdBy);
+    console.log(businessOwner, "businessOwner")
+
+
+    if (!businessOwner) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Onwer associated with business not found',
+      });
+    }
+
+
+
+    console.log("Owner Email",  businessOwner.email)
 
     const newBooking = await Booking.create({
       serviceId,
       specialistId,
+      userId: user._id,
       businessId,
-      serialNumber,
+      token: nextSerialNumber,
       name,
       phone,
       date,
@@ -95,6 +118,26 @@ const addBookingApi = async (req, res, next) => {
       timeSlot,
       price,
     });
+    console.log("user.email", user.email)
+    const userMailSend = await sendEmail({
+      email: user.email,
+      subject: 'Booking Confirmation',
+      html: `<p>Your Booking is Booked. <br /> Thank You</p>`,
+    });
+
+    const businessOwnerMailSend = await sendEmail({
+      email:  businessOwner.email,
+      subject: 'New Booking Notification',
+      html: `<p>A new booking has been made. <br />Please check your dashboard for details.</p>`,
+    });
+
+    if (!userMailSend || !businessOwnerMailSend) {
+      console.error('Error sending confirmation emails');
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error sending confirmation emails',
+      });
+    }
 
     res.status(200).json({
       status: "success",
