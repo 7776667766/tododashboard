@@ -108,7 +108,7 @@ const addBookingApi = async (req, res, next) => {
   }
 };
 
-const getAllBookingsApi = async (req, res, next) => {
+const getBookingByBusinessApi = async (req, res, next) => {
   try {
     console.log(req.user);
     if (req.user === undefined) {
@@ -135,9 +135,9 @@ const getAllBookingsApi = async (req, res, next) => {
       console.log("boooking 123", bookings);
 
       await Promise.all(
-        bookings.map(async (service) => {
-          const myServiceData = await getServiceData(service);
-          myBookings.push(myServiceData);
+        bookings.map(async (booking) => {
+          const myBookingData = await getBookingData(booking);
+          myBookings.push(myBookingData);
         })
       );
 
@@ -280,10 +280,10 @@ const updateBookingApi = async (req, res, next) => {
 module.exports = {
   addBookingApi,
   updateBookingApi,
-  getAllBookingsApi,
+  getBookingByBusinessApi,
 };
 
-const getServiceData = async (data) => {
+const getBookingData = async (data) => {
   const { specialistId } = data;
   const specialist = await Specialist.findById(specialistId).select({
     _id: 0,
@@ -293,7 +293,7 @@ const getServiceData = async (data) => {
     },
     phone: 1,
   });
-  const myServiceData = {
+  const myBookingData = {
     id: data._id,
     name: data.name,
     phone: data.phone,
@@ -301,6 +301,7 @@ const getServiceData = async (data) => {
     date: data.date,
     specialist: specialist,
     timeSlot: data.timeSlot,
+    status: data.status,
   };
-  return myServiceData;
+  return myBookingData;
 };
