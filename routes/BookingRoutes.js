@@ -4,11 +4,11 @@ const auth = require("../middlewares/auth");
 const {
   addBookingApi,
   updateBookingApi,
-  getAllBookingsApi,
+  getBookingByBusinessApi,
 } = require("../controllers/BookingController");
 
 router.post("/booking/add", addBookingApi);
 // router.update('/booking/update',updateBookingApi)
-router.post("/get-all-business-booking", auth, getAllBookingsApi);
+router.post("/get-my-business-booking", auth, getBookingByBusinessApi);
 
 module.exports = router;
