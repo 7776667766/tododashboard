@@ -4,9 +4,7 @@ const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
 const Service = require("../models/Service/ServiceModel");
 const User = require("../models/UserModel");
-const Manager = require("../models/ManagerModel");
 const { sendEmail } = require("../util/sendEmail");
-
 
 const addBookingApi = async (req, res, next) => {
   try {
@@ -88,11 +86,8 @@ const addBookingApi = async (req, res, next) => {
     }
     console.log("business", business)
 
-    
-
     const businessOwner = await User.findById(business.createdBy);
     console.log(businessOwner, "businessOwner")
-
 
     if (!businessOwner) {
       return res.status(400).json({
@@ -101,9 +96,7 @@ const addBookingApi = async (req, res, next) => {
       });
     }
 
-
-
-    console.log("Owner Email",  businessOwner.email)
+    console.log("Owner Email", businessOwner.email)
 
     const newBooking = await Booking.create({
       serviceId,
@@ -126,7 +119,7 @@ const addBookingApi = async (req, res, next) => {
     });
 
     const businessOwnerMailSend = await sendEmail({
-      email:  businessOwner.email,
+      email: businessOwner.email,
       subject: 'New Booking Notification',
       html: `<p>A new booking has been made. <br />Please check your dashboard for details.</p>`,
     });
@@ -322,11 +315,32 @@ const updateBookingApi = async (req, res, next) => {
     });
   }
 };
+const getBookedTimeSlots = async (req, res, next) => {
+  try {
+    const { serviceId, date } = req.body;
+
+    const bookedTimeSlots = await Booking.find({serviceId, date }).distinct('timeSlot')
+    console.log('Booked TimeSlots:',bookedTimeSlots);
+
+    return res.status(200).json({
+      data: bookedTimeSlots,
+      message: 'Booked Time Slots',
+    });
+
+  } catch (error) {
+    console.error('Error Fetching Booked Time Slots:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+    });
+  }
+};
 
 module.exports = {
   addBookingApi,
   updateBookingApi,
   getBookingByBusinessApi,
+  getBookedTimeSlots,
 };
 
 const getBookingData = async (data) => {

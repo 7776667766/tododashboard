@@ -6,6 +6,7 @@ const {
   getServiceDetailByIdApi,
   getAllServicesTypeApi,
   updateServiceApi,
+  // getServicebyTimeSlots,
 } = require("../controllers/ServiceController");
 const auth = require("../middlewares/auth");
 const upload = require("../middlewares/uploadImage");
@@ -21,5 +22,6 @@ router.post(
 router.post("/services/update/:serviceId", auth, updateServiceApi);
 router.post("/services/all-services", auth, getServicesApi);
 router.get("/services/detail/:id", auth, getServiceDetailByIdApi);
+// router.get("/service/timeSlots", getServicebyTimeSlots)
 
 module.exports = router;

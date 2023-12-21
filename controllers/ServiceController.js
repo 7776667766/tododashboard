@@ -100,7 +100,7 @@ const addServiceApi = async (req, res, next) => {
       price,
       typeId,
       specialistId,
-      date,
+      timeInterval,
       businessId,
       timeSlots,
     } = req.body;
@@ -111,7 +111,7 @@ const addServiceApi = async (req, res, next) => {
       !price ||
       !typeId ||
       !specialistId ||
-      !date ||
+      !timeInterval ||
       !businessId ||
       !timeSlots
     ) {
@@ -188,7 +188,7 @@ const addServiceApi = async (req, res, next) => {
       price,
       typeId,
       specialistId,
-      date,
+      timeInterval,
       businessId,
       timeSlots,
       ownerId: id,
@@ -406,6 +406,7 @@ const getServiceDetailByIdApi = async (req, res, next) => {
   }
 };
 
+
 module.exports = {
   addServiceTypeApi,
   getAllServicesTypeApi,
@@ -438,7 +439,7 @@ const getServiceData = async (data) => {
     description: data.description,
     image: process.env.SERVER_URL + data.image,
     price: data.price,
-    date: data.date,
+    timeInterval: data.timeInterval,
     type: type,
     specialist: specialist,
     timeSlots: data.timeSlots,

@@ -21,11 +21,12 @@ const serviceSchema = new mongoose.Schema({
     required: [true, "Price is required"],
     trim: true,
   },
-  date: {
-    type: Date,
-    required: [true, "Date is required"],
+  timeInterval: {
+    type: [Number],
+    required: [true, "Time intervals are required"],
     trim: true,
   },
+  
   typeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ServiceType",
