@@ -3,6 +3,7 @@ const Business = require("../models/BusinessModal");
 const Specialist = require("../models/SpecialistModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
+const slugify = require("slugify");
 const validator = require("validator");
 require("dotenv").config();
 
@@ -105,6 +106,8 @@ const addServiceApi = async (req, res, next) => {
       timeSlots,
     } = req.body;
 
+    console.log(timeInterval)
+
     if (
       !name ||
       !description ||
@@ -181,6 +184,8 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
+    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g }); 
+
     const data = await Service.create({
       name,
       description,
@@ -192,9 +197,11 @@ const addServiceApi = async (req, res, next) => {
       businessId,
       timeSlots,
       ownerId: id,
+      slug
     });
 
-    const myService = await getServiceData(data);
+    const myService = await Service.findOne({ _id: data._id });
+    console.log("my servcice", myService)
 
     res.status(200).json({
       status: "success",

@@ -11,6 +11,10 @@ const serviceSchema = new mongoose.Schema({
     required: [true, "Description is required"],
     trim: true,
   },
+  slug: {
+    type: String,
+    unique: true,
+  },
   image: {
     type: String,
     required: [true, "Image is required"],
@@ -22,7 +26,7 @@ const serviceSchema = new mongoose.Schema({
     trim: true,
   },
   timeInterval: {
-    type: [Number],
+    type: Number,
     required: [true, "Time intervals are required"],
     trim: true,
   },
@@ -67,5 +71,6 @@ const serviceSchema = new mongoose.Schema({
     default: true,
   },
 });
+
 
 module.exports = mongoose.model("Service", serviceSchema);

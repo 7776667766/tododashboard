@@ -3,6 +3,8 @@ const User = require("../models/UserModel");
 const Manager = require("../models/ManagerModel");
 const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
+const slugify = require("slugify");
+
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -437,6 +439,11 @@ const registerBusinessApi = async (req, res, next) => {
         message: "You are not authorized to register business",
       });
     }
+
+    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g }); 
+    console.log(slug)
+
+
     const myBusiness = await Business.create({
       name,
       email,
@@ -444,6 +451,7 @@ const registerBusinessApi = async (req, res, next) => {
       description,
       address,
       socialLinks,
+      slug,
       images,
       googleId,
       createdBy: id,
