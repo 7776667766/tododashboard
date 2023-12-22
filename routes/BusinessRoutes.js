@@ -9,6 +9,7 @@ const {
   getManagersByBusinessIdApi,
   registerBusinessApi,
   getBusinessByUserIdApi,
+  getBusinessDetailBySlugApi,
 } = require("../controllers/BusinessController");
 
 router.post("/specialist/add", auth, addSpecialistApi);
@@ -19,5 +20,6 @@ router.get("/manager/delete/:managerId", auth, deleteManagerApi);
 router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
 router.post("/register-business", auth, registerBusinessApi);
 router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
+router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
 
 module.exports = router;

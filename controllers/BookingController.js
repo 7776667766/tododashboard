@@ -8,7 +8,6 @@ const { sendEmail } = require("../util/sendEmail");
 
 const addBookingApi = async (req, res, next) => {
   try {
-
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
@@ -24,7 +23,11 @@ const addBookingApi = async (req, res, next) => {
       });
     }
 
-    const latestBooking = await Booking.findOne({}, {}, { sort: { token: -1 } });
+    const latestBooking = await Booking.findOne(
+      {},
+      {},
+      { sort: { token: -1 } }
+    );
     const nextSerialNumber = (latestBooking && latestBooking.token + 1) || 1;
 
     const {
@@ -80,23 +83,23 @@ const addBookingApi = async (req, res, next) => {
 
     if (!business) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Business not found',
+        status: "error",
+        message: "Business not found",
       });
     }
-    console.log("business", business)
+    console.log("business", business);
 
     const businessOwner = await User.findById(business.createdBy);
-    console.log(businessOwner, "businessOwner")
+    console.log(businessOwner, "businessOwner");
 
     if (!businessOwner) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Onwer associated with business not found',
+        status: "error",
+        message: "Onwer associated with business not found",
       });
     }
 
-    console.log("Owner Email", businessOwner.email)
+    console.log("Owner Email", businessOwner.email);
 
     const newBooking = await Booking.create({
       serviceId,
@@ -111,24 +114,24 @@ const addBookingApi = async (req, res, next) => {
       timeSlot,
       price,
     });
-    console.log("user.email", user.email)
+    console.log("user.email", user.email);
     const userMailSend = await sendEmail({
       email: user.email,
-      subject: 'Booking Confirmation',
+      subject: "Booking Confirmation",
       html: `<p>Your Booking is Booked. <br /> Thank You</p>`,
     });
 
     const businessOwnerMailSend = await sendEmail({
       email: businessOwner.email,
-      subject: 'New Booking Notification',
+      subject: "New Booking Notification",
       html: `<p>A new booking has been made. <br />Please check your dashboard for details.</p>`,
     });
 
     if (!userMailSend || !businessOwnerMailSend) {
-      console.error('Error sending confirmation emails');
+      console.error("Error sending confirmation emails");
       return res.status(500).json({
-        status: 'error',
-        message: 'Error sending confirmation emails',
+        status: "error",
+        message: "Error sending confirmation emails",
       });
     }
 
@@ -318,20 +321,34 @@ const updateBookingApi = async (req, res, next) => {
 const getBookedTimeSlots = async (req, res, next) => {
   try {
     const { serviceId, date } = req.body;
-
-    const bookedTimeSlots = await Booking.find({serviceId, date }).distinct('timeSlot')
-    console.log('Booked TimeSlots:',bookedTimeSlots);
+    if (!serviceId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Id is required",
+      });
+    }
+    if (!date) {
+      return res.status(400).json({
+        status: "error",
+        message: "Date is required",
+      });
+    }
+    const bookedTimeSlots = await Booking.find({
+      serviceId,
+      date: { $gte: new Date(date) },
+    }).distinct("timeSlot");
+    console.log("Booked TimeSlots:", bookedTimeSlots);
 
     return res.status(200).json({
+      status: "success",
       data: bookedTimeSlots,
-      message: 'Booked Time Slots',
+      message: "Booked Time Slots",
     });
-
   } catch (error) {
-    console.error('Error Fetching Booked Time Slots:', error);
+    console.error("Error Fetching Booked Time Slots:", error);
     return res.status(500).json({
-      status: 'error',
-      message: 'Internal server error',
+      status: "error",
+      message: "Internal server error",
     });
   }
 };

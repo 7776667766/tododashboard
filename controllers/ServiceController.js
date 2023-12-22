@@ -307,47 +307,52 @@ const updateServiceApi = async (req, res, next) => {
 };
 
 const getServicesApi = async (req, res, next) => {
-  console.log(req.user)
+  console.log("getServicesApi req.body", req.body);
   try {
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
-    const { id } = req.user;
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(400).json({
-        status: "error",
-        message: "User not found",
-      });
-    }
+    // if (req.user === undefined) {
+    //   return res.status(400).json({ status: "error", message: "Invalid user" });
+    // }
+    // const { id } = req.user;
+    // const user = await User.findById(id);
+    // if (!user) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "User not found",
+    //   });
+    // }
 
     const { businessId } = req.body;
-    if (user.role !== "admin") {
-      if (!businessId) {
-        return res.status(400).json({
-          status: "error",
-          message: "Business Id is required",
-        });
-      }
-      if (!validator.isMongoId(businessId)) {
-        return res.status(400).json({
-          status: "error",
-          message: "Business Id is invalid",
-        });
-      }
-    }
+    // if (user.role !== "admin") {
+    //   if (!businessId) {
+    //     return res.status(400).json({
+    //       status: "error",
+    //       message: "Business Id is required",
+    //     });
+    //   }
+    //   if (!validator.isMongoId(businessId)) {
+    //     return res.status(400).json({
+    //       status: "error",
+    //       message: "Business Id is invalid",
+    //     });
+    //   }
+    // }
 
     let myServices = [];
     const services = await Service.find(
-      user.role === "admin"
-        ? {
-            active: true,
-          }
-        : {
-            businessId,
-            ownerId: id,
-            active: true,
-          }
+      {
+        businessId,
+        // ownerId: id,
+        active: true,
+      }
+      // user.role === "admin"
+      //   ? {
+      //       active: true,
+      //     }
+      //   : {
+      //       businessId,
+      //       ownerId: id,
+      //       active: true,
+      //     }
     );
 
     await Promise.all(
@@ -405,7 +410,6 @@ const getServiceDetailByIdApi = async (req, res, next) => {
     });
   }
 };
-
 
 module.exports = {
   addServiceTypeApi,

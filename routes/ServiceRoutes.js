@@ -20,7 +20,7 @@ router.post(
   addServiceApi
 );
 router.post("/services/update/:serviceId", auth, updateServiceApi);
-router.post("/services/all-services", auth, getServicesApi);
+router.post("/services/all-services", getServicesApi);
 router.get("/services/detail/:id", auth, getServiceDetailByIdApi);
 // router.get("/service/timeSlots", getServicebyTimeSlots)
 

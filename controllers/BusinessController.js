@@ -547,6 +547,49 @@ const getBusinessByUserIdApi = async (req, res, next) => {
   }
 };
 
+const getBusinessDetailBySlugApi = async (req, res, next) => {
+  try {
+    const { slug } = req.params;
+    console.log("slug", slug);
+    if (!slug) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug is required",
+      });
+    }
+    const business = await Business.findOne({
+      slug: slug,
+    }).select({
+      _id: 0,
+      id: {
+        $toString: "$_id",
+      },
+      name: 1,
+      email: 1,
+      phone: 1,
+      description: 1,
+      address: 1,
+      socialLinks: 1,
+      images: 1,
+      googleId: 1,
+      slug: 1,
+    });
+    if (!business) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      data: business,
+    });
+  } catch (error) {
+    console.log("Error in get business by user id", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   addSpecialistApi,
   getSpecialistByBusinessIdApi,
@@ -556,4 +599,5 @@ module.exports = {
   getManagersByBusinessIdApi,
   registerBusinessApi,
   getBusinessByUserIdApi,
+  getBusinessDetailBySlugApi,
 };
