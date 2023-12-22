@@ -11,6 +11,10 @@ const businessSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Email is required"],
   },
+  slug: {
+    type: String,
+    unique: true,
+  },
   phone: {
     type: String,
     trim: true,
