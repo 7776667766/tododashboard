@@ -106,7 +106,7 @@ const addServiceApi = async (req, res, next) => {
       timeSlots,
     } = req.body;
 
-    console.log(timeInterval)
+    console.log(timeInterval);
 
     if (
       !name ||
@@ -184,7 +184,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g }); 
+    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
     const data = await Service.create({
       name,
@@ -197,15 +197,15 @@ const addServiceApi = async (req, res, next) => {
       businessId,
       timeSlots,
       ownerId: id,
-      slug
+      slug,
     });
 
     const myService = await Service.findOne({ _id: data._id });
-    console.log("my servcice", myService)
+    const myServiceData = await getServiceData(myService);
 
     res.status(200).json({
       status: "success",
-      data: myService,
+      data: myServiceData,
       message: "Service added successfully",
     });
   } catch (error) {
@@ -300,8 +300,13 @@ const updateServiceApi = async (req, res, next) => {
       });
     }
     await Service.updateOne({ _id: serviceId }, req.body);
+
+    const myServiceData = await Service.findOne({ _id: serviceId });
+    const myServiceUpdatedData = await getServiceData(myServiceData);
+
     res.status(200).json({
       status: "success",
+      data: myServiceUpdatedData,
       message: "Service updated successfully",
     });
   } catch (error) {
@@ -454,6 +459,7 @@ const getServiceData = async (data) => {
     type: type,
     specialist: specialist,
     timeSlots: data.timeSlots,
+    slug: data.slug,
   };
   return myServiceData;
 };

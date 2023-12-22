@@ -5,7 +5,6 @@ const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
 const slugify = require("slugify");
 
-
 const addSpecialistApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
@@ -440,9 +439,8 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
-    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g }); 
-    console.log(slug)
-
+    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
+    console.log(slug);
 
     const myBusiness = await Business.create({
       name,
@@ -512,6 +510,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         socialLinks: 1,
         images: 1,
         googleId: 1,
+        slug: 1,
       });
       if (!business) {
         return res.status(400).json({
@@ -537,6 +536,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         socialLinks: 1,
         images: 1,
         googleId: 1,
+        slug: 1,
       });
       if (!business) {
         return res.status(400).json({
