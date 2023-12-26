@@ -87,7 +87,6 @@ const addBookingApi = async (req, res, next) => {
         message: "Business not found",
       });
     }
-  
 
     const businessOwner = await User.findById(business.createdBy);
 
@@ -110,7 +109,7 @@ const addBookingApi = async (req, res, next) => {
       status,
       timeSlot,
       price,
-    })
+    });
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -329,9 +328,14 @@ const getBookedTimeSlots = async (req, res, next) => {
         message: "Date is required",
       });
     }
+
     const bookedTimeSlots = await Booking.find({
       serviceId,
-      date: { $gte: new Date(date) },
+      date,
+      // date: {
+      //   $gte: date,
+      //   $lte: date,
+      // },
     }).distinct("timeSlot");
     console.log("Booked TimeSlots:", bookedTimeSlots);
 

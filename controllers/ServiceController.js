@@ -387,22 +387,22 @@ const getServicesApi = async (req, res, next) => {
   }
 };
 
-const getServiceDetailByIdApi = async (req, res, next) => {
+const getServiceDetailBySlugApi = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    if (!id) {
+    const { slug } = req.params;
+    if (!slug) {
       return res.status(400).json({
         status: "error",
-        message: "Service Id is required",
+        message: "Service slug is required",
       });
     }
-    if (!validator.isMongoId(id)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Service Id is invalid",
-      });
-    }
-    const service = await Service.findById(id);
+    // if (!validator.isMongoId(id)) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Service Id is invalid",
+    //   });
+    // }
+    const service = await Service.findOne({ slug });
     if (!service) {
       return res.status(400).json({
         status: "error",
@@ -429,7 +429,7 @@ module.exports = {
   addServiceApi,
   updateServiceApi,
   getServicesApi,
-  getServiceDetailByIdApi,
+  getServiceDetailBySlugApi,
 };
 
 const getServiceData = async (data) => {
