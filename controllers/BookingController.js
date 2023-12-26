@@ -87,10 +87,9 @@ const addBookingApi = async (req, res, next) => {
         message: "Business not found",
       });
     }
-    console.log("business", business);
+  
 
     const businessOwner = await User.findById(business.createdBy);
-    console.log(businessOwner, "businessOwner");
 
     if (!businessOwner) {
       return res.status(400).json({
@@ -98,8 +97,6 @@ const addBookingApi = async (req, res, next) => {
         message: "Onwer associated with business not found",
       });
     }
-
-    console.log("Owner Email", businessOwner.email);
 
     const newBooking = await Booking.create({
       serviceId,
@@ -113,8 +110,8 @@ const addBookingApi = async (req, res, next) => {
       status,
       timeSlot,
       price,
-    });
-    console.log("user.email", user.email);
+    })
+
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "Booking Confirmation",
@@ -174,7 +171,6 @@ const getBookingByBusinessApi = async (req, res, next) => {
         businessId: businessId,
         active: true,
       });
-      console.log("boooking 123", bookings);
 
       await Promise.all(
         bookings.map(async (booking) => {

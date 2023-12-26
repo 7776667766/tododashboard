@@ -4,6 +4,7 @@ const Manager = require("../models/ManagerModel");
 const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
 const slugify = require("slugify");
+const { sendEmail } = require("../util/sendEmail");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -453,7 +454,32 @@ const registerBusinessApi = async (req, res, next) => {
       images,
       googleId,
       createdBy: id,
+      createdAt,
     });
+
+    console.log(user.email , "owner email")
+
+    const userMailSend = await sendEmail({
+      email: user.email,
+      subject: "New Business Created Successfully",
+      html: `<p>Dear ${user.name},<br /><br />We are pleased to inform you that 
+      a new business has been successfully created. 
+      Thank you for choosing ${myBusiness.name}.<br /><br />
+      For your reference, here are some important details:<br />
+      - Business Website: www.business/${slug} <br />
+      - Date of Creation: ${myBusiness.createdAt}<br /><br />
+      If you have any questions or require further assistance,
+       feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
+    });
+    
+    if (!userMailSend) {
+      console.error("Error sending confirmation emails");
+      return res.status(500).json({
+        status: "error",
+        message: "Error sending confirmation emails",
+      });
+    }
+
     res.status(200).json({
       status: "success",
       data: {
