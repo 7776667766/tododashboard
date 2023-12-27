@@ -12,11 +12,15 @@ const cardSchema = new mongoose.Schema({
     required: true,
   },
 
-  stripePaymentIntentId: {
-    type: String,
-    required: true,
-  },
+  // stripePaymentIntentId: {
+  //   type: String,
+  //   required: true,
+  // },
 
+  subscriptionPlan :{
+    type:String,
+
+  },
   createdAt: {
     type: Date,
     default: Date.now,
