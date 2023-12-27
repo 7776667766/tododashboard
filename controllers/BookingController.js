@@ -329,13 +329,15 @@ const getBookedTimeSlots = async (req, res, next) => {
       });
     }
 
+    const startDate = new Date(date).setHours(0, 0, 0, 0);
+    const endDate = new Date(date).setHours(23, 59, 59, 999);
+
     const bookedTimeSlots = await Booking.find({
       serviceId,
-      date,
-      // date: {
-      //   $gte: date,
-      //   $lte: date,
-      // },
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
     }).distinct("timeSlot");
     console.log("Booked TimeSlots:", bookedTimeSlots);
 
