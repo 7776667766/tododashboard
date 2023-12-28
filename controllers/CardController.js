@@ -5,15 +5,13 @@ const createSubscription = async (customerId, priceId) => {
     const subscription = await stripe.subscriptions.create({
         customer: customerId,
         items: [{ price: priceId }],
-        trial_period_days: 1,  
     });
     return subscription;
 };
 
 const addCardApi = async (req, res, next) => {
     try {
-
-        const { name, token, subscriptionPlan } = req.body;
+        const { name, token, subscriptionPlan, check } = req.body;
         console.log(token, "token")
 
         if (!name || !token || !subscriptionPlan) {
@@ -34,7 +32,7 @@ const addCardApi = async (req, res, next) => {
             },
         });
 
-        console.log("payment method", paymentMethod.id)
+        console.log("card payment method", paymentMethod.card)
 
         const customer = await stripe.customers.create({
             payment_method: paymentMethod.id,
@@ -58,10 +56,10 @@ const addCardApi = async (req, res, next) => {
                 selectedPriceId = await createCustomPrice(5000);
                 break;
             case '6months':
-                selectedPriceId = await createCustomPrice(7000);
+                selectedPriceId = await createCustomPrice(10000);
                 break;
-            case '8months':
-                selectedPriceId = await createCustomPrice(9000);
+            case '12months':
+                selectedPriceId = await createCustomPrice(18000);
                 break;
             default:
                 return res.status(400).json({ status: 'error', message: 'Invalid subscription plan' });
@@ -71,16 +69,33 @@ const addCardApi = async (req, res, next) => {
 
         console.log(subscription, "subscription")
 
-        const newCard = await Card.create({
-            name,
-            stripeCustomerId: customer.id,
-            stripePaymentMethodId: paymentMethod.id,
-            stripeSubscriptionId: subscription.id,
-        });
 
-        console.log("newCard", newCard)
 
-        res.status(201).json({ status: 'success', data: newCard });
+
+        if (check==="true") {
+            const { exp_month, exp_year, last4, brand } = paymentMethod.card;
+            console.log(exp_month, exp_year, last4, brand,"-------card details to showw")
+
+            const newCard = await Card.create({
+                name,
+                stripeCustomerId: customer.id,
+                stripePaymentMethodId: paymentMethod.id,
+                stripeSubscriptionId: subscription.id,
+                subscriptionPlan,
+                expiryDate: `${exp_month}/${exp_year}`,
+                cardDigits: last4,
+                cardType: brand,
+
+            });
+
+            console.log("newCard", newCard);
+
+            res.status(201).json({ status: 'success', data: newCard });
+        } else {
+            console.log("Check is false, skipping card details saving.");
+
+            res.status(201).json({ status: 'success', message: 'Card details not saved due to check being false' });
+        }
     } catch (error) {
         console.error('Error in Adding Card Details', error);
         res.status(500).json({ status: 'error', message: 'Internal Server Error' });
@@ -107,6 +122,19 @@ const createCustomPrice = async (amount) => {
     return price.id;
 };
 
+const getTransactionDetails = async (req, res, next) => {
+    try {
+      const transactions = await Card.find();
+      console.log("transections",transactions)
+  
+      res.status(200).json({ status: 'success', data: transactions });
+    } catch (error) {
+      console.error('Error fetching transaction details:', error);
+      res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+    }
+  };
+  
 module.exports = {
     addCardApi,
+    getTransactionDetails
 };
