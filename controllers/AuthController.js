@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
+const imgFullPath = require("../util/imgFullPath");
 require("dotenv").config();
 const registerApi = async (req, res, next) => {
   try {
@@ -86,7 +87,7 @@ const registerApi = async (req, res, next) => {
       email,
       name,
       phone,
-      image: req.file.path, 
+      image: req.file.path,
       role,
       password,
     });
@@ -122,7 +123,7 @@ const registerApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: process.env.SERVER_URL + user.image,
+          image: imgFullPath(user.image),
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -203,7 +204,7 @@ Thank You
             name: user.name,
             email: user.email,
             phone: user.phone,
-            image: process.env.SERVER_URL + user.image,
+            image: imgFullPath(user.image),
             role: user.role,
             createdAt: user.createdAt,
             verified: user.verified,
@@ -221,6 +222,34 @@ Thank You
     console.log("Error in login", error);
     res.status(400).json({ status: "error", message: error.message });
   }
+};
+
+const checkTokenIsValidApi = async (req, res, next) => {
+  const { id } = req.user;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(400).json({ status: "error", message: "Invalid user" });
+  }
+
+  const token = createSecretToken({ id: user._id });
+  res.status(201).json({
+    status: "success",
+    data: {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        image: imgFullPath(user.image),
+        role: user.role,
+        createdAt: user.createdAt,
+        verified: user.verified,
+        verifyAt: user.verifyAt,
+      },
+    },
+    message: "Login successfull",
+  });
 };
 
 const verifyOtpApi = async (req, res, next) => {
@@ -244,8 +273,7 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Otp not match" });
     }
-    console.log("Otp doc", otpDoc);
-    console.log("Current date", new Date());
+
     if (new Date() > otpDoc.expiredAt) {
       return res.status(400).json({ status: "error", message: "OTP expired" });
     }
@@ -275,7 +303,7 @@ const verifyOtpApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: process.env.SERVER_URL + user.image,
+          image: imgFullPath(user.image),
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -470,7 +498,7 @@ const getUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: process.env.SERVER_URL + user.image,
+          image: imgFullPath(user.image),
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -511,7 +539,7 @@ const updataUserProfileApi = async (req, res, next) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          image: process.env.SERVER_URL + req.file.path,
+          image: imgFullPath(req.file.path),
           role: user.role,
           createdAt: user.createdAt,
           verified: user.verified,
@@ -579,6 +607,7 @@ const getAllUsersApi = async (req, res, next) => {
 module.exports = {
   registerApi,
   loginApi,
+  checkTokenIsValidApi,
   verifyOtpApi,
   forgetPasswordApi,
   resetPasswordApi,

@@ -5,6 +5,7 @@ const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const slugify = require("slugify");
 const validator = require("validator");
+const imgFullPath = require("../util/imgFullPath");
 require("dotenv").config();
 
 const addServiceTypeApi = async (req, res, next) => {
@@ -319,7 +320,6 @@ const updateServiceApi = async (req, res, next) => {
 };
 
 const getServicesApi = async (req, res, next) => {
-  console.log("getServicesApi req.body", req.body);
   try {
     // if (req.user === undefined) {
     //   return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -453,7 +453,7 @@ const getServiceData = async (data) => {
     id: data._id,
     name: data.name,
     description: data.description,
-    image: process.env.SERVER_URL + data.image,
+    image: imgFullPath(data.image),
     price: data.price,
     timeInterval: data.timeInterval,
     type: type,

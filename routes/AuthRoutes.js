@@ -9,6 +9,7 @@ const {
   updataUserProfileApi,
   logoutApi,
   getAllUsersApi,
+  checkTokenIsValidApi,
 } = require("../controllers/AuthController");
 const router = require("express").Router();
 const auth = require("../middlewares/auth");
@@ -16,6 +17,7 @@ const upload = require("../middlewares/uploadImage");
 
 router.post("/auth/login", loginApi);
 router.post("/auth/register", upload("profile").single("image"), registerApi);
+router.get("/auth/token-is-valid", auth, checkTokenIsValidApi);
 router.post("/auth/verify-otp", verifyOtpApi);
 router.post("/auth/forget-password", forgetPasswordApi);
 router.post("/auth/reset-password", resetPasswordApi);

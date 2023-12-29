@@ -5,6 +5,8 @@ const Business = require("../models/BusinessModal");
 const Service = require("../models/Service/ServiceModel");
 const User = require("../models/UserModel");
 const { sendEmail } = require("../util/sendEmail");
+const imgFullPath = require("../util/imgFullPath");
+require("dotenv").config();
 
 const addBookingApi = async (req, res, next) => {
   try {
@@ -130,10 +132,10 @@ const addBookingApi = async (req, res, next) => {
         message: "Error sending confirmation emails",
       });
     }
-
+    const myBookingData = await getBookingData(newBooking);
     res.status(200).json({
       status: "success",
-      data: newBooking,
+      data: myBookingData,
       message: "Booking added successfully",
     });
   } catch (error) {
@@ -363,7 +365,7 @@ module.exports = {
 };
 
 const getBookingData = async (data) => {
-  const { specialistId } = data;
+  const { specialistId, businessId, serviceId } = data;
   const specialist = await Specialist.findById(specialistId).select({
     _id: 0,
     name: 1,
@@ -371,6 +373,19 @@ const getBookingData = async (data) => {
       $toString: "$_id",
     },
     phone: 1,
+  });
+
+  const businessData = await Business.findById(businessId).select({
+    _id: 0,
+    name: 1,
+    id: {
+      $toString: "$_id",
+    },
+  });
+  const serviceData = await Service.findById(serviceId).select({
+    _id: 1,
+    name: 1,
+    image: 1,
   });
   const myBookingData = {
     id: data._id,
@@ -381,6 +396,13 @@ const getBookingData = async (data) => {
     specialist: specialist,
     timeSlot: data.timeSlot,
     status: data.status,
+    token: data.token,
+    business: businessData,
+    service: serviceData && {
+      id: serviceData._id,
+      name: serviceData.name,
+      image: imgFullPath(serviceData.image),
+    },
   };
   return myBookingData;
 };
