@@ -1,5 +1,8 @@
 const Card = require('../models/CardModel');
 const stripe = require('stripe')('sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS');
+const User = require("../models/UserModel");
+const Owner = require("../models/OwnerModel");
+
 
 const createSubscription = async (customerId, priceId) => {
     const subscription = await stripe.subscriptions.create({
@@ -11,6 +14,20 @@ const createSubscription = async (customerId, priceId) => {
 
 const addCardApi = async (req, res, next) => {
     try {
+
+        const { id } = req.user;
+
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(400).json({
+                status: "error",
+                message: "User not found",
+            });
+        }
+        console.log("userID--------", user);
+
+
         const { name, token, subscriptionPlan, check } = req.body;
         console.log(token, "token")
 
@@ -69,14 +86,15 @@ const addCardApi = async (req, res, next) => {
 
         console.log(subscription, "subscription")
 
+        const amount = subscription.plan.amount;
+        console.log('Amount:', amount);
 
-
-
-        if (check==="true") {
+        if (check === "true") {
             const { exp_month, exp_year, last4, brand } = paymentMethod.card;
-            console.log(exp_month, exp_year, last4, brand,"-------card details to showw")
+            console.log(exp_month, exp_year, last4, brand, "-------card details to showw")
 
             const newCard = await Card.create({
+                userId: user._id,
                 name,
                 stripeCustomerId: customer.id,
                 stripePaymentMethodId: paymentMethod.id,
@@ -85,7 +103,7 @@ const addCardApi = async (req, res, next) => {
                 expiryDate: `${exp_month}/${exp_year}`,
                 cardDigits: last4,
                 cardType: brand,
-
+                amount: amount
             });
 
             console.log("newCard", newCard);
@@ -103,6 +121,7 @@ const addCardApi = async (req, res, next) => {
 };
 
 
+
 const createCustomPrice = async (amount) => {
     const product = await stripe.products.create({
         name: 'Your Product Name',
@@ -118,23 +137,50 @@ const createCustomPrice = async (amount) => {
             interval_count: 3,
         },
     });
-
     return price.id;
 };
 
-const getTransactionDetails = async (req, res, next) => {
+const getTransactionbyUserId = async (req, res, next) => {
     try {
-      const transactions = await Card.find();
-      console.log("transections",transactions)
-  
-      res.status(200).json({ status: 'success', data: transactions });
+        if (req.user === undefined) {
+            return res.status(400).json({ status: "error", message: "Invalid user" });
+        }
+        const { id } = req.user;
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(400).json({
+                status: "error",
+                message: "User not found",
+            });
+        }
+
+        console.log(user.role,"user.role")
+        if (user.role !== 'admin' && user.role !== 'owner') {
+            return res.status(400).json({
+                status: "error",
+                message: "you are not authorzed to find transaction list",
+            });
+
+        }
+        const adminTransaction = await Card.find(user.role === "owner" ? { userId: id } : {})
+        if (!adminTransaction) {
+            return res.status(400).json({
+                status: "error",
+                message: "adminTransaction not found",
+            });
+        }
+        res.status(200).json({
+            status: "success",
+            data: adminTransaction,
+        });
+
     } catch (error) {
-      console.error('Error fetching transaction details:', error);
-      res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+        console.log("Error in get transaction by user id", error);
+        res.status(400).json({ status: "error", message: error.message });
     }
-  };
-  
+};
+
 module.exports = {
     addCardApi,
-    getTransactionDetails
+    getTransactionbyUserId
 };
