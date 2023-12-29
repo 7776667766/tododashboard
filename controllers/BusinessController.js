@@ -379,6 +379,7 @@ const registerBusinessApi = async (req, res, next) => {
       googleId,
       slug,
     } = req.body;
+    console.log("slug", slug);
     if (
       !name ||
       !email ||
@@ -444,6 +445,13 @@ const registerBusinessApi = async (req, res, next) => {
 
     const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
     console.log("mySlug", mySlug);
+    const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+    if (slugAlreadyExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
 
     const myBusiness = await Business.create({
       name,
@@ -452,7 +460,7 @@ const registerBusinessApi = async (req, res, next) => {
       description,
       address,
       socialLinks,
-      mySlug,
+      slug: mySlug,
       images,
       googleId,
       createdBy: id,
