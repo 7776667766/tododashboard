@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
+  userId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "Service is required"],
+  },
+
   name: {
     type: String,
     required: [true, 'Cardholder Name is required'],
