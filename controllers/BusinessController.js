@@ -377,6 +377,7 @@ const registerBusinessApi = async (req, res, next) => {
       socialLinks,
       images,
       googleId,
+      slug,
     } = req.body;
     if (
       !name ||
@@ -386,7 +387,8 @@ const registerBusinessApi = async (req, res, next) => {
       !address ||
       !socialLinks ||
       !images ||
-      !googleId
+      !googleId ||
+      !slug
     ) {
       return res.status(400).json({
         status: "error",
@@ -440,8 +442,8 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
-    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
-    console.log(slug);
+    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
+    console.log("mySlug", mySlug);
 
     const myBusiness = await Business.create({
       name,
@@ -450,14 +452,13 @@ const registerBusinessApi = async (req, res, next) => {
       description,
       address,
       socialLinks,
-      slug,
+      mySlug,
       images,
       googleId,
       createdBy: id,
-      createdAt,
     });
 
-    console.log(user.email , "owner email")
+    console.log(user.email, "owner email");
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -471,7 +472,7 @@ const registerBusinessApi = async (req, res, next) => {
       If you have any questions or require further assistance,
        feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
     });
-    
+
     if (!userMailSend) {
       console.error("Error sending confirmation emails");
       return res.status(500).json({
@@ -492,6 +493,7 @@ const registerBusinessApi = async (req, res, next) => {
         socialLinks: myBusiness.socialLinks,
         images: myBusiness.images,
         googleId: myBusiness.googleId,
+        slug: myBusiness.slug,
       },
       message: "Business registered successfully",
     });

@@ -150,7 +150,6 @@ const addBookingApi = async (req, res, next) => {
 
 const getBookingByBusinessApi = async (req, res, next) => {
   try {
-    console.log(req.user);
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
@@ -166,7 +165,6 @@ const getBookingByBusinessApi = async (req, res, next) => {
 
     if (user.role === "manager" || user.role === "owner") {
       const { businessId } = req.body;
-
       let myBookings = [];
       const bookings = await Booking.find({
         businessId: businessId,
