@@ -21,14 +21,9 @@ const addPlanApi = async (req, res, next) => {
                 message: "You are not authorized to add Plan",
             });
         }
+        console.log(req.body,"body------");
 
-        const { name, duration, price, description, features } = req.body
-
-        console.log(name, duration, price, description, features, "name, duration, price, description, features")
-
-        if (!name || !duration || !price || !description || !features) {
-            return res.status(400).json({ status: 'error', message: 'All Feilds Are Required' });
-        }
+        const { name, duration, price, description , features} = req.body
 
         const newPlan = await Plan.create({
             userId: user._id,
@@ -36,16 +31,16 @@ const addPlanApi = async (req, res, next) => {
             duration,
             price,
             description,
-            features,
+            features
         });
 
         console.log("NewPlan....", newPlan);
 
-        res.status(201).json({ status: 'New Plan Aded Successfully', data: newPlan });
+        res.status(201).json({ status: 'success', data: newPlan, message: "New Plan Aded Successfully" });
 
     } catch (error) {
         console.error('Error in adding Plan Details', error);
-        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+        res.status(500).json({ status: 'error', message: error });
     }
 };
 

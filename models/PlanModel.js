@@ -10,21 +10,18 @@ const planSchema = new mongoose.Schema({
 
     name: {
         type: String,
-        required: [true, "Name is required"],
-        trim: true,
+        
     },
     duration: {
         type: String,
-        trim: true,
     },
     price: {
         type: String,
-        required: [true, "Price is required"],
+        
     },
 
     description: {
         type: String,
-        required: [true, "description is required"],
     },
 
     features: {
