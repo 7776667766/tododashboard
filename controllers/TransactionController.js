@@ -1,9 +1,8 @@
-const Card = require("../models/CardModel");
+const Transaction = require("../models/TransactionModel");
 const stripe = require("stripe")(
   "sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS"
 );
 const User = require("../models/UserModel");
-const Owner = require("../models/OwnerModel");
 
 const createSubscription = async (customerId, priceId) => {
   const subscription = await stripe.subscriptions.create({
@@ -13,7 +12,7 @@ const createSubscription = async (customerId, priceId) => {
   return subscription;
 };
 
-const addCardApi = async (req, res, next) => {
+const addTransactionApi = async (req, res, next) => {
   try {
     const { id } = req.user;
 
@@ -44,7 +43,7 @@ const addCardApi = async (req, res, next) => {
         .status(400)
         .json({
           status: "error",
-          message: "Invalid credit card information in the token",
+          message: "Invalid credit Transaction information in the token",
         });
     }
 
@@ -55,7 +54,7 @@ const addCardApi = async (req, res, next) => {
       },
     });
 
-    console.log("card payment method", paymentMethod.card);
+    console.log("Transaction payment method", paymentMethod.card);
 
     const customer = await stripe.customers.create({
       payment_method: paymentMethod.id,
@@ -95,17 +94,17 @@ const addCardApi = async (req, res, next) => {
     const amount = subscription.plan.amount;
     console.log("Amount:", amount);
 
-    // if (check === "true") {
+ 
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
     console.log(
       exp_month,
       exp_year,
       last4,
       brand,
-      "-------card details to showw"
+      "-------Transaction details to showw"
     );
 
-    const newCard = await Card.create({
+    const newTransaction = await Transaction.create({
       userId: user._id,
       name,
       stripeCustomerId: customer.id,
@@ -118,16 +117,11 @@ const addCardApi = async (req, res, next) => {
       amount: amount,
     });
 
-    console.log("newCard", newCard);
+    console.log("newCard", newTransaction);
 
     res.status(201).json({ status: "success", data: newCard });
-    // } else {
-    //     console.log("Check is false, skipping card details saving.");
-
-    //     res.status(201).json({ status: 'success', message: 'Card details not saved due to check being false' });
-    // }
   } catch (error) {
-    console.error("Error in Adding Card Details", error);
+    console.error("Error in Adding Transaction Details", error);
     res.status(500).json({ status: "error", message: "Internal Server Error" });
   }
 };
@@ -171,7 +165,7 @@ const getTransactionbyUserId = async (req, res, next) => {
         message: "you are not authorzed to find transaction list",
       });
     }
-    const adminTransaction = await Card.find(
+    const adminTransaction = await Transaction.find(
       user.role === "owner" ? { userId: id } : {}
     );
     if (!adminTransaction) {
@@ -191,6 +185,6 @@ const getTransactionbyUserId = async (req, res, next) => {
 };
 
 module.exports = {
-  addCardApi,
+  addTransactionApi,
   getTransactionbyUserId,
 };

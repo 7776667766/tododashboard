@@ -3,8 +3,9 @@ const authRoutes = require("./AuthRoutes");
 const serviceRoutes = require("./ServiceRoutes");
 const businessRoutes = require("./BusinessRoutes");
 const bookingRoutes=require('./BookingRoutes')
-const cardRoutes= require('./CardRoutes')
+const cardRoutes= require('./TransactionRoutes')
 const planRoutes= require('./planRoutes')
+const transactionRoutes= require('./TransactionRoutes')
 
 
 router.use("/api", authRoutes);
@@ -13,6 +14,6 @@ router.use("/api", businessRoutes);
 router.use('/api', bookingRoutes)
 router.use('/api', cardRoutes)
 router.use('/api', planRoutes)
-
+router.use('/api', transactionRoutes)
 
 module.exports = router;
