@@ -92,9 +92,9 @@ const addTransactionApi = async (req, res, next) => {
       brand,
       "-------Transaction details to showw"
     );
-
     let newcard;  
 
+console.log(check,"check")
       if (check === true) {
         newcard = {
           name,
@@ -104,31 +104,26 @@ const addTransactionApi = async (req, res, next) => {
           cardType: brand,
           amount: amount,
         };
-        res.status(201).json({ status: "success", message: "Card saved successfully", data: newcard });
       } else {
-        res.status(200).json({ status: "success", message: "Card not saved" });
+        const newTransaction = await Transaction.create({
+          userId: user._id,
+          name,
+          stripeCustomerId: customer.id,
+          stripePaymentMethodId: paymentMethod.id,
+          stripeSubscriptionId: subscription.id,
+          subscriptionPlan,
+          expiryDate: `${exp_month}/${exp_year}`,
+          cardDigits: last4,
+          cardType: brand,
+          amount: amount,
+        });
+    
+        res.status(201).json({ status: "success", message: "Transaction saved successfully", data: newTransaction, newcard });
       }
-
-
-      const newTransaction = await Transaction.create({
-        userId: user._id,
-        name,
-        stripeCustomerId: customer.id,
-        stripePaymentMethodId: paymentMethod.id,
-        stripeSubscriptionId: subscription.id,
-        subscriptionPlan,
-        expiryDate: `${exp_month}/${exp_year}`,
-        cardDigits: last4,
-        cardType: brand,
-        amount: amount,
-      });
-
-      res.status(201).json({ status: "success", message: "Card saved successfully", data: newTransaction, newcard });
     } catch (error) {
       console.error("Error in Adding Transaction Details", error);
       res.status(500).json({ status: "error", message: "Internal Server Error" });
-    }
-  };
+    }}
 
   const createCustomPrice = async (amount) => {
     const product = await stripe.products.create({
