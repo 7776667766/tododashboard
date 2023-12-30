@@ -16,8 +16,8 @@ const planSchema = new mongoose.Schema({
     required: [true, "Plan price is required"],
   },
 
-  description: {
-    type: String,
+  Features: {
+    type: [String], 
     required: [true, "Plan description is required"],
   },
 

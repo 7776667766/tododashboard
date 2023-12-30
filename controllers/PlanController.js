@@ -22,9 +22,9 @@ const addPlanApi = async (req, res, next) => {
       });
     }
 
-    const { name, duration, price, description } = req.body;
+    const { name, duration, price, Features } = req.body;
 
-    if (!name || !duration || !price || !description) {
+    if (!name || !duration || !price || !Features) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",

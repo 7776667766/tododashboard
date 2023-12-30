@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const cardSchema = new mongoose.Schema({
+const transactionSchema = new mongoose.Schema({
   userId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -54,6 +54,6 @@ const cardSchema = new mongoose.Schema({
   },
 });
 
-const Card = mongoose.model('Card', cardSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
 
-module.exports = Card;
+module.exports = Transaction;
