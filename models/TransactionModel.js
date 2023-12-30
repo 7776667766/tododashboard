@@ -32,6 +32,9 @@ const transactionSchema = new mongoose.Schema({
     type: String,
 
   },
+  token:{
+    type:String
+  },
   amount: {
     type: Number
   },

@@ -24,10 +24,7 @@ const addTransactionApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-    console.log("userID--------", user);
-
     const { name, token, subscriptionPlan, check } = req.body;
-    console.log(token, "token");
 
     if (!name || !token || !subscriptionPlan) {
       return res
@@ -36,7 +33,6 @@ const addTransactionApi = async (req, res, next) => {
     }
 
     const creditCardInfo = req.body.token;
-    console.log(creditCardInfo, "information of card");
 
     if (!creditCardInfo) {
       return res
@@ -54,8 +50,6 @@ const addTransactionApi = async (req, res, next) => {
       },
     });
 
-    console.log("Transaction payment method", paymentMethod.card);
-
     const customer = await stripe.customers.create({
       payment_method: paymentMethod.id,
       invoice_settings: {
@@ -63,7 +57,6 @@ const addTransactionApi = async (req, res, next) => {
       },
       name: name,
     });
-    console.log(customer, "customerr");
 
     await stripe.paymentMethods.attach(paymentMethod.id, {
       customer: customer.id,
@@ -88,13 +81,9 @@ const addTransactionApi = async (req, res, next) => {
     }
 
     const subscription = await createSubscription(customer.id, selectedPriceId);
-
-    console.log(subscription, "subscription");
-
     const amount = subscription.plan.amount;
-    console.log("Amount:", amount);
 
- 
+
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
     console.log(
       exp_month,
@@ -104,87 +93,102 @@ const addTransactionApi = async (req, res, next) => {
       "-------Transaction details to showw"
     );
 
-    const newTransaction = await Transaction.create({
-      userId: user._id,
-      name,
-      stripeCustomerId: customer.id,
-      stripePaymentMethodId: paymentMethod.id,
-      stripeSubscriptionId: subscription.id,
-      subscriptionPlan,
-      expiryDate: `${exp_month}/${exp_year}`,
-      cardDigits: last4,
-      cardType: brand,
-      amount: amount,
+    let newcard;  
+
+      if (check === true) {
+        newcard = {
+          name,
+          subscriptionPlan,
+          expiryDate: `${exp_month}/${exp_year}`,
+          cardDigits: last4,
+          cardType: brand,
+          amount: amount,
+        };
+        res.status(201).json({ status: "success", message: "Card saved successfully", data: newcard });
+      } else {
+        res.status(200).json({ status: "success", message: "Card not saved" });
+      }
+
+
+      const newTransaction = await Transaction.create({
+        userId: user._id,
+        name,
+        stripeCustomerId: customer.id,
+        stripePaymentMethodId: paymentMethod.id,
+        stripeSubscriptionId: subscription.id,
+        subscriptionPlan,
+        expiryDate: `${exp_month}/${exp_year}`,
+        cardDigits: last4,
+        cardType: brand,
+        amount: amount,
+      });
+
+      res.status(201).json({ status: "success", message: "Card saved successfully", data: newTransaction, newcard });
+    } catch (error) {
+      console.error("Error in Adding Transaction Details", error);
+      res.status(500).json({ status: "error", message: "Internal Server Error" });
+    }
+  };
+
+  const createCustomPrice = async (amount) => {
+    const product = await stripe.products.create({
+      name: "Your Product Name",
+      type: "service",
     });
 
-    console.log("newCard", newTransaction);
-
-    res.status(201).json({ status: "success", data: newCard });
-  } catch (error) {
-    console.error("Error in Adding Transaction Details", error);
-    res.status(500).json({ status: "error", message: "Internal Server Error" });
-  }
-};
-
-const createCustomPrice = async (amount) => {
-  const product = await stripe.products.create({
-    name: "Your Product Name",
-    type: "service",
-  });
-
-  const price = await stripe.prices.create({
-    product: product.id,
-    unit_amount: amount,
-    currency: "usd",
-    recurring: {
-      interval: "month",
-      interval_count: 3,
-    },
-  });
-  return price.id;
-};
-
-const getTransactionbyUserId = async (req, res, next) => {
-  try {
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
-    const { id } = req.user;
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(400).json({
-        status: "error",
-        message: "User not found",
-      });
-    }
-
-    console.log(user.role, "user.role");
-    if (user.role !== "admin" && user.role !== "owner") {
-      return res.status(400).json({
-        status: "error",
-        message: "you are not authorzed to find transaction list",
-      });
-    }
-    const adminTransaction = await Transaction.find(
-      user.role === "owner" ? { userId: id } : {}
-    );
-    if (!adminTransaction) {
-      return res.status(400).json({
-        status: "error",
-        message: "adminTransaction not found",
-      });
-    }
-    res.status(200).json({
-      status: "success",
-      data: adminTransaction,
+    const price = await stripe.prices.create({
+      product: product.id,
+      unit_amount: amount,
+      currency: "usd",
+      recurring: {
+        interval: "month",
+        interval_count: 3,
+      },
     });
-  } catch (error) {
-    console.log("Error in get transaction by user id", error);
-    res.status(400).json({ status: "error", message: error.message });
-  }
-};
+    return price.id;
+  };
 
-module.exports = {
-  addTransactionApi,
-  getTransactionbyUserId,
-};
+  const getTransactionbyUserId = async (req, res, next) => {
+    try {
+      if (req.user === undefined) {
+        return res.status(400).json({ status: "error", message: "Invalid user" });
+      }
+      const { id } = req.user;
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(400).json({
+          status: "error",
+          message: "User not found",
+        });
+      }
+
+      console.log(user.role, "user.role");
+      if (user.role !== "admin" && user.role !== "owner") {
+        return res.status(400).json({
+          status: "error",
+          message: "you are not authorzed to find transaction list",
+        });
+      }
+      const adminTransaction = await Transaction.find(
+        user.role === "owner" ? { userId: id } : {}
+      );
+      if (!adminTransaction) {
+        return res.status(400).json({
+          status: "error",
+          message: "adminTransaction not found",
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        data: adminTransaction,
+      });
+    } catch (error) {
+      console.log("Error in get transaction by user id", error);
+      res.status(400).json({ status: "error", message: error.message });
+    }
+  };
+
+  module.exports = {
+    addTransactionApi,
+    getTransactionbyUserId,
+  };
