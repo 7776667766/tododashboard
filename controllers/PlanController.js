@@ -49,13 +49,13 @@ const addPlanApi = async (req, res, next) => {
   }
 };
 
-const getPlanbyAdminId = async (req, res, next) => {
+const getBusinessPlanListApi = async (req, res, next) => {
   try {
     const planData = await Plan.find({});
     if (!planData) {
       return res.status(400).json({
         status: "error",
-        message: "planData not found",
+        message: "Plan not found",
       });
     }
     res.status(200).json({
@@ -70,5 +70,5 @@ const getPlanbyAdminId = async (req, res, next) => {
 
 module.exports = {
   addPlanApi,
-  getPlanbyAdminId,
+  getBusinessPlanListApi,
 };
