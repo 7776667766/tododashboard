@@ -11,6 +11,16 @@ const templateSchema = new mongoose.Schema({
     required: [true, "Slug is required"],
     trim: true,
   },
+  bookingImage: {
+    type: String,
+    required: [true, " Booking Image is required"],
+    trim: true,
+  },
+  websiteImage: {
+    type: String,
+    required: [true, " Image is required"],
+    trim: true,
+  },
   createdAt: {
     type: Date,
     default: new Date(),
