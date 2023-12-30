@@ -1,5 +1,3 @@
-// name duration price description featured
-
 const mongoose = require("mongoose");
 
 const planSchema = new mongoose.Schema({
@@ -16,9 +14,9 @@ const planSchema = new mongoose.Schema({
     required: [true, "Plan price is required"],
   },
 
-  Features: {
-    type: [String], 
-    required: [true, "Plan description is required"],
+  features: {
+    type: [String],
+    required: [true, "Features is required"],
   },
 
   isFeatured: {

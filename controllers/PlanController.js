@@ -13,18 +13,17 @@ const addPlanApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-    console.log("userID--------", user);
 
     if (user.role !== "admin") {
       return res.status(400).json({
         status: "error",
-        message: "You are not authorized to add Plan",
+        message: "You are not authorized to add plan",
       });
     }
 
-    const { name, duration, price, Features } = req.body;
+    const { name, duration, price, features } = req.body;
 
-    if (!name || !duration || !price || !Features) {
+    if (!name || !duration || !price || !features) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -36,12 +35,10 @@ const addPlanApi = async (req, res, next) => {
       userId: id,
     });
 
-    console.log("NewPlan....", newPlan);
-
     res.status(201).json({
       status: "success",
       data: newPlan,
-      message: "New Plan Aded Successfully",
+      message: "New plan added successfully",
     });
   } catch (error) {
     console.error("Error in adding Plan Details", error);
