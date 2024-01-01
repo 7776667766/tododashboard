@@ -1,8 +1,14 @@
 const User = require("../models/UserModel");
 const Template = require("../models/TemplateModal");
 const slugify = require("slugify");
+const imgFullPath = require("../util/imgFullPath");
 
 const addTemplateApi = async (req, res, next) => {
+  
+
+   let bookingImg = req.files['bookingImage'][0].path;
+  let  websiteImg = req.files['websiteImage'][0].path;
+
     try {
         const { id } = req.user;
 
@@ -23,11 +29,11 @@ const addTemplateApi = async (req, res, next) => {
             });
         }
 
-        const { name, bookingImage, websiteImage } = req.body;
+        const { name,status } = req.body;
         const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
 
-        if (!name || !slug || !bookingImage || !websiteImage) {
+        if (!name || !slug ) {
             return res.status(400).json({
                 status: "error",
                 message: "All fields are required",
@@ -37,11 +43,13 @@ const addTemplateApi = async (req, res, next) => {
         const newTemplate = await Template.create({
             name,
             slug,
-            bookingImage,
-            websiteImage,
-            createdBy: id,
+            bookingImage:bookingImg,
+            websiteImage:websiteImg,
+            createdBy:id,
+            status,
         });
         console.log(newTemplate)
+
         res.status(201).json({
             status: "success",
             data: newTemplate,
@@ -49,23 +57,32 @@ const addTemplateApi = async (req, res, next) => {
         });
     } catch (error) {
         console.error("Error in adding template Details", error);
-        res.status(500).json({ status: "error", message: error });
+        res.status(500).json({
+            status: "error",
+            message: error.message,
+        });
     }
 };
 
 const getTepmlateApi = async (req, res, next) => {
     try {
-        const planData = await Plan.find({});
-        if (!planData) {
-            return res.status(400).json({
-                status: "error",
-                message: "Plan not found",
-            });
-        }
-        res.status(200).json({
-            status: "success",
-            data: planData,
-        });
+         
+    let myTemplate = [];
+    const templates = await Template.find()
+    
+    await Promise.all(
+        templates.map(async (template) => {
+          const mytemplateData = await getTemplateData(template);
+          myTemplate.push(mytemplateData)
+          console.log("my template data ",mytemplateData)
+        })
+      );
+      console.log("my template",myTemplate)
+  
+      res.status(200).json({
+        status: "success",
+        data: myTemplate,
+      });
     } catch (error) {
         console.log("Error in get planData by user id", error);
         res.status(400).json({ status: "error", message: error.message });
@@ -74,5 +91,20 @@ const getTepmlateApi = async (req, res, next) => {
 
 module.exports = {
     addTemplateApi,
-    // getTepmlateApi,
+    getTepmlateApi,
 };
+
+
+const getTemplateData = async (data) => {
+
+    const myServiceData = {
+      name: data.name,
+      bookingImage: imgFullPath(data.bookingImage),
+      websiteImage: imgFullPath(data.websiteImage),
+      slug:data.slug,
+      status:data.status
+      
+    };
+    return myServiceData;
+  };
+  

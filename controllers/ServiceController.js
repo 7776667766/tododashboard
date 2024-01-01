@@ -321,50 +321,15 @@ const updateServiceApi = async (req, res, next) => {
 
 const getServicesApi = async (req, res, next) => {
   try {
-    // if (req.user === undefined) {
-    //   return res.status(400).json({ status: "error", message: "Invalid user" });
-    // }
-    // const { id } = req.user;
-    // const user = await User.findById(id);
-    // if (!user) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "User not found",
-    //   });
-    // }
 
     const { businessId } = req.body;
-    // if (user.role !== "admin") {
-    //   if (!businessId) {
-    //     return res.status(400).json({
-    //       status: "error",
-    //       message: "Business Id is required",
-    //     });
-    //   }
-    //   if (!validator.isMongoId(businessId)) {
-    //     return res.status(400).json({
-    //       status: "error",
-    //       message: "Business Id is invalid",
-    //     });
-    //   }
-    // }
 
     let myServices = [];
     const services = await Service.find(
       {
         businessId,
-        // ownerId: id,
         active: true,
       }
-      // user.role === "admin"
-      //   ? {
-      //       active: true,
-      //     }
-      //   : {
-      //       businessId,
-      //       ownerId: id,
-      //       active: true,
-      //     }
     );
 
     await Promise.all(
@@ -396,12 +361,6 @@ const getServiceDetailBySlugApi = async (req, res, next) => {
         message: "Service slug is required",
       });
     }
-    // if (!validator.isMongoId(id)) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Service Id is invalid",
-    //   });
-    // }
     const service = await Service.findOne({ slug });
     if (!service) {
       return res.status(400).json({
