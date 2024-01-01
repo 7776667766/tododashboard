@@ -18,7 +18,8 @@ router.post(
   upload("service").single("image"),
   addServiceApi
 );
-router.post("/services/update/:serviceId", auth, updateServiceApi);
+router.post("/services/update/:serviceId",auth, upload("service").single("image"),
+  updateServiceApi);
 router.post("/services/all-services", getServicesApi);
 router.get("/services/detail/:slug", getServiceDetailBySlugApi);
 
