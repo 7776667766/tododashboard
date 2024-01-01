@@ -220,6 +220,7 @@ const addServiceApi = async (req, res, next) => {
 };
 
 const updateServiceApi = async (req, res, next) => {
+  console.log(req.file,"----")
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -301,7 +302,12 @@ const updateServiceApi = async (req, res, next) => {
         message: "You are not authorized to update this service",
       });
     }
-    await Service.updateOne({ _id: serviceId }, req.body);
+      
+
+    const myServiceImg = req.file?.path ? req.file.path : service.image;
+    
+    await Service.updateOne({ _id: serviceId } , {...req.body , image:myServiceImg  });
+    console.log({...req.body , image:myServiceImg},"req.body")
 
     const myServiceData = await Service.findOne({ _id: serviceId });
     const myServiceUpdatedData = await getServiceData(myServiceData);

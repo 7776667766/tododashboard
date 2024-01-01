@@ -17,7 +17,6 @@ const serviceSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, "Image is required"],
     trim: true,
   },
   price: {
@@ -74,7 +73,7 @@ const serviceSchema = new mongoose.Schema({
     type: Date,
   },
   active: {
-    type: Boolean,
+    type: String,
     default: true,
   },
 });
