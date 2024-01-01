@@ -225,6 +225,7 @@ const updateServiceApi = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { serviceId } = req.params;
+
     const { id } = req.user;
     const { businessId, typeId, specialistId } = req.body;
     if (!serviceId) {

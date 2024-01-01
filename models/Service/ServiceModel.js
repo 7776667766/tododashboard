@@ -30,7 +30,7 @@ const serviceSchema = new mongoose.Schema({
     required: [true, "Time intervals are required"],
     trim: true,
   },
-  
+
   typeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ServiceType",
@@ -55,7 +55,14 @@ const serviceSchema = new mongoose.Schema({
     required: [true, "Business Id is required"],
   },
   timeSlots: {
-    type: Array,
+    type: [
+      {
+        day: String,
+        startTime: String,
+        endTime: String,
+        active: Boolean,
+      },
+    ],
     required: [true, "TimeSlots is required"],
     trim: true,
   },
@@ -71,6 +78,5 @@ const serviceSchema = new mongoose.Schema({
     default: true,
   },
 });
-
 
 module.exports = mongoose.model("Service", serviceSchema);
