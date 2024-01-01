@@ -73,7 +73,7 @@ const serviceSchema = new mongoose.Schema({
     type: Date,
   },
   active: {
-    type: Boolean,
+    type: String,
     default: true,
   },
 });
