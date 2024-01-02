@@ -220,7 +220,7 @@ const addServiceApi = async (req, res, next) => {
 };
 
 const updateServiceApi = async (req, res, next) => {
-  console.log(req.file,"----")
+  console.log(req.file, "----")
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -302,12 +302,12 @@ const updateServiceApi = async (req, res, next) => {
         message: "You are not authorized to update this service",
       });
     }
-      
+
 
     const myServiceImg = req.file?.path ? req.file.path : service.image;
-    
-    await Service.updateOne({ _id: serviceId } , {...req.body , image:myServiceImg  });
-    console.log({...req.body , image:myServiceImg},"req.body")
+
+    await Service.updateOne({ _id: serviceId }, { ...req.body, image: myServiceImg });
+    console.log({ ...req.body, image: myServiceImg }, "req.body")
 
     const myServiceData = await Service.findOne({ _id: serviceId });
     const myServiceUpdatedData = await getServiceData(myServiceData);
@@ -332,12 +332,11 @@ const getServicesApi = async (req, res, next) => {
     const { businessId } = req.body;
 
     let myServices = [];
-    const services = await Service.find(
-      {
-        businessId,
-        active: true,
-      }
-    );
+    const services = await Service.find({
+      deletedAt: null || undefined,
+      businessId,
+      active: true,
+    });
 
     await Promise.all(
       services.map(async (service) => {
@@ -389,6 +388,44 @@ const getServiceDetailBySlugApi = async (req, res, next) => {
   }
 };
 
+const deleteServiceApi = async (req, res, next) => {
+  try {
+    const { serviceId } = req.params;
+
+    console.log(serviceId, "serviceId")
+
+    if (!serviceId || !validator.isMongoId(serviceId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid service ID",
+      });
+    }
+
+    const service = await Service.findById(serviceId);
+
+    if (!service) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service not found",
+      });
+    }
+    await Service.findByIdAndUpdate({ _id: serviceId }, { deletedAt: new Date() });
+
+    res.status(200).json({
+
+      status: "success",
+      message: "Service deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in deleting service", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   addServiceTypeApi,
   getAllServicesTypeApi,
@@ -396,6 +433,7 @@ module.exports = {
   updateServiceApi,
   getServicesApi,
   getServiceDetailBySlugApi,
+  deleteServiceApi
 };
 
 const getServiceData = async (data) => {
