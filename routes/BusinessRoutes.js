@@ -10,6 +10,7 @@ const {
   registerBusinessApi,
   getBusinessByUserIdApi,
   getBusinessDetailBySlugApi,
+  selectedTheme
 } = require("../controllers/BusinessController");
 const upload = require("../middlewares/uploadImage");
 
@@ -23,5 +24,7 @@ router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
 router.post("/register-business", auth,  upload("business").single("logo"), registerBusinessApi);
 router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
+router.post("/theme-Api",auth, selectedTheme);
+
 
 module.exports = router;
