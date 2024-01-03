@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const businessSchema = new mongoose.Schema({
+
   name: {
     type: String,
     trim: true,
@@ -14,6 +15,10 @@ const businessSchema = new mongoose.Schema({
   slug: {
     type: String,
     unique: true,
+  },
+  logo: {
+    type: String,
+
   },
   phone: {
     type: String,
@@ -49,6 +54,9 @@ const businessSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Owner Id is required"],
   },
+
+  bookingService: { type: Boolean, default: false },
+  websiteService: { type: Boolean, default: false },
   createdAt: {
     type: Date,
     default: new Date(),

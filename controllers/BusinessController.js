@@ -5,6 +5,8 @@ const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
 const slugify = require("slugify");
 const { sendEmail } = require("../util/sendEmail");
+const imgFullPath = require("../util/imgFullPath");
+const Owner = require("../models/OwnerModel");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -363,10 +365,16 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
+  console.log(req.file.path, "path of image----")
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
+
+
+    console.log(req.user, "user owner")
+
+
     const { id } = req.user;
     const {
       name,
@@ -380,6 +388,7 @@ const registerBusinessApi = async (req, res, next) => {
       slug,
     } = req.body;
     console.log("slug", slug);
+
     if (
       !name ||
       !email ||
@@ -429,13 +438,17 @@ const registerBusinessApi = async (req, res, next) => {
         });
       }
     });
+
     const user = await User.findById(id);
+
+    console.log(user, "user111")
     if (!user) {
       return res.status(400).json({
         status: "error",
         message: "User not found",
       });
     }
+
     if (user.role !== "owner") {
       return res.status(400).json({
         status: "error",
@@ -443,8 +456,21 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
+
+    const Ownerdata = await Owner.findOne({ id }).lean();
+    console.log("OwnerData", Ownerdata)
+
+    if (!Ownerdata) {
+      return res.status(400).json({
+        status: "error",
+        message: "Ownerdata not found",
+      });
+    }
+
+    console.log("Booking Service:", Ownerdata.bookingService);
+    console.log("Website Service:", Ownerdata.websiteService);
+
     const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
-    console.log("mySlug", mySlug);
     const slugAlreadyExist = await Business.findOne({ slug: mySlug });
     if (slugAlreadyExist) {
       return res.status(400).json({
@@ -461,10 +487,14 @@ const registerBusinessApi = async (req, res, next) => {
       address,
       socialLinks,
       slug: mySlug,
+      logo: req.file.path,
       images,
       googleId,
+      bookingService: Ownerdata.bookingService,
+      websiteService: Ownerdata.websiteService,
       createdBy: id,
     });
+    console.log(myBusiness, "business")
 
     console.log(user.email, "owner email");
 
@@ -499,15 +529,18 @@ const registerBusinessApi = async (req, res, next) => {
         description: myBusiness.description,
         address: myBusiness.address,
         socialLinks: myBusiness.socialLinks,
+        bookingService: Ownerdata.bookingService,
+        websiteService: Ownerdata.websiteService,
         images: myBusiness.images,
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
+        logo: imgFullPath(myBusiness.logo)
       },
       message: "Business registered successfully",
     });
   } catch (error) {
     console.log("Error in register business", error);
-    res.status(400).json({ status: "error", message: error.message });
+    res.status(400).json({ status: "error", data, message: error.message });
   }
 };
 
