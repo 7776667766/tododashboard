@@ -467,6 +467,9 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
+
+    console.log("theme", Ownerdata.theme);
+
     console.log("Booking Service:", Ownerdata.bookingService);
     console.log("Website Service:", Ownerdata.websiteService);
 
@@ -492,6 +495,7 @@ const registerBusinessApi = async (req, res, next) => {
       googleId,
       bookingService: Ownerdata.bookingService,
       websiteService: Ownerdata.websiteService,
+      theme: Ownerdata.theme,
       createdBy: id,
     });
     console.log(myBusiness, "business")
@@ -531,6 +535,7 @@ const registerBusinessApi = async (req, res, next) => {
         socialLinks: myBusiness.socialLinks,
         bookingService: Ownerdata.bookingService,
         websiteService: Ownerdata.websiteService,
+        theme: Ownerdata.theme,
         images: myBusiness.images,
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
@@ -667,6 +672,59 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
   }
 };
 
+const selectedTheme = async (req, res, next) => {
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user;
+    const user = await User.findById(id);
+
+    console.log(user, "user111");
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "owner") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to register business",
+      });
+    }
+
+    const { theme } = req.body;
+    if (!theme) {
+      return res.status(400).json({
+        status: "error",
+        message: "Theme is required",
+      });
+    }
+
+    const ownerId = user._id;
+
+    const updateTheme = await Owner.updateOne(
+      { ownerId: ownerId },
+      { $set: { theme: theme } }
+    );
+
+    console.log("updated theme", updateTheme);
+
+    res.status(200).json({
+      status: "success",
+      message: "Theme updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in theme", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+
 module.exports = {
   addSpecialistApi,
   getSpecialistByBusinessIdApi,
@@ -677,4 +735,5 @@ module.exports = {
   registerBusinessApi,
   getBusinessByUserIdApi,
   getBusinessDetailBySlugApi,
+  selectedTheme
 };
