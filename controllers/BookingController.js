@@ -339,7 +339,6 @@ const getBookedTimeSlots = async (req, res, next) => {
         $lte: endDate,
       },
     }).distinct("timeSlot");
-    console.log("Booked TimeSlots:", bookedTimeSlots);
 
     return res.status(200).json({
       status: "success",
@@ -350,7 +349,7 @@ const getBookedTimeSlots = async (req, res, next) => {
     console.error("Error Fetching Booked Time Slots:", error);
     return res.status(500).json({
       status: "error",
-      message: "Internal server error",
+      message: error,
     });
   }
 };
