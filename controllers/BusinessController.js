@@ -365,15 +365,13 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
-  console.log(req.file.path, "path of image----")
+  console.log(req.file.path, "path of image----");
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
 
-
-    console.log(req.user, "user owner")
-
+    console.log(req.user, "user owner");
 
     const { id } = req.user;
     const {
@@ -441,7 +439,7 @@ const registerBusinessApi = async (req, res, next) => {
 
     const user = await User.findById(id);
 
-    console.log(user, "user111")
+    console.log(user, "user111");
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -456,9 +454,8 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
-
     const Ownerdata = await Owner.findOne({ id }).lean();
-    console.log("OwnerData", Ownerdata)
+    console.log("OwnerData", Ownerdata);
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -466,7 +463,6 @@ const registerBusinessApi = async (req, res, next) => {
         message: "Ownerdata not found",
       });
     }
-
 
     console.log("theme", Ownerdata.theme);
 
@@ -498,7 +494,7 @@ const registerBusinessApi = async (req, res, next) => {
       theme: Ownerdata.theme,
       createdBy: id,
     });
-    console.log(myBusiness, "business")
+    console.log(myBusiness, "business");
 
     console.log(user.email, "owner email");
 
@@ -525,22 +521,27 @@ const registerBusinessApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      data: {
-        id: myBusiness._id,
-        name: myBusiness.name,
-        email: myBusiness.email,
-        phone: myBusiness.phone,
-        description: myBusiness.description,
-        address: myBusiness.address,
-        socialLinks: myBusiness.socialLinks,
-        bookingService: Ownerdata.bookingService,
-        websiteService: Ownerdata.websiteService,
-        theme: Ownerdata.theme,
-        images: myBusiness.images,
-        googleId: myBusiness.googleId,
-        slug: myBusiness.slug,
-        logo: imgFullPath(myBusiness.logo)
-      },
+      data: await businessData({
+        ...myBusiness,
+        logo: req.file.path,
+        ...Ownerdata,
+      }),
+      // {
+      //   id: myBusiness._id,
+      //   name: myBusiness.name,
+      //   email: myBusiness.email,
+      //   phone: myBusiness.phone,
+      //   description: myBusiness.description,
+      //   address: myBusiness.address,
+      //   socialLinks: myBusiness.socialLinks,
+      //   bookingService: Ownerdata.bookingService,
+      //   websiteService: Ownerdata.websiteService,
+      //   theme: Ownerdata.theme,
+      //   images: myBusiness.images,
+      //   googleId: myBusiness.googleId,
+      //   slug: myBusiness.slug,
+      //   logo: imgFullPath(myBusiness.logo),
+      // },
       message: "Business registered successfully",
     });
   } catch (error) {
@@ -571,21 +572,22 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "Manager not found",
         });
       }
-      const business = await Business.findById(manager.businessId).select({
-        _id: 0,
-        id: {
-          $toString: "$_id",
-        },
-        name: 1,
-        email: 1,
-        phone: 1,
-        description: 1,
-        address: 1,
-        socialLinks: 1,
-        images: 1,
-        googleId: 1,
-        slug: 1,
-      });
+      const business = await Business.findById(manager.businessId);
+      // .select({
+      //   _id: 0,
+      //   id: {
+      //     $toString: "$_id",
+      //   },
+      //   name: 1,
+      //   email: 1,
+      //   phone: 1,
+      //   description: 1,
+      //   address: 1,
+      //   socialLinks: 1,
+      //   images: 1,
+      //   googleId: 1,
+      //   slug: 1,
+      // });
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -594,24 +596,25 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       }
       res.status(200).json({
         status: "success",
-        data: business,
+        data: await businessData(business),
       });
     } else {
-      const business = await Business.findOne({ createdBy: id }).select({
-        _id: 0,
-        id: {
-          $toString: "$_id",
-        },
-        name: 1,
-        email: 1,
-        phone: 1,
-        description: 1,
-        address: 1,
-        socialLinks: 1,
-        images: 1,
-        googleId: 1,
-        slug: 1,
-      });
+      const business = await Business.findOne({ createdBy: id });
+      // .select({
+      //   _id: 0,
+      //   id: {
+      //     $toString: "$_id",
+      //   },
+      //   name: 1,
+      //   email: 1,
+      //   phone: 1,
+      //   description: 1,
+      //   address: 1,
+      //   socialLinks: 1,
+      //   images: 1,
+      //   googleId: 1,
+      //   slug: 1,
+      // });
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -620,7 +623,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       }
       res.status(200).json({
         status: "success",
-        data: business,
+        data: await businessData(business),
       });
     }
   } catch (error) {
@@ -641,21 +644,22 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
     }
     const business = await Business.findOne({
       slug: slug,
-    }).select({
-      _id: 0,
-      id: {
-        $toString: "$_id",
-      },
-      name: 1,
-      email: 1,
-      phone: 1,
-      description: 1,
-      address: 1,
-      socialLinks: 1,
-      images: 1,
-      googleId: 1,
-      slug: 1,
     });
+    // .select({
+    //   _id: 0,
+    //   id: {
+    //     $toString: "$_id",
+    //   },
+    //   name: 1,
+    //   email: 1,
+    //   phone: 1,
+    //   description: 1,
+    //   address: 1,
+    //   socialLinks: 1,
+    //   images: 1,
+    //   googleId: 1,
+    //   slug: 1,
+    // });
     if (!business) {
       return res.status(400).json({
         status: "error",
@@ -664,7 +668,7 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
     }
     res.status(200).json({
       status: "success",
-      data: business,
+      data: await businessData(business),
     });
   } catch (error) {
     console.log("Error in get business by user id", error);
@@ -724,7 +728,6 @@ const selectedTheme = async (req, res, next) => {
   }
 };
 
-
 module.exports = {
   addSpecialistApi,
   getSpecialistByBusinessIdApi,
@@ -735,5 +738,24 @@ module.exports = {
   registerBusinessApi,
   getBusinessByUserIdApi,
   getBusinessDetailBySlugApi,
-  selectedTheme
+  selectedTheme,
+};
+
+const businessData = async (businessData) => {
+  return {
+    id: businessData._id,
+    name: businessData.name,
+    email: businessData.email,
+    phone: businessData.phone,
+    description: businessData.description,
+    address: businessData.address,
+    socialLinks: businessData.socialLinks,
+    bookingService: businessData.bookingService,
+    websiteService: businessData.websiteService,
+    theme: businessData?.theme || "",
+    images: businessData.images,
+    googleId: businessData.googleId,
+    slug: businessData.slug,
+    logo: imgFullPath(businessData.logo),
+  };
 };
