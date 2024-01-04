@@ -455,7 +455,7 @@ const registerBusinessApi = async (req, res, next) => {
     }
 
     const Ownerdata = await Owner.findOne({ id }).lean();
-    console.log("OwnerData", Ownerdata);
+    console.log("OwnerData-----------", Ownerdata);
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -491,7 +491,7 @@ const registerBusinessApi = async (req, res, next) => {
       googleId,
       bookingService: Ownerdata.bookingService,
       websiteService: Ownerdata.websiteService,
-      theme: Ownerdata.theme,
+      theme: Ownerdata.theme || "",
       createdBy: id,
     });
     console.log(myBusiness, "business");
@@ -522,26 +522,22 @@ const registerBusinessApi = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: await businessData({
+        
+        id: myBusiness._id,
+        name: myBusiness.name,
+        email: myBusiness.email,
+        phone: myBusiness.phone,
+        description: myBusiness.description,
+        address: myBusiness.address,
+        socialLinks: myBusiness.socialLinks,
+        images: myBusiness.images,
+        googleId: myBusiness.googleId,
+        slug: myBusiness.slug,
         ...myBusiness,
         logo: req.file.path,
         ...Ownerdata,
+          theme: Ownerdata.theme,
       }),
-      // {
-      //   id: myBusiness._id,
-      //   name: myBusiness.name,
-      //   email: myBusiness.email,
-      //   phone: myBusiness.phone,
-      //   description: myBusiness.description,
-      //   address: myBusiness.address,
-      //   socialLinks: myBusiness.socialLinks,
-      //   bookingService: Ownerdata.bookingService,
-      //   websiteService: Ownerdata.websiteService,
-      //   theme: Ownerdata.theme,
-      //   images: myBusiness.images,
-      //   googleId: myBusiness.googleId,
-      //   slug: myBusiness.slug,
-      //   logo: imgFullPath(myBusiness.logo),
-      // },
       message: "Business registered successfully",
     });
   } catch (error) {
@@ -573,21 +569,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         });
       }
       const business = await Business.findById(manager.businessId);
-      // .select({
-      //   _id: 0,
-      //   id: {
-      //     $toString: "$_id",
-      //   },
-      //   name: 1,
-      //   email: 1,
-      //   phone: 1,
-      //   description: 1,
-      //   address: 1,
-      //   socialLinks: 1,
-      //   images: 1,
-      //   googleId: 1,
-      //   slug: 1,
-      // });
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -600,21 +581,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       });
     } else {
       const business = await Business.findOne({ createdBy: id });
-      // .select({
-      //   _id: 0,
-      //   id: {
-      //     $toString: "$_id",
-      //   },
-      //   name: 1,
-      //   email: 1,
-      //   phone: 1,
-      //   description: 1,
-      //   address: 1,
-      //   socialLinks: 1,
-      //   images: 1,
-      //   googleId: 1,
-      //   slug: 1,
-      // });
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -645,21 +611,6 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
     const business = await Business.findOne({
       slug: slug,
     });
-    // .select({
-    //   _id: 0,
-    //   id: {
-    //     $toString: "$_id",
-    //   },
-    //   name: 1,
-    //   email: 1,
-    //   phone: 1,
-    //   description: 1,
-    //   address: 1,
-    //   socialLinks: 1,
-    //   images: 1,
-    //   googleId: 1,
-    //   slug: 1,
-    // });
     if (!business) {
       return res.status(400).json({
         status: "error",
@@ -684,8 +635,7 @@ const selectedTheme = async (req, res, next) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-
-    console.log(user, "user111");
+    console.log(id,"ownerId")
 
     if (!user) {
       return res.status(400).json({
@@ -708,18 +658,18 @@ const selectedTheme = async (req, res, next) => {
         message: "Theme is required",
       });
     }
+  // const updateTheme = await Owner.updateOne(
+  //     { ownerId: id },
+  //     { $set: { theme: theme } }
+  //   );
 
-    const ownerId = user._id;
-
-    const updateTheme = await Owner.updateOne(
-      { ownerId: ownerId },
-      { $set: { theme: theme } }
-    );
+   const updateTheme= await Owner.updateOne({ ownerId : id }, {theme: theme });
 
     console.log("updated theme", updateTheme);
 
     res.status(200).json({
       status: "success",
+      updateTheme,
       message: "Theme updated successfully",
     });
   } catch (error) {

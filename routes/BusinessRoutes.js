@@ -24,7 +24,7 @@ router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
 router.post("/register-business", auth,  upload("business").single("logo"), registerBusinessApi);
 router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
-router.post("/theme-Api",auth, selectedTheme);
+router.post("/theme/theme-Api",auth, selectedTheme);
 
 
 module.exports = router;

@@ -57,7 +57,10 @@ const businessSchema = new mongoose.Schema({
 
   bookingService: { type: Boolean, default: false },
   websiteService: { type: Boolean, default: false },
-  theme:{ type:String},
+
+  theme: { 
+    type: String ,
+  },
   createdAt: {
     type: Date,
     default: new Date(),

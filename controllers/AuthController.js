@@ -61,6 +61,16 @@ const registerApi = async (req, res, next) => {
     console.log("Role:", role);
     console.log("Services:", services);
 
+    const user = await User.create({
+      email,
+      name,
+      phone,
+      // image: req.file.path,
+      role,
+      password,
+    });
+
+    
     let websiteService = false;
     let bookingService = false;
 
@@ -82,15 +92,14 @@ const registerApi = async (req, res, next) => {
         });
       }
     }
-
-    const user = await User.create({
-      email,
-      name,
-      phone,
-      // image: req.file.path,
-      role,
-      password,
+    const OwnerData = await Owner.create({
+      ownerId: user._id,
+      websiteService,
+      bookingService,
+      theme: ""
     });
+    console.log("FATA OWNER" , OwnerData )
+
 
     const otp = await createOTPFun(user.phone);
     const mailSend = await sendEmail({

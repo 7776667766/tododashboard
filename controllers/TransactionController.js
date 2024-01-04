@@ -65,14 +65,14 @@ const addTransactionApi = async (req, res, next) => {
     let selectedPriceId;
 
     switch (subscriptionPlan) {
-      case "3months":
-        selectedPriceId = await createCustomPrice(5000);
+      case "1 Month":
+        selectedPriceId = await createCustomPrice(123000);
         break;
-      case "6months":
-        selectedPriceId = await createCustomPrice(10000);
+      case "3 Months":
+        selectedPriceId = await createCustomPrice(123000);
         break;
-      case "12months":
-        selectedPriceId = await createCustomPrice(18000);
+      case "6 Months":
+        selectedPriceId = await createCustomPrice(123000);
         break;
       default:
         return res
