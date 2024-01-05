@@ -3,6 +3,7 @@ const stripe = require("stripe")(
   "sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS"
 );
 const User = require("../models/UserModel");
+// const Plan = require('../models/PlanModel');
 
 const createSubscription = async (customerId, priceId) => {
   const subscription = await stripe.subscriptions.create({
@@ -24,7 +25,7 @@ const addTransactionApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-    const { name, token, subscriptionPlan, check } = req.body;
+    const { name, token, subscriptionPlan, check , price } = req.body;
 
     if (!name || !token || !subscriptionPlan) {
       return res
@@ -66,20 +67,16 @@ const addTransactionApi = async (req, res, next) => {
 
     switch (subscriptionPlan) {
       case "1 Month":
-        selectedPriceId = await createCustomPrice(123000);
-        break;
       case "3 Months":
-        selectedPriceId = await createCustomPrice(123000);
-        break;
       case "6 Months":
-        selectedPriceId = await createCustomPrice(123000);
+        selectedPriceId = await createCustomPrice(price);
         break;
       default:
-        return res
-          .status(400)
-          .json({ status: "error", message: "Invalid subscription plan" });
+        return res.status(400).json({
+          status: "error",
+          message: "Invalid subscription plan",
+        });
     }
-
     const subscription = await createSubscription(customer.id, selectedPriceId);
     const amount = subscription.plan.amount;
 
@@ -127,11 +124,10 @@ console.log(check,"check")
 
   const createCustomPrice = async (amount) => {
     const product = await stripe.products.create({
-      name: "Your Product Name",
       type: "service",
     });
 
-    const price = await stripe.prices.create({
+    const prices = await stripe.prices.create({
       product: product.id,
       unit_amount: amount,
       currency: "usd",
@@ -140,7 +136,7 @@ console.log(check,"check")
         interval_count: 3,
       },
     });
-    return price.id;
+    return prices.id;
   };
 
   const getTransactionbyUserId = async (req, res, next) => {

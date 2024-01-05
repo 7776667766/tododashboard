@@ -1,10 +1,19 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
+  planId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Plan",
+    required: [true, "Plan is required"],
+  },
+
   userId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Service is required"],
+  },
+  price:{
+    type:String,
   },
 
   name: {
