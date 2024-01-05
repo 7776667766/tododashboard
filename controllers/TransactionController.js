@@ -63,20 +63,23 @@ const addTransactionApi = async (req, res, next) => {
       customer: customer.id,
     });
 
-    let selectedPriceId;
+    // let selectedPriceId;
 
-    switch (subscriptionPlan) {
-      case "1 Month":
-      case "3 Months":
-      case "6 Months":
-        selectedPriceId = await createCustomPrice(price);
-        break;
-      default:
-        return res.status(400).json({
-          status: "error",
-          message: "Invalid subscription plan",
-        });
-    }
+    // switch (subscriptionPlan) {
+    //   case "1 Month":
+    //   case "3 Months":
+    //   case "6 Months":
+    //     selectedPriceId = await createCustomPrice(price);
+    //     break;
+    //   default:
+    //     return res.status(400).json({
+    //       status: "error",
+    //       message: "Invalid subscription plan",
+    //     });
+    // }
+
+    const selectedPriceId = await createCustomPrice(subscriptionPlan, duration);
+
     const subscription = await createSubscription(customer.id, selectedPriceId);
     const amount = subscription.plan.amount;
 
