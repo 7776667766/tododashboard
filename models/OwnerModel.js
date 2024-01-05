@@ -7,24 +7,18 @@ const ownerSchema = new mongoose.Schema({
     required: [true, "Owner Id is required"],
     trim: true,
   },
-
   theme: {
     type: String,
     trim: true,
   },
-
-  bookingService:
-  {
+  bookingService: {
     type: Boolean,
-    default: false
+    default: false,
   },
-
-  websiteService:
-  {
+  websiteService: {
     type: Boolean,
-    default: false
+    default: false,
   },
-
   createdAt: {
     type: Date,
     default: new Date(),

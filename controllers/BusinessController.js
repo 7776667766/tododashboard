@@ -365,13 +365,10 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
-  console.log(req.file.path, "path of image----");
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-
-    console.log(req.user, "user owner");
 
     const { id } = req.user;
     const {
@@ -385,7 +382,6 @@ const registerBusinessApi = async (req, res, next) => {
       googleId,
       slug,
     } = req.body;
-    console.log("slug", slug);
 
     if (
       !name ||
@@ -439,7 +435,6 @@ const registerBusinessApi = async (req, res, next) => {
 
     const user = await User.findById(id);
 
-    console.log(user, "user111");
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -454,8 +449,7 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
-    const Ownerdata = await Owner.findOne({ id }).lean();
-    console.log("OwnerData-----------", Ownerdata);
+    const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -463,11 +457,6 @@ const registerBusinessApi = async (req, res, next) => {
         message: "Ownerdata not found",
       });
     }
-
-    console.log("theme", Ownerdata.theme);
-
-    console.log("Booking Service:", Ownerdata.bookingService);
-    console.log("Website Service:", Ownerdata.websiteService);
 
     const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
     const slugAlreadyExist = await Business.findOne({ slug: mySlug });
@@ -494,9 +483,6 @@ const registerBusinessApi = async (req, res, next) => {
       theme: Ownerdata.theme || "",
       createdBy: id,
     });
-    console.log(myBusiness, "business");
-
-    console.log(user.email, "owner email");
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -522,7 +508,6 @@ const registerBusinessApi = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: await businessData({
-        
         id: myBusiness._id,
         name: myBusiness.name,
         email: myBusiness.email,
@@ -536,7 +521,7 @@ const registerBusinessApi = async (req, res, next) => {
         ...myBusiness,
         logo: req.file.path,
         ...Ownerdata,
-          theme: Ownerdata.theme,
+        theme: Ownerdata.theme,
       }),
       message: "Business registered successfully",
     });
@@ -635,7 +620,7 @@ const selectedTheme = async (req, res, next) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-    console.log(id,"ownerId")
+    console.log(id, "ownerId");
 
     if (!user) {
       return res.status(400).json({
@@ -658,12 +643,15 @@ const selectedTheme = async (req, res, next) => {
         message: "Theme is required",
       });
     }
-  // const updateTheme = await Owner.updateOne(
-  //     { ownerId: id },
-  //     { $set: { theme: theme } }
-  //   );
+    // const updateTheme = await Owner.updateOne(
+    //     { ownerId: id },
+    //     { $set: { theme: theme } }
+    //   );
 
-   const updateTheme= await Owner.updateOne({ ownerId : id }, {theme: theme });
+    const updateTheme = await Owner.updateOne(
+      { ownerId: id },
+      { theme: theme }
+    );
 
     console.log("updated theme", updateTheme);
 

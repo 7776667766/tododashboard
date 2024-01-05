@@ -11,8 +11,16 @@ const imgFullPath = require("../util/imgFullPath");
 require("dotenv").config();
 const registerApi = async (req, res, next) => {
   try {
-    const { name, email, phone, password, confirmPassword, role, services } =
-      req.body;
+    const {
+      name,
+      email,
+      phone,
+      password,
+      confirmPassword,
+      role,
+      bookingService,
+      websiteService,
+    } = req.body;
 
     if (!email || !name || !phone || !password || !confirmPassword) {
       return res
@@ -58,48 +66,37 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Phone number already in use" });
     }
-    console.log("Role:", role);
-    console.log("Services:", services);
+
+    console.log("req.body", req.body);
+
+    if (role === "owner" && !websiteService && !bookingService) {
+      console.log("websiteService", websiteService);
+      console.log("bookingService", bookingService);
+
+      return res.status(400).json({
+        status: "error",
+        message: "Website service or booking service is required",
+      });
+    }
 
     const user = await User.create({
       email,
       name,
       phone,
-      // image: req.file.path,
+      image: req.file.path,
       role,
       password,
     });
 
-    
-    let websiteService = false;
-    let bookingService = false;
-
-    if (role === "owner" && services && services.length > 0) {
-      const websiteServiceObj = services.find(
-        (service) => service.name === "Website"
-      );
-      const bookingServiceObj = services.find(
-        (service) => service.name === "Booking"
-      );
-
-      websiteService = websiteServiceObj ? websiteServiceObj.selected : false;
-      bookingService = bookingServiceObj ? bookingServiceObj.selected : false;
-
-      if (!websiteService && !bookingService) {
-        return res.status(400).json({
-          status: "error",
-          message: "Website service or booking service is required",
-        });
-      }
+    if (role === "owner") {
+      const OwnerData = await Owner.create({
+        ownerId: user._id,
+        websiteService: websiteService,
+        bookingService: bookingService,
+        theme: "",
+      });
+      console.log("FATA OWNER", OwnerData);
     }
-    const OwnerData = await Owner.create({
-      ownerId: user._id,
-      websiteService,
-      bookingService,
-      theme: ""
-    });
-    console.log("FATA OWNER" , OwnerData )
-
 
     const otp = await createOTPFun(user.phone);
     const mailSend = await sendEmail({
