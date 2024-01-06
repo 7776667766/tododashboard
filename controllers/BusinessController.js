@@ -666,6 +666,10 @@ const selectedTheme = async (req, res, next) => {
   }
 };
 
+
+
+
+
 module.exports = {
   addSpecialistApi,
   getSpecialistByBusinessIdApi,
@@ -697,3 +701,4 @@ const businessData = async (businessData) => {
     logo: imgFullPath(businessData.logo),
   };
 };
+

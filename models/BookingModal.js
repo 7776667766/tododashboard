@@ -10,7 +10,7 @@ const bookingSchema = new mongoose.Schema({
   userId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "Service is required"],
+    required: [true, "User is required"],
   },
 
   specialistId: {
