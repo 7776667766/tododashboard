@@ -643,11 +643,8 @@ const selectedTheme = async (req, res, next) => {
         message: "Theme is required",
       });
     }
-    // const updateTheme = await Owner.updateOne(
-    //     { ownerId: id },
-    //     { $set: { theme: theme } }
-    //   );
 
+ 
     const updateTheme = await Owner.updateOne(
       { ownerId: id },
       { theme: theme }
@@ -666,8 +663,78 @@ const selectedTheme = async (req, res, next) => {
   }
 };
 
+const addDummyBusinessApi = async (req, res,) => {
+  console.log("body request", req.body)
 
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
 
+    const { id } = req.user;
+    const {
+      name,
+      email,
+      phone,
+      description,
+      address,
+      socialLinks,
+      googleId,
+      slug,
+    } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to add dummy business",
+      });
+    }
+
+    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
+
+    const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+    if (slugAlreadyExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
+    const myBusiness = await Business.create({
+      name,
+      email,
+      phone,
+      description,
+      address,
+      logo:req.file.path,
+      socialLinks,
+      googleId,
+      slug:mySlug,
+      theme:"theme-1",
+      bookingService: true,
+      websiteService: true,
+    })
+    console.log("MYBuisness", myBusiness)
+    res.status(200).json({
+      status: "success",
+      data: myBusiness,
+      message: "Dummy Business added successfully",
+    });
+
+  } catch (error) {
+    console.log("Error in Dummy business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
 
 
 module.exports = {
@@ -681,6 +748,7 @@ module.exports = {
   getBusinessByUserIdApi,
   getBusinessDetailBySlugApi,
   selectedTheme,
+  addDummyBusinessApi
 };
 
 const businessData = async (businessData) => {

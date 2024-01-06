@@ -39,19 +39,17 @@ const serviceSchema = new mongoose.Schema({
   specialistId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Specialist",
-    required: [true, "Specialist Id is required"],
     trim: true,
   },
 
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "owner Id is required"],
   },
   businessId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Business",
-    required: [true, "Business Id is required"],
+    // required: [true, "Business Id is required"],
   },
   timeSlots: {
     type: [

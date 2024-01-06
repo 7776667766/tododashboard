@@ -426,6 +426,7 @@ const deleteServiceApi = async (req, res, next) => {
 };
 
 const addDummyServiceApi = async (req, res, next) => {
+  console.log(req.body,"req.body")
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -437,7 +438,7 @@ const addDummyServiceApi = async (req, res, next) => {
       description,
       price,
       typeId,
-      specialistId,
+      // specialistId,
       timeInterval,
       businessId,
       timeSlots,
@@ -445,57 +446,12 @@ const addDummyServiceApi = async (req, res, next) => {
 
     console.log(timeInterval);
 
-    if (
-      !name ||
-      !description ||
-      !price ||
-      !typeId ||
-      !specialistId ||
-      !timeInterval ||
-      !businessId ||
-      !timeSlots
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "All Dummy fields are required",
-      });
-    }
-
-    if (!validator.isMongoId(typeId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Dummy Type is invalid",
-      });
-    }
-
-    if (!validator.isMongoId(specialistId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Dummy Specialist is invalid",
-      });
-    }
-
-    if (!validator.isMongoId(businessId)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Dummy Business is invalid",
-      });
-    }
-
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(400).json({
-        status: "error",
-        message: "Dummy User not found",
-      });
-    }
-
-    if (user.role !== "owner") {
-      return res.status(400).json({
-        status: "error",
-        message: "You are not authorized to Dummy  add service",
-      });
-    }
+    // if (user.role !== "admin") {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "You are not authorized to Dummy  add service",
+    //   });
+    // }
 
     const isServiceTypeExist = await ServiceType.findById(typeId);
     if (!isServiceTypeExist) {
@@ -505,22 +461,8 @@ const addDummyServiceApi = async (req, res, next) => {
       });
     }
 
-    const isSpecialistExist = await Specialist.findById(specialistId);
-    if (!isSpecialistExist) {
-      return res.status(400).json({
-        status: "error",
-        message: "Dummy Specialist does not exists",
-      });
-    }
 
-    const isBusinessExist = await Business.findById(businessId);
-    if (!isBusinessExist) {
-      return res.status(400).json({
-        status: "error",
-        message: "Dummy Business does not exists",
-      });
-    }
-
+  
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
     const data = await Service.create({
@@ -529,7 +471,7 @@ const addDummyServiceApi = async (req, res, next) => {
       image: req.file.path,
       price,
       typeId,
-      specialistId,
+      // specialistId,
       timeInterval,
       businessId,
       timeSlots,
@@ -537,12 +479,12 @@ const addDummyServiceApi = async (req, res, next) => {
       slug,
     });
 
-    const myDumService = await Service.findOne({ _id: data._id });
-    const myDumServiceData = await getServiceData(myDumService);
+    // const myDumService = await Service.findOne({ _id: data._id });
+    // const myDumServiceData = await getServiceData(myDumService);
 
     res.status(200).json({
       status: "success",
-      data: myDumServiceData,
+      data,
       message: "  Dummy Service added successfully",
     });
   } catch (error) {
@@ -587,7 +529,6 @@ const getDummyServicesApi = async (req, res, next) => {
     });
   }
 };
-
 
 
 module.exports = {

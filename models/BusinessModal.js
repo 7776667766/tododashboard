@@ -46,13 +46,13 @@ const businessSchema = new mongoose.Schema({
   googleId: {
     type: String,
     trim: true,
-    required: [true, "Google Id is required"],
+ 
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     trim: true,
-    required: [true, "Owner Id is required"],
+   
   },
 
   bookingService: { type: Boolean, default: false },
