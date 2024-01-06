@@ -63,22 +63,23 @@ const addTransactionApi = async (req, res, next) => {
       customer: customer.id,
     });
 
-    // let selectedPriceId;
+    let selectedPriceId;
 
-    // switch (subscriptionPlan) {
-    //   case "1 Month":
-    //   case "3 Months":
-    //   case "6 Months":
-    //     selectedPriceId = await createCustomPrice(price);
-    //     break;
-    //   default:
-    //     return res.status(400).json({
-    //       status: "error",
-    //       message: "Invalid subscription plan",
-    //     });
-    // }
-
-    const selectedPriceId = await createCustomPrice(subscriptionPlan, duration);
+    switch (subscriptionPlan) {
+      case "1 Month":
+        selectedPriceId = await createCustomPrice(price);
+        break;
+      case "3 Months":
+        selectedPriceId = await createCustomPrice(price);
+        break;
+      case "6 Months":
+        selectedPriceId = await createCustomPrice(price);
+        break;
+      default:
+        return res
+          .status(400)
+          .json({ status: "error", message: "Invalid subscription plan" });
+    }
 
     const subscription = await createSubscription(customer.id, selectedPriceId);
     const amount = subscription.plan.amount;
@@ -127,10 +128,11 @@ console.log(check,"check")
 
   const createCustomPrice = async (amount) => {
     const product = await stripe.products.create({
+      name: "Your Product Name",
       type: "service",
     });
 
-    const prices = await stripe.prices.create({
+    const price = await stripe.prices.create({
       product: product.id,
       unit_amount: amount,
       currency: "usd",
@@ -139,7 +141,7 @@ console.log(check,"check")
         interval_count: 3,
       },
     });
-    return prices.id;
+    return price.id;
   };
 
   const getTransactionbyUserId = async (req, res, next) => {
