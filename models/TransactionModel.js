@@ -1,24 +1,18 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema({
-  planId:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Plan",
-    required: [true, "Plan is required"],
-  },
-
-  userId:{
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Service is required"],
   },
-  price:{
-    type:String,
+  price: {
+    type: String,
   },
 
   name: {
     type: String,
-    required: [true, 'Cardholder Name is required'],
+    required: [true, "Cardholder Name is required"],
     trim: true,
   },
 
@@ -28,33 +22,31 @@ const transactionSchema = new mongoose.Schema({
   },
 
   stripeCustomerId: {
-    type: String
+    type: String,
   },
   stripeSubscriptionId: {
-    type: String
+    type: String,
   },
   check: {
     type: String,
-
   },
   subscriptionPlan: {
     type: String,
-
   },
-  token:{
-    type:String
+  token: {
+    type: String,
   },
   amount: {
-    type: Number
+    type: Number,
   },
   cardType: {
-    type: String, 
+    type: String,
   },
   cardDigits: {
-    type: String, 
+    type: String,
   },
   expiryDate: {
-    type: String, 
+    type: String,
   },
   createdAt: {
     type: Date,
@@ -66,6 +58,6 @@ const transactionSchema = new mongoose.Schema({
   },
 });
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+const Transaction = mongoose.model("Transaction", transactionSchema);
 
 module.exports = Transaction;
