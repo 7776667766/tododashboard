@@ -354,7 +354,6 @@ const getBookedTimeSlots = async (req, res, next) => {
   }
 };
 
-
 const getBookingbyUserId = async (req, res) => {
   try {
     if (req.user === undefined) {
@@ -362,28 +361,19 @@ const getBookingbyUserId = async (req, res) => {
     }
     const { id } = req.user;
 
-    if (!user) {
-      return res.status(400).json({
-        status: "error",
-        message: "User not found",
-      });
-    }
-    const mybooking = []
+    const mybooking = [];
     const bookings = await Booking.find({ userId: id });
-    console.log("bookingData", bookings)
 
-  
     await Promise.all(
       bookings.map(async (booking) => {
         const myBookingData = await getBookingData(booking);
         mybooking.push(myBookingData);
       })
     );
-
     res.status(200).json({
       status: "success",
       data: mybooking,
-    })
+    });
   } catch (error) {
     console.error("Error Fetching in Booking By User Id:", error);
     return res.status(500).json({
@@ -391,7 +381,7 @@ const getBookingbyUserId = async (req, res) => {
       message: error,
     });
   }
-}
+};
 
 module.exports = {
   addBookingApi,
@@ -442,7 +432,4 @@ const getBookingData = async (data) => {
     },
   };
   return myBookingData;
-
-
-
 };
