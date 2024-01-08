@@ -426,7 +426,7 @@ const deleteServiceApi = async (req, res, next) => {
 };
 
 const addDummyServiceApi = async (req, res, next) => {
-  console.log(req.body,"req.body")
+  console.log(req.body)
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -438,31 +438,41 @@ const addDummyServiceApi = async (req, res, next) => {
       description,
       price,
       typeId,
-      // specialistId,
       timeInterval,
-      businessId,
       timeSlots,
     } = req.body;
 
     console.log(timeInterval);
 
-    // if (user.role !== "admin") {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "You are not authorized to Dummy  add service",
-    //   });
-    // }
-
-    const isServiceTypeExist = await ServiceType.findById(typeId);
-    if (!isServiceTypeExist) {
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !typeId ||
+      !timeInterval ||
+      !timeSlots
+    ) {
       return res.status(400).json({
         status: "error",
-        message: "Dummy Service type does not exists",
+        message: "All fields are required",
       });
     }
 
 
-  
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    const targetSlug = 'dummy-slug';
+
+    const business = await Business.findOne({ slug: targetSlug });
+
+    console.log("businessId",business._id)
+
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
     const data = await Service.create({
@@ -471,21 +481,20 @@ const addDummyServiceApi = async (req, res, next) => {
       image: req.file.path,
       price,
       typeId,
-      // specialistId,
       timeInterval,
-      businessId,
+      businessId:business._id,
       timeSlots,
       ownerId: id,
       slug,
     });
+    console.log("data", data
+    )
 
-    // const myDumService = await Service.findOne({ _id: data._id });
-    // const myDumServiceData = await getServiceData(myDumService);
 
     res.status(200).json({
       status: "success",
       data,
-      message: "  Dummy Service added successfully",
+      message: "Dummy Service added successfully",
     });
   } catch (error) {
     console.error("Error in creating service", error);

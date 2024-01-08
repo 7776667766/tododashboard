@@ -536,8 +536,10 @@ const getBusinessByUserIdApi = async (req, res, next) => {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
+
     const { id } = req.user;
     const user = await User.findById(id);
+
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -545,43 +547,107 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       });
     }
 
+    let business;
+
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
+
       if (!manager) {
         return res.status(400).json({
           status: "error",
           message: "Manager not found",
         });
       }
-      const business = await Business.findById(manager.businessId);
+
+      business = await Business.findById(manager.businessId);
+
       if (!business) {
         return res.status(400).json({
           status: "error",
           message: "Business not found",
         });
       }
-      res.status(200).json({
-        status: "success",
-        data: await businessData(business),
-      });
-    } else {
-      const business = await Business.findOne({ createdBy: id });
+    } else if (user.role === "admin") {
+      const targetSlug = 'dummy-slug';
+      business = await Business.findOne({ slug: targetSlug });
+
       if (!business) {
         return res.status(400).json({
           status: "error",
           message: "Business not found",
         });
       }
-      res.status(200).json({
-        status: "success",
-        data: await businessData(business),
-      });
+
+      console.log("businessId", business._id);
     }
+
+    res.status(200).json({
+      status: "success",
+      data: await businessData(business),
+    });
+
   } catch (error) {
     console.log("Error in get business by user id", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
+
+// const getBusinessByUserIdApi = async (req, res, next) => {
+//   try {
+//     if (req.user === undefined) {
+//       return res.status(400).json({ status: "error", message: "Invalid user" });
+//     }
+//     const { id } = req.user;
+//     const user = await User.findById(id);
+//     if (!user) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "User not found",
+//       });
+//     }
+
+
+//     if (user.role === "manager") {
+//       const manager = await Manager.findOne({ managerId: id });
+//       if (!manager) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Manager not found",
+//         });
+//       }
+//       const business = await Business.findById(manager.businessId);
+//       if (!business) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Business not found",
+//         });
+//       }
+
+//       res.status(200).json({
+//         status: "success",
+//         data: await businessData(business),
+//       })
+//     } else {
+//       if (user.role === "admin") {
+
+//         const targetSlug = 'dummy-slug';
+
+//         const business = await Business.findOne({ slug: targetSlug });
+
+//         console.log("businessId", business._id)
+
+//       }
+//       res.status(200).json({
+//         status: "success",
+//         data: await businessData(business),
+//       });
+//     }
+//   } catch (error) {
+//     console.log("Error in get business by user id", error);
+//     res.status(400).json({ status: "error", message: error.message });
+//   }
+// };
 
 const getBusinessDetailBySlugApi = async (req, res, next) => {
   try {
@@ -644,7 +710,7 @@ const selectedTheme = async (req, res, next) => {
       });
     }
 
- 
+
     const updateTheme = await Owner.updateOne(
       { ownerId: id },
       { theme: theme }
@@ -715,11 +781,11 @@ const addDummyBusinessApi = async (req, res,) => {
       phone,
       description,
       address,
-      logo:req.file.path,
+      logo: req.file.path,
       socialLinks,
       googleId,
-      slug:mySlug,
-      theme:"theme-1",
+      slug: mySlug,
+      theme: "theme-1",
       bookingService: true,
       websiteService: true,
     })
