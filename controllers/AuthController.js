@@ -9,6 +9,7 @@ const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
 require("dotenv").config();
+
 const registerApi = async (req, res, next) => {
   try {
     const {
@@ -67,12 +68,7 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone number already in use" });
     }
 
-    console.log("req.body", req.body);
-
     if (role === "owner" && !websiteService && !bookingService) {
-      console.log("websiteService", websiteService);
-      console.log("bookingService", bookingService);
-
       return res.status(400).json({
         status: "error",
         message: "Website service or booking service is required",
@@ -121,20 +117,11 @@ const registerApi = async (req, res, next) => {
       });
     }
 
+    const userData = await getUserData(user);
     res.status(201).json({
       status: "success",
       data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          image: imgFullPath(user.image),
-          role: user.role,
-          createdAt: user.createdAt,
-          verified: user.verified,
-          verifyAt: user.verifyAt,
-        },
+        user: userData,
       },
       message: "Account created successfully",
     });
@@ -201,21 +188,13 @@ Thank You
       //   message: "OTP sent successfully",
       // });
       const token = createSecretToken({ id: user._id });
+      const userData = await getUserData(user);
+
       res.status(201).json({
         status: "success",
         data: {
           token,
-          user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            image: imgFullPath(user.image),
-            role: user.role,
-            createdAt: user.createdAt,
-            verified: user.verified,
-            verifyAt: user.verifyAt,
-          },
+          user: userData,
         },
         message: "Login successfull",
       });
@@ -238,21 +217,12 @@ const checkTokenIsValidApi = async (req, res, next) => {
   }
 
   const token = createSecretToken({ id: user._id });
+  const userData = await getUserData(user);
   res.status(201).json({
     status: "success",
     data: {
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        image: imgFullPath(user.image),
-        role: user.role,
-        createdAt: user.createdAt,
-        verified: user.verified,
-        verifyAt: user.verifyAt,
-      },
+      user: userData,
     },
     message: "Login successfull",
   });
@@ -300,21 +270,13 @@ const verifyOtpApi = async (req, res, next) => {
       user.verifyAt = new Date();
     }
     const token = createSecretToken({ id: user._id });
+    const userData = await getUserData(user);
+
     res.status(200).json({
       status: "success",
       data: {
         token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          image: imgFullPath(user.image),
-          role: user.role,
-          createdAt: user.createdAt,
-          verified: user.verified,
-          verifyAt: user.verifyAt,
-        },
+        user: userData,
       },
       message: "OTP verified successfully",
     });
@@ -496,20 +458,11 @@ const getUserProfileApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "User not found" });
     }
+    const userData = await getUserData(user);
     res.status(200).json({
       status: "success",
       data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          image: imgFullPath(user.image),
-          role: user.role,
-          createdAt: user.createdAt,
-          verified: user.verified,
-          verifyAt: user.verifyAt,
-        },
+        user: userData,
       },
       message: "User profile fetched successfully",
     });
@@ -537,20 +490,11 @@ const updataUserProfileApi = async (req, res, next) => {
 
     await User.updateOne({ _id: id }, { name, image });
     const user = await User.findById(id);
+    const userData = await getUserData(user);
     res.status(200).json({
       status: "success",
       data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          image: imgFullPath(req.file.path),
-          role: user.role,
-          createdAt: user.createdAt,
-          verified: user.verified,
-          verifyAt: user.verifyAt,
-        },
+        user: userData,
       },
       message: "User profile updated successfully",
     });
@@ -622,4 +566,33 @@ module.exports = {
   getUserProfileApi,
   updataUserProfileApi,
   getAllUsersApi,
+};
+
+const getUserData = async (user) => {
+  let services = {
+    websiteService: false,
+    bookingService: false,
+  };
+
+  if (user.role === "owner") {
+    const ownerData = await Owner.findOne({ ownerId: user._id });
+    if (ownerData) {
+      services = {
+        websiteService: ownerData.websiteService,
+        bookingService: ownerData.bookingService,
+      };
+    }
+  }
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    image: imgFullPath(user.image),
+    role: user.role,
+    createdAt: user.createdAt,
+    verified: user.verified,
+    verifyAt: user.verifyAt,
+    services,
+  };
 };
