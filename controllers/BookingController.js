@@ -403,11 +403,10 @@ const getBookingData = async (data) => {
   });
 
   const businessData = await Business.findById(businessId).select({
-    _id: 0,
+    _id: 1,
     name: 1,
-    id: {
-      $toString: "$_id",
-    },
+    logo: 1,
+    address: 1,
   });
   const serviceData = await Service.findById(serviceId).select({
     _id: 1,
@@ -424,7 +423,12 @@ const getBookingData = async (data) => {
     timeSlot: data.timeSlot,
     status: data.status,
     token: data.token,
-    business: businessData,
+    business: businessData && {
+      id: businessData._id,
+      name: businessData.name,
+      address: businessData.address,
+      logo: imgFullPath(businessData.logo),
+    },
     service: serviceData && {
       id: serviceData._id,
       name: serviceData.name,
