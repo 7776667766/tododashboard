@@ -610,60 +610,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
   }
 };
 
-// const getBusinessByUserIdApi = async (req, res, next) => {
-//   try {
-//     if (req.user === undefined) {
-//       return res.status(400).json({ status: "error", message: "Invalid user" });
-//     }
-//     const { id } = req.user;
-//     const user = await User.findById(id);
-//     if (!user) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "User not found",
-//       });
-//     }
-
-//     if (user.role === "manager") {
-//       const manager = await Manager.findOne({ managerId: id });
-//       if (!manager) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Manager not found",
-//         });
-//       }
-//       const business = await Business.findById(manager.businessId);
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Business not found",
-//         });
-//       }
-
-//       res.status(200).json({
-//         status: "success",
-//         data: await businessData(business),
-//       })
-//     } else {
-//       if (user.role === "admin") {
-
-//         const targetSlug = 'dummy-slug';
-
-//         const business = await Business.findOne({ slug: targetSlug });
-
-//         console.log("businessId", business._id)
-
-//       }
-//       res.status(200).json({
-//         status: "success",
-//         data: await businessData(business),
-//       });
-//     }
-//   } catch (error) {
-//     console.log("Error in get business by user id", error);
-//     res.status(400).json({ status: "error", message: error.message });
-//   }
-// };
 
 const getBusinessDetailBySlugApi = async (req, res, next) => {
   try {
