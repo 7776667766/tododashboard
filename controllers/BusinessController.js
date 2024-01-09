@@ -549,7 +549,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
     let business;
 
-    if (user.role === "manager") {
+    if (user.role === "manager" ) {
       const manager = await Manager.findOne({ managerId: id });
 
       if (!manager) {
@@ -559,7 +559,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         });
       }
 
-      business = await Business.findById(manager.businessId);
+      const business = await Business.findById(manager.businessId);
 
       if (!business) {
         return res.status(400).json({
@@ -574,11 +574,9 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       if (!business) {
         return res.status(400).json({
           status: "error",
-          message: "Business not found",
+          message: "admin Business is not found",
         });
       }
-
-      console.log("businessId", business._id);
     }
 
     res.status(200).json({
@@ -801,7 +799,6 @@ const addDummyBusinessApi = async (req, res,) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 module.exports = {
   addSpecialistApi,

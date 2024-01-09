@@ -36,11 +36,17 @@ const serviceSchema = new mongoose.Schema({
     required: [true, "Type is required"],
     trim: true,
   },
+
   specialistId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Specialist",
     trim: true,
   },
+
+  specialistName:{
+    type:String
+  },
+
 
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,

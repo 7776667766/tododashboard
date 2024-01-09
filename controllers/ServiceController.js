@@ -90,6 +90,7 @@ const getAllServicesTypeApi = async (req, res, next) => {
 };
 
 const addServiceApi = async (req, res, next) => {
+  console.log(req.body,"request of services")
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -185,6 +186,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
+    console.log(businessId,"businessId")
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
     const data = await Service.create({
@@ -439,6 +441,7 @@ const addDummyServiceApi = async (req, res, next) => {
       price,
       typeId,
       timeInterval,
+      specialistName,
       timeSlots,
     } = req.body;
 
@@ -482,6 +485,7 @@ const addDummyServiceApi = async (req, res, next) => {
       price,
       typeId,
       timeInterval,
+      specialistName,
       businessId:business._id,
       timeSlots,
       ownerId: id,
