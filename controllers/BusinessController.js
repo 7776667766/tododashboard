@@ -538,6 +538,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
     }
 
     const { id } = req.user;
+    console.log(id, "Given Id");
     const user = await User.findById(id);
 
     if (!user) {
@@ -568,7 +569,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         });
       }
     } else if (user.role === "admin") {
-      const targetSlug = 'dummy-slug';
+      const targetSlug = "dummy-slug";
       business = await Business.findOne({ slug: targetSlug });
 
       if (!business) {
@@ -577,19 +578,37 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "admin Business is not found",
         });
       }
+      console.log("businessId", business._id);
+    } else if (user.role === "owner") {
+      const owner = await Owner.findOne({ ownerId: id });
+      if (!owner) {
+        return res.status(400).json({
+          status: "error",
+          message: "Owner not found",
+        });
+      }
+
+      business = await Business.findOne({
+        createdBy: id,
+      });
+
+      if (!business) {
+        return res.status(400).json({
+          status: "error",
+          message: "Business not found",
+        });
+      }
     }
 
     res.status(200).json({
       status: "success",
       data: await businessData(business),
     });
-
   } catch (error) {
     console.log("Error in get business by user id", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 // const getBusinessByUserIdApi = async (req, res, next) => {
 //   try {
@@ -604,7 +623,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 //         message: "User not found",
 //       });
 //     }
-
 
 //     if (user.role === "manager") {
 //       const manager = await Manager.findOne({ managerId: id });
@@ -708,7 +726,6 @@ const selectedTheme = async (req, res, next) => {
       });
     }
 
-
     const updateTheme = await Owner.updateOne(
       { ownerId: id },
       { theme: theme }
@@ -727,8 +744,8 @@ const selectedTheme = async (req, res, next) => {
   }
 };
 
-const addDummyBusinessApi = async (req, res,) => {
-  console.log("body request", req.body)
+const addDummyBusinessApi = async (req, res) => {
+  console.log("body request", req.body);
 
   try {
     if (req.user === undefined) {
@@ -786,14 +803,13 @@ const addDummyBusinessApi = async (req, res,) => {
       theme: "theme-1",
       bookingService: true,
       websiteService: true,
-    })
-    console.log("MYBuisness", myBusiness)
+    });
+    console.log("MYBuisness", myBusiness);
     res.status(200).json({
       status: "success",
       data: myBusiness,
       message: "Dummy Business added successfully",
     });
-
   } catch (error) {
     console.log("Error in Dummy business", error);
     res.status(400).json({ status: "error", message: error.message });
@@ -811,7 +827,7 @@ module.exports = {
   getBusinessByUserIdApi,
   getBusinessDetailBySlugApi,
   selectedTheme,
-  addDummyBusinessApi
+  addDummyBusinessApi,
 };
 
 const businessData = async (businessData) => {
@@ -832,4 +848,3 @@ const businessData = async (businessData) => {
     logo: imgFullPath(businessData.logo),
   };
 };
-

@@ -222,7 +222,7 @@ const addServiceApi = async (req, res, next) => {
 };
 
 const updateServiceApi = async (req, res, next) => {
-  console.log(req.file, "----")
+  console.log(req.file, "----");
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -305,11 +305,13 @@ const updateServiceApi = async (req, res, next) => {
       });
     }
 
-
     const myServiceImg = req.file?.path ? req.file.path : service.image;
 
-    await Service.updateOne({ _id: serviceId }, { ...req.body, image: myServiceImg });
-    console.log({ ...req.body, image: myServiceImg }, "req.body")
+    await Service.updateOne(
+      { _id: serviceId },
+      { ...req.body, image: myServiceImg }
+    );
+    console.log({ ...req.body, image: myServiceImg }, "req.body");
 
     const myServiceData = await Service.findOne({ _id: serviceId });
     const myServiceUpdatedData = await getServiceData(myServiceData);
@@ -330,7 +332,6 @@ const updateServiceApi = async (req, res, next) => {
 
 const getServicesApi = async (req, res, next) => {
   try {
-
     const { businessId } = req.body;
 
     let myServices = [];
@@ -394,8 +395,6 @@ const deleteServiceApi = async (req, res, next) => {
   try {
     const { serviceId } = req.params;
 
-    console.log(serviceId, "serviceId")
-
     if (!serviceId || !validator.isMongoId(serviceId)) {
       return res.status(400).json({
         status: "error",
@@ -411,10 +410,12 @@ const deleteServiceApi = async (req, res, next) => {
         message: "Service not found",
       });
     }
-    await Service.findByIdAndUpdate({ _id: serviceId }, { deletedAt: new Date() });
+    await Service.findByIdAndUpdate(
+      { _id: serviceId },
+      { deletedAt: new Date() }
+    );
 
     res.status(200).json({
-
       status: "success",
       message: "Service deleted successfully",
     });
@@ -428,22 +429,15 @@ const deleteServiceApi = async (req, res, next) => {
 };
 
 const addDummyServiceApi = async (req, res, next) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
     }
 
     const { id } = req.user;
-    const {
-      name,
-      description,
-      price,
-      typeId,
-      timeInterval,
-      specialistName,
-      timeSlots,
-    } = req.body;
+    const { name, description, price, typeId, timeInterval, timeSlots } =
+      req.body;
 
     console.log(timeInterval);
 
@@ -461,7 +455,6 @@ const addDummyServiceApi = async (req, res, next) => {
       });
     }
 
-
     const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({
@@ -470,11 +463,11 @@ const addDummyServiceApi = async (req, res, next) => {
       });
     }
 
-    const targetSlug = 'dummy-slug';
+    const targetSlug = "dummy-slug";
 
     const business = await Business.findOne({ slug: targetSlug });
 
-    console.log("businessId",business._id)
+    console.log("businessId", business._id);
 
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
@@ -485,15 +478,12 @@ const addDummyServiceApi = async (req, res, next) => {
       price,
       typeId,
       timeInterval,
-      specialistName,
-      businessId:business._id,
+      businessId: business._id,
       timeSlots,
       ownerId: id,
       slug,
     });
-    console.log("data", data
-    )
-
+    console.log("data", data);
 
     res.status(200).json({
       status: "success",
@@ -510,10 +500,8 @@ const addDummyServiceApi = async (req, res, next) => {
   }
 };
 
-
 const getDummyServicesApi = async (req, res, next) => {
   try {
-
     const { businessId } = req.body;
 
     let myServices = [];
@@ -542,7 +530,6 @@ const getDummyServicesApi = async (req, res, next) => {
     });
   }
 };
-
 
 module.exports = {
   addServiceTypeApi,
