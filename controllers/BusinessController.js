@@ -531,6 +531,25 @@ const registerBusinessApi = async (req, res, next) => {
   }
 };
 
+const getAllBusinessApi = async (req, res, next) => {
+  try {
+    const business = await Business.find();
+    const businessDataList = [];
+    await Promise.all(
+      business.map(async (business) => {
+        businessDataList.push(await businessData(business));
+      })
+    );
+    res.status(200).json({
+      status: "success",
+      data: businessDataList,
+    });
+  } catch (error) {
+    console.log("Error in getting all business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
 const getBusinessByUserIdApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
@@ -550,7 +569,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
     let business;
 
-    if (user.role === "manager" ) {
+    if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
 
       if (!manager) {
@@ -609,7 +628,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 const getBusinessDetailBySlugApi = async (req, res, next) => {
   try {
@@ -762,21 +780,10 @@ const addDummyBusinessApi = async (req, res) => {
   }
 };
 
-module.exports = {
-  addSpecialistApi,
-  getSpecialistByBusinessIdApi,
-  addManagerApi,
-  updateManagerApi,
-  deleteManagerApi,
-  getManagersByBusinessIdApi,
-  registerBusinessApi,
-  getBusinessByUserIdApi,
-  getBusinessDetailBySlugApi,
-  selectedTheme,
-  addDummyBusinessApi,
-};
-
 const businessData = async (businessData) => {
+  if (!businessData) {
+    return null;
+  }
   return {
     id: businessData._id,
     name: businessData.name,
@@ -793,4 +800,20 @@ const businessData = async (businessData) => {
     slug: businessData.slug,
     logo: imgFullPath(businessData.logo),
   };
+};
+
+module.exports = {
+  addSpecialistApi,
+  getSpecialistByBusinessIdApi,
+  addManagerApi,
+  updateManagerApi,
+  deleteManagerApi,
+  getManagersByBusinessIdApi,
+  getAllBusinessApi,
+  registerBusinessApi,
+  getBusinessByUserIdApi,
+  getBusinessDetailBySlugApi,
+  selectedTheme,
+  addDummyBusinessApi,
+  businessData,
 };

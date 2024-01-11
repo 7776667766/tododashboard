@@ -6,6 +6,7 @@ const ServiceType = require("../models/Service/ServiceTypeModel");
 const slugify = require("slugify");
 const validator = require("validator");
 const imgFullPath = require("../util/imgFullPath");
+const { businessData } = require("./BusinessController");
 require("dotenv").config();
 
 const addServiceTypeApi = async (req, res, next) => {
@@ -90,7 +91,7 @@ const getAllServicesTypeApi = async (req, res, next) => {
 };
 
 const addServiceApi = async (req, res, next) => {
-  console.log(req.body,"request of services")
+  console.log(req.body, "request of services");
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -186,7 +187,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    console.log(businessId,"businessId")
+    console.log(businessId, "businessId");
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
     const data = await Service.create({
@@ -323,6 +324,33 @@ const updateServiceApi = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Error in updating service", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+const getAllServicesApi = async (req, res, next) => {
+  try {
+    let myServices = [];
+    const services = await Service.find({
+      deletedAt: null || undefined,
+      active: true,
+    });
+
+    await Promise.all(
+      services.map(async (service) => {
+        const myServiceData = await getServiceData(service);
+        myServices.push(myServiceData);
+      })
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: myServices,
+    });
+  } catch (error) {
+    console.log("Error in getting all services", error);
     res.status(500).json({
       status: "error",
       message: error.message,
@@ -537,6 +565,7 @@ module.exports = {
   addServiceApi,
   updateServiceApi,
   getServicesApi,
+  getAllServicesApi,
   getServiceDetailBySlugApi,
   getDummyServicesApi,
   deleteServiceApi,
@@ -560,6 +589,8 @@ const getServiceData = async (data) => {
     },
     email: 1,
   });
+  const business = await Business.findById(data.businessId);
+  const myBusinessData = await businessData(business);
   const myServiceData = {
     id: data._id,
     name: data.name,
@@ -567,10 +598,11 @@ const getServiceData = async (data) => {
     image: imgFullPath(data.image),
     price: data.price,
     timeInterval: data.timeInterval,
+    slug: data.slug,
+    business: myBusinessData,
     type: type,
     specialist: specialist,
     timeSlots: data.timeSlots,
-    slug: data.slug,
   };
   return myServiceData;
 };
