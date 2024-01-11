@@ -482,7 +482,12 @@ const registerBusinessApi = async (req, res, next) => {
       websiteService: Ownerdata.websiteService,
       theme: Ownerdata.theme || "",
       createdBy: id,
+      bannerText: Ownerdata.bannerText,
+      color: Ownerdata.color,
+      bannerImg:Ownerdata.bannerImge
     });
+
+    console.log(myBusiness,"myBusinessData111111")
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -522,6 +527,9 @@ const registerBusinessApi = async (req, res, next) => {
         logo: req.file.path,
         ...Ownerdata,
         theme: Ownerdata.theme,
+        bannerText: Ownerdata.bannerText,
+        bannerImg:Ownerdata.bannerImge,
+        color: Ownerdata.color
       }),
       message: "Business registered successfully",
     });
@@ -659,6 +667,7 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
 };
 
 const selectedTheme = async (req, res, next) => {
+  console.log("req.body", req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -682,7 +691,7 @@ const selectedTheme = async (req, res, next) => {
       });
     }
 
-    const { theme } = req.body;
+    const { theme, color, bannerText } = req.body;
     if (!theme) {
       return res.status(400).json({
         status: "error",
@@ -690,11 +699,31 @@ const selectedTheme = async (req, res, next) => {
       });
     }
 
+    if (!color) {
+      return res.status(400).json({
+        status: "error",
+        message: "color is required",
+      });
+    }
+    if (!bannerText) {
+      return res.status(400).json({
+        status: "error",
+        message: "banner text is required",
+      });
+    }
+
     const updateTheme = await Owner.updateOne(
       { ownerId: id },
-      { theme: theme }
+      {
+        $set: {
+          theme: theme,
+          color: color,
+          bannerText: bannerText,
+          bannerImge: req.file.path,
+        },
+      }
     );
-
+    
     console.log("updated theme", updateTheme);
 
     res.status(200).json({
@@ -799,6 +828,10 @@ const businessData = async (businessData) => {
     googleId: businessData.googleId,
     slug: businessData.slug,
     logo: imgFullPath(businessData.logo),
+    bannerText: businessData.bannerText,
+    bannerImg: imgFullPath(businessData.bannerImg),
+    color: businessData.color
+
   };
 };
 

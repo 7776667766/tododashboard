@@ -48,6 +48,7 @@ const addServiceTypeApi = async (req, res, next) => {
 
     const newService = await ServiceType.create({
       name,
+      image: req.file.path,
       createdBy: id,
     });
 
@@ -56,6 +57,7 @@ const addServiceTypeApi = async (req, res, next) => {
       data: {
         id: newService._id,
         name: newService.name,
+        image: imgFullPath(newService.image),
       },
       message: "Service type added successfully",
     });
@@ -357,6 +359,39 @@ const getAllServicesApi = async (req, res, next) => {
     });
   }
 };
+const updateServiceTypeApi = async (req, res) => {
+  try {
+    console.log(req.body);
+
+    const { id } = req.user;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    const { name, image } = req.body;
+
+    const updatedService = await ServiceType.findOneAndUpdate(
+      { $set: { name, image } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: updatedService,
+      message: "Service updated successfully",
+    });
+  } catch (error) {
+    console.error("Error in updating service", error);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};
 
 const getServicesApi = async (req, res, next) => {
   try {
@@ -559,15 +594,54 @@ const getDummyServicesApi = async (req, res, next) => {
   }
 };
 
+const deleteServicTypeApi = async (req, res, next) => {
+  try {
+    const { serviceId } = req.params;
+
+    if (!serviceId || !validator.isMongoId(serviceId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid service ID",
+      });
+    }
+
+    const service = await ServiceType.findById(serviceId);
+
+    if (!service) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service not found",
+      });
+    }
+    await Service.findByIdAndUpdate(
+      { _id: serviceId },
+      { deletedAt: new Date() }
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "Service deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in deleting service", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addServiceTypeApi,
   getAllServicesTypeApi,
   addServiceApi,
   updateServiceApi,
+  updateServiceTypeApi,
   getServicesApi,
   getAllServicesApi,
   getServiceDetailBySlugApi,
   getDummyServicesApi,
+  deleteServicTypeApi,
   deleteServiceApi,
   addDummyServiceApi,
 };

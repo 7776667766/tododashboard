@@ -19,6 +19,21 @@ const ownerSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  bannerText: {
+    type: String,
+    trim: true,
+  },
+
+  bannerImge: {
+    type: String,
+
+  },
+  color: {
+    type: String,
+    trim: true,
+  },
+
   createdAt: {
     type: Date,
     default: new Date(),

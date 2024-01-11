@@ -31,7 +31,12 @@ router.post(
 router.get("/business/get-all-business", getAllBusinessApi);
 router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
-router.post("/theme/theme-Api", auth, selectedTheme);
+router.post(
+  "/theme/theme-Api",
+  auth,
+  upload("business").single("bannerImg"),
+  selectedTheme
+);
 router.post(
   "/add-dummy-business",
   auth,
