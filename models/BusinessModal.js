@@ -16,6 +16,21 @@ const businessSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+
+
+  bannerText: {
+    type: String,
+  },
+
+  bannerImg: {
+    type: String,
+  },
+
+  color: {
+    type: String
+  },
+
+
   logo: {
     type: String,
 
@@ -46,20 +61,20 @@ const businessSchema = new mongoose.Schema({
   googleId: {
     type: String,
     trim: true,
- 
+
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     trim: true,
-   
+
   },
 
   bookingService: { type: Boolean, default: false },
   websiteService: { type: Boolean, default: false },
 
-  theme: { 
-    type: String ,
+  theme: {
+    type: String,
   },
   createdAt: {
     type: Date,

@@ -8,19 +8,25 @@ const {
   updateServiceApi,
   addDummyServiceApi,
   getDummyServicesApi,
-  deleteServiceApi
+  deleteServiceApi,
+  updateServiceTypeApi,
+  deleteServicTypeApi,
 } = require("../controllers/ServiceController");
 const auth = require("../middlewares/auth");
 const upload = require("../middlewares/uploadImage");
 
-router.post("/services/types/add", auth, addServiceTypeApi);
+router.post("/services/types/add", auth, upload("service").single("image"), addServiceTypeApi);
 router.get("/services/types", getAllServicesTypeApi);
+router.get("/servicetype/delete/:serviceId", deleteServicTypeApi);
+
 router.post(
   "/services/add",
   auth,
   upload("service").single("image"),
   addServiceApi
 );
+// updateServiceTypeApi
+
 router.post("/services/update/:serviceId", auth, upload("service").single("image"),
   updateServiceApi);
 router.post("/services/all-services", getServicesApi);
@@ -30,9 +36,10 @@ router.post("/services/all-dummy-services", getDummyServicesApi);
 router.post(
   "/services/dummyadd",
   auth,
-  upload("service").single("image"),
+  upload("serviceType").single("image"),
   addDummyServiceApi
 )
-
+router.post("/servicestype/update/:id", auth ,upload("service").single("image"),
+updateServiceTypeApi);
 
 module.exports = router;

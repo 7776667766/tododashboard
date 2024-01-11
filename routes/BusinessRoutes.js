@@ -15,7 +15,6 @@ const {
 } = require("../controllers/BusinessController");
 const upload = require("../middlewares/uploadImage");
 
-
 router.post("/specialist/add", auth, addSpecialistApi);
 router.get("/specialist/:businessId", auth, getSpecialistByBusinessIdApi);
 router.post("/manager/add", auth, addManagerApi);
@@ -25,7 +24,7 @@ router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
 router.post("/register-business", auth,  upload("business").single("logo"), registerBusinessApi);
 router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
-router.post("/theme/theme-Api",auth, selectedTheme);
+router.post("/theme/theme-Api",auth, upload("business").single("bannerImg"), selectedTheme);
 router.post("/add-dummy-business", auth, upload("business").single("logo"),  addDummyBusinessApi);
 
 
