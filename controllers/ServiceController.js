@@ -46,19 +46,17 @@ const addServiceTypeApi = async (req, res, next) => {
       });
     }
 
-    const newService = await ServiceType.create({
+    const newServiceType = await ServiceType.create({
       name,
       image: req.file.path,
       createdBy: id,
     });
 
+    const myServiceType = await getServiceTypeData(newServiceType);
+
     res.status(200).json({
       status: "success",
-      data: {
-        id: newService._id,
-        name: newService.name,
-        image: imgFullPath(newService.image),
-      },
+      data: myServiceType,
       message: "Service type added successfully",
     });
   } catch (error) {
@@ -72,16 +70,21 @@ const addServiceTypeApi = async (req, res, next) => {
 
 const getAllServicesTypeApi = async (req, res, next) => {
   try {
-    const serviceTypes = await ServiceType.find().select({
-      _id: 0,
-      name: 1,
-      id: {
-        $toString: "$_id",
-      },
+    const serviceTypes = await ServiceType.find({
+      deletedAt: null || undefined,
     });
+
+    const myServiceTypes = [];
+    await Promise.all(
+      serviceTypes.map(async (serviceType) => {
+        const myServiceType = await getServiceTypeData(serviceType);
+        myServiceTypes.push(myServiceType);
+      })
+    );
+
     res.status(200).json({
       status: "success",
-      data: serviceTypes,
+      data: myServiceTypes,
     });
   } catch (error) {
     console.log("Error in getting all service types", error);
@@ -362,6 +365,21 @@ const getAllServicesApi = async (req, res, next) => {
 const updateServiceTypeApi = async (req, res) => {
   try {
     console.log(req.body);
+    const { serviceTypeId } = req.params;
+    console.log("serviceTypeId", serviceTypeId);
+    if (!serviceTypeId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Type Id is required",
+      });
+    }
+
+    if (!validator.isMongoId(serviceTypeId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Type Id is invalid",
+      });
+    }
 
     const { id } = req.user;
     const user = await User.findById(id);
@@ -372,17 +390,34 @@ const updateServiceTypeApi = async (req, res) => {
       });
     }
 
-    const { name, image } = req.body;
+    if (user.role !== "admin") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to update service type",
+      });
+    }
 
-    const updatedService = await ServiceType.findOneAndUpdate(
-      { $set: { name, image } },
+    const serviceType = await ServiceType.findById(serviceTypeId);
+    if (!serviceType) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service Type not found",
+      });
+    }
+    const myServiceTypeImg = req.file?.path ? req.file.path : serviceType.image;
+
+    const updatedServiceType = await ServiceType.findOneAndUpdate(
+      { _id: serviceTypeId },
+      { $set: { ...req.body, image: myServiceTypeImg } },
       { new: true }
     );
 
+    const myServiceType = await getServiceTypeData(updatedServiceType);
+
     res.status(200).json({
       status: "success",
-      data: updatedService,
-      message: "Service updated successfully",
+      data: myServiceType,
+      message: "Service Type updated successfully",
     });
   } catch (error) {
     console.error("Error in updating service", error);
@@ -596,25 +631,25 @@ const getDummyServicesApi = async (req, res, next) => {
 
 const deleteServicTypeApi = async (req, res, next) => {
   try {
-    const { serviceId } = req.params;
+    const { serviceTypeId } = req.params;
 
-    if (!serviceId || !validator.isMongoId(serviceId)) {
+    if (!serviceTypeId || !validator.isMongoId(serviceTypeId)) {
       return res.status(400).json({
         status: "error",
-        message: "Invalid service ID",
+        message: "Invalid service type id",
       });
     }
 
-    const service = await ServiceType.findById(serviceId);
+    const serviceType = await ServiceType.findById(serviceTypeId);
 
-    if (!service) {
+    if (!serviceType) {
       return res.status(400).json({
         status: "error",
         message: "Service not found",
       });
     }
-    await Service.findByIdAndUpdate(
-      { _id: serviceId },
+    await ServiceType.findByIdAndUpdate(
+      { _id: serviceTypeId },
       { deletedAt: new Date() }
     );
 
@@ -646,15 +681,18 @@ module.exports = {
   addDummyServiceApi,
 };
 
+const getServiceTypeData = async (data) => {
+  return {
+    id: data._id,
+    name: data.name,
+    image: imgFullPath(data.image),
+  };
+};
+
 const getServiceData = async (data) => {
   const { typeId, specialistId } = data;
-  const type = await ServiceType.findById(typeId).select({
-    _id: 0,
-    name: 1,
-    id: {
-      $toString: "$_id",
-    },
-  });
+  const type = await ServiceType.findById(typeId);
+  const serviceType = await getServiceTypeData(type);
   const specialist = await Specialist.findById(specialistId).select({
     _id: 0,
     name: 1,
@@ -674,7 +712,7 @@ const getServiceData = async (data) => {
     timeInterval: data.timeInterval,
     slug: data.slug,
     business: myBusinessData,
-    type: type,
+    type: serviceType,
     specialist: specialist,
     timeSlots: data.timeSlots,
   };
