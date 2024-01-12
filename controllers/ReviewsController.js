@@ -15,7 +15,8 @@ const getAllReviews = (req, res) => {
         title: "Sample Review 1",
         description: "This is a test review 1.",
         rating: 3.5,
-        image: "https://example.com/sample-image1.jpg",
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
         deletedAt: null,
       },
       {
@@ -23,7 +24,8 @@ const getAllReviews = (req, res) => {
         title: "Sample Review 2",
         description: "This is a test review 2.",
         rating: 4.0,
-        image: "https://example.com/sample-image2.jpg",
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
         deletedAt: null,
       },
     ];

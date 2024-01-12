@@ -34,20 +34,18 @@ router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
 router.post(
   "/theme/theme-Api",
   auth,
-  upload("business").single("bannerImg"),
+  upload("business/banners").single("bannerImg"),
   selectedTheme
 );
 //dummy-business-Api
 
-
-// router.post("/template/add", upload("template").fields([
-//   { name: "websiteImage", maxCount: 1 },
-//   { name: "bookingImage", maxCount: 1 }]), auth, addTemplateApi);
-
 router.post(
   "/add-dummy-business",
   auth,
-  upload("business").fields([{ name: "logo", maxCount: 1 }, { name: "bannerImg", maxCount: 1 }]),
+  upload("business").fields([
+    { name: "logo", maxCount: 1 },
+    { name: "bannerImg", maxCount: 1 },
+  ]),
   addDummyBusinessApi
 );
 

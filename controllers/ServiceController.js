@@ -216,12 +216,12 @@ const addServiceApi = async (req, res, next) => {
       businessId,
       timeSlots,
       ownerId: id,
-      slug: mySlug
+      slug: mySlug,
     });
 
     const myService = await Service.findOne({ _id: data._id });
     const myServiceData = await getServiceData(myService);
-    console.log("myServicesData", myServiceData)
+    console.log("myServicesData", myServiceData);
     res.status(200).json({
       status: "success",
       data: myServiceData,
