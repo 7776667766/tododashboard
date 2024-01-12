@@ -365,6 +365,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
+  
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -542,19 +543,28 @@ const registerBusinessApi = async (req, res, next) => {
 const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find();
+    
+
     const businessDataList = [];
+
     await Promise.all(
       business.map(async (business) => {
         businessDataList.push(await businessData(business));
       })
     );
+
+    console.log("businessDataList", businessDataList)
+
     res.status(200).json({
       status: "success",
       data: businessDataList,
     });
+
   } catch (error) {
+
     console.log("Error in getting all business", error);
     res.status(400).json({ status: "error", message: error.message });
+
   }
 };
 
@@ -596,13 +606,13 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         });
       }
     } else if (user.role === "admin") {
-      const targetSlug = "dummy-slug";
+      const targetSlug = "dummy-business";
       business = await Business.findOne({ slug: targetSlug });
 
       if (!business) {
         return res.status(400).json({
           status: "error",
-          message: "admin Business is not found",
+          message: "dummy business not found",
         });
       }
       console.log("businessId", business._id);
@@ -738,7 +748,13 @@ const selectedTheme = async (req, res, next) => {
 };
 
 const addDummyBusinessApi = async (req, res) => {
+
   console.log("body request", req.body);
+  let logo = req.files["logo"][0].path;
+  let bannerImg = req.files["bannerImg"][0].path;
+
+  console.log("logo",logo)
+  console.log("bannerImg",bannerImg)
 
   try {
     if (req.user === undefined) {
@@ -749,6 +765,8 @@ const addDummyBusinessApi = async (req, res) => {
     const {
       name,
       email,
+      bannerText,
+      color,
       phone,
       description,
       address,
@@ -789,7 +807,10 @@ const addDummyBusinessApi = async (req, res) => {
       phone,
       description,
       address,
-      logo: req.file.path,
+      logo,
+      bannerImg,
+      bannerText,
+      color,
       socialLinks,
       googleId,
       slug: mySlug,
@@ -797,7 +818,8 @@ const addDummyBusinessApi = async (req, res) => {
       bookingService: true,
       websiteService: true,
     });
-    console.log("MYBuisness", myBusiness);
+
+    console.log("Checking MYBuisness Payload ", myBusiness);
     res.status(200).json({
       status: "success",
       data: myBusiness,

@@ -108,6 +108,7 @@ const addServiceApi = async (req, res, next) => {
       description,
       price,
       typeId,
+      slug,
       specialistId,
       timeInterval,
       businessId,
@@ -193,7 +194,16 @@ const addServiceApi = async (req, res, next) => {
     }
 
     console.log(businessId, "businessId");
-    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
+
+    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
+
+    const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+    if (slugAlreadyExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
 
     const data = await Service.create({
       name,
@@ -206,12 +216,12 @@ const addServiceApi = async (req, res, next) => {
       businessId,
       timeSlots,
       ownerId: id,
-      slug,
+      slug: mySlug
     });
 
     const myService = await Service.findOne({ _id: data._id });
     const myServiceData = await getServiceData(myService);
-
+    console.log("myServicesData", myServiceData)
     res.status(200).json({
       status: "success",
       data: myServiceData,
@@ -712,6 +722,7 @@ const getServiceData = async (data) => {
     name: data.name,
     description: data.description,
     image: imgFullPath(data.image),
+    slug: data.slug,
     price: data.price,
     timeInterval: data.timeInterval,
     slug: data.slug,
