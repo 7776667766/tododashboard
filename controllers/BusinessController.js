@@ -366,7 +366,6 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
-
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -486,10 +485,10 @@ const registerBusinessApi = async (req, res, next) => {
       createdBy: id,
       bannerText: Ownerdata.bannerText,
       color: Ownerdata.color,
-      bannerImg: Ownerdata.bannerImge
+      bannerImg: Ownerdata.bannerImge,
     });
 
-    console.log(myBusiness, "myBusinessData111111")
+    console.log(myBusiness, "myBusinessData111111");
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -531,7 +530,7 @@ const registerBusinessApi = async (req, res, next) => {
         theme: Ownerdata.theme,
         bannerText: Ownerdata.bannerText,
         bannerImg: Ownerdata.bannerImge,
-        color: Ownerdata.color
+        color: Ownerdata.color,
       }),
       message: "Business registered successfully",
     });
@@ -545,7 +544,6 @@ const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find();
 
-
     const businessDataList = [];
 
     await Promise.all(
@@ -554,18 +552,13 @@ const getAllBusinessApi = async (req, res, next) => {
       })
     );
 
-    console.log("businessDataList", businessDataList)
-
     res.status(200).json({
       status: "success",
       data: businessDataList,
     });
-
   } catch (error) {
-
     console.log("Error in getting all business", error);
     res.status(400).json({ status: "error", message: error.message });
-
   }
 };
 
@@ -678,7 +671,7 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
 };
 
 const selectedTheme = async (req, res, next) => {
-  console.log("req.body", req.body)
+  console.log("req.body", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -748,16 +741,13 @@ const selectedTheme = async (req, res, next) => {
   }
 };
 
-
-
 const addDummyBusinessApi = async (req, res) => {
-
   console.log("body request", req.body);
   let logo = req.files["logo"][0].path;
   let bannerImg = req.files["bannerImg"][0].path;
 
-  console.log("logo", logo)
-  console.log("bannerImg", bannerImg)
+  console.log("logo", logo);
+  console.log("bannerImg", bannerImg);
 
   try {
     if (req.user === undefined) {
@@ -855,32 +845,28 @@ const businessData = async (businessData) => {
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
-    color: businessData.color
-
+    color: businessData.color,
   };
 };
 
 const getBusinessByServiceType = async (req, res, next) => {
-  console.log("req.body", req.body);
   try {
-    const { typeId } = req.body;
-    console.log(typeId, "typeId");
-
-    if (!typeId) {
+    const { serviceTypeId } = req.params;
+    if (!serviceTypeId) {
       return res.status(400).json({
         status: "error",
-        message: "Type Id is required",
+        message: "Service Type Id is required",
       });
     }
 
-    if (!validator.isMongoId(typeId)) {
+    if (!validator.isMongoId(serviceTypeId)) {
       return res.status(400).json({
         status: "error",
-        message: "Type Id is invalid",
+        message: "Service Type Id is invalid",
       });
     }
     let myBusinessIds = [];
-    const services = await Service.find({ typeId });
+    const services = await Service.find({ typeId: serviceTypeId });
     await Promise.all(
       services.map(async (service) => {
         const myServiceData = await getServiceData(service);
@@ -889,20 +875,23 @@ const getBusinessByServiceType = async (req, res, next) => {
     );
 
     const businesses = await Business.find({ _id: { $in: myBusinessIds } });
-
+    let myBusinessList = [];
+    await Promise.all(
+      businesses.map(async (business) => {
+        const myBusinessData = await businessData(business);
+        myBusinessList.push(myBusinessData);
+      })
+    );
 
     res.status(200).json({
       status: "success",
-      data: businesses,
+      data: myBusinessList,
     });
   } catch (error) {
-    console.log("Error in get service", error);
+    console.log("Error in get business by service type", error);
     res.status(400).json({ status: "error", data, message: error.message });
   }
 };
-
-
-
 
 module.exports = {
   addSpecialistApi,
