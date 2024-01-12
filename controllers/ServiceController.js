@@ -561,13 +561,17 @@ const addDummyServiceApi = async (req, res, next) => {
       });
     }
 
-    const targetSlug = "dummy-slug";
-
-    const business = await Business.findOne({ slug: targetSlug });
+    const business = await Business.findOne({ slug: "dummy-business" });
 
     console.log("businessId", business._id);
 
-    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
+    let slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
+
+    const isSlugAlredyExist = await Service.findOne({ slug });
+    if (isSlugAlredyExist) {
+      // update slug
+      slug = `${slug}-${Math.floor(Math.random() * 1000)}`;
+    }
 
     const data = await Service.create({
       name,
