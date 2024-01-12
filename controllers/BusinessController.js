@@ -7,6 +7,7 @@ const slugify = require("slugify");
 const { sendEmail } = require("../util/sendEmail");
 const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
+const Service = require("../models/Service/ServiceModel");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -365,7 +366,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
-  
+
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -485,10 +486,10 @@ const registerBusinessApi = async (req, res, next) => {
       createdBy: id,
       bannerText: Ownerdata.bannerText,
       color: Ownerdata.color,
-      bannerImg:Ownerdata.bannerImge
+      bannerImg: Ownerdata.bannerImge
     });
 
-    console.log(myBusiness,"myBusinessData111111")
+    console.log(myBusiness, "myBusinessData111111")
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -529,7 +530,7 @@ const registerBusinessApi = async (req, res, next) => {
         ...Ownerdata,
         theme: Ownerdata.theme,
         bannerText: Ownerdata.bannerText,
-        bannerImg:Ownerdata.bannerImge,
+        bannerImg: Ownerdata.bannerImge,
         color: Ownerdata.color
       }),
       message: "Business registered successfully",
@@ -543,7 +544,7 @@ const registerBusinessApi = async (req, res, next) => {
 const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find();
-    
+
 
     const businessDataList = [];
 
@@ -733,7 +734,7 @@ const selectedTheme = async (req, res, next) => {
         },
       }
     );
-    
+
     console.log("updated theme", updateTheme);
 
     res.status(200).json({
@@ -747,14 +748,16 @@ const selectedTheme = async (req, res, next) => {
   }
 };
 
+
+
 const addDummyBusinessApi = async (req, res) => {
 
   console.log("body request", req.body);
   let logo = req.files["logo"][0].path;
   let bannerImg = req.files["bannerImg"][0].path;
 
-  console.log("logo",logo)
-  console.log("bannerImg",bannerImg)
+  console.log("logo", logo)
+  console.log("bannerImg", bannerImg)
 
   try {
     if (req.user === undefined) {
@@ -857,6 +860,50 @@ const businessData = async (businessData) => {
   };
 };
 
+const getBusinessByServiceType = async (req, res, next) => {
+  console.log("req.body", req.body);
+  try {
+    const { typeId } = req.body;
+    console.log(typeId, "typeId");
+
+    if (!typeId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Type Id is required",
+      });
+    }
+
+    if (!validator.isMongoId(typeId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Type Id is invalid",
+      });
+    }
+    let myBusinessIds = [];
+    const services = await Service.find({ typeId });
+    await Promise.all(
+      services.map(async (service) => {
+        const myServiceData = await getServiceData(service);
+        myBusinessIds.push(myServiceData.businessId);
+      })
+    );
+
+    const businesses = await Business.find({ _id: { $in: myBusinessIds } });
+
+
+    res.status(200).json({
+      status: "success",
+      data: businesses,
+    });
+  } catch (error) {
+    console.log("Error in get service", error);
+    res.status(400).json({ status: "error", data, message: error.message });
+  }
+};
+
+
+
+
 module.exports = {
   addSpecialistApi,
   getSpecialistByBusinessIdApi,
@@ -870,5 +917,14 @@ module.exports = {
   getBusinessDetailBySlugApi,
   selectedTheme,
   addDummyBusinessApi,
+  getBusinessByServiceType,
   businessData,
+};
+
+const getServiceData = async (service) => {
+  const businessId = service.businessId;
+
+  return {
+    businessId,
+  };
 };

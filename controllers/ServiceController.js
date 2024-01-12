@@ -197,7 +197,7 @@ const addServiceApi = async (req, res, next) => {
 
     const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
 
-    const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+    const slugAlreadyExist = await Service.findOne({ slug: mySlug });
     if (slugAlreadyExist) {
       return res.status(400).json({
         status: "error",

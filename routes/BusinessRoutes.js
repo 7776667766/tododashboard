@@ -13,6 +13,7 @@ const {
   selectedTheme,
   addDummyBusinessApi,
   getAllBusinessApi,
+  getBusinessByServiceType,
 } = require("../controllers/BusinessController");
 const upload = require("../middlewares/uploadImage");
 
@@ -22,6 +23,8 @@ router.post("/manager/add", auth, addManagerApi);
 router.post("/manager/update/:managerId", auth, updateManagerApi);
 router.get("/manager/delete/:managerId", auth, deleteManagerApi);
 router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
+router.get("/business-by-service-type",  getBusinessByServiceType);
+
 router.post(
   "/register-business",
   auth,

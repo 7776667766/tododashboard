@@ -11,19 +11,17 @@ const getAllReviews = (req, res) => {
   try {
     const myReviews = [
       {
-        businessId: businessId,
-        title: "Sample Review 1",
-        description: "This is a test review 1.",
+        title: "Review 1",
+        description: "fine service really impressive.",
         rating: 3.5,
-        image: "https://example.com/sample-image1.jpg",
+        image: "https://tse2.mm.bing.net/th?id=OIP.C_1j1Nk5UHp71WwaL4ATqQHaEr&pid=Api&P=0&h=220",
         deletedAt: null,
       },
       {
-        businessId: businessId,
-        title: "Sample Review 2",
+        title: "Review 2",
         description: "This is a test review 2.",
         rating: 4.0,
-        image: "https://example.com/sample-image2.jpg",
+        image: "https://tse4.mm.bing.net/th?id=OIP.JJSXln3GIWyOc-6W7newEAHaEN&pid=Api&P=0&h=220",
         deletedAt: null,
       },
     ];
@@ -46,6 +44,3 @@ module.exports = {
   getAllReviews,
 };
 
-module.exports = {
-  getAllReviews,
-};
