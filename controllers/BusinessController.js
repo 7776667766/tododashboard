@@ -460,8 +460,7 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
-    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
-    const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+    const slugAlreadyExist = await Business.findOne({ slug: slug });
     if (slugAlreadyExist) {
       return res.status(400).json({
         status: "error",
@@ -476,7 +475,7 @@ const registerBusinessApi = async (req, res, next) => {
       description,
       address,
       socialLinks,
-      slug: mySlug,
+      slug: slug,
       logo: req.file.path,
       images,
       googleId,
@@ -515,7 +514,7 @@ const registerBusinessApi = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: await businessData({
-        id: myBusiness._id,
+        _id: myBusiness._id,
         name: myBusiness.name,
         email: myBusiness.email,
         phone: myBusiness.phone,
@@ -543,7 +542,9 @@ const registerBusinessApi = async (req, res, next) => {
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
-    const business = await Business.find();
+    const business = await Business.find({
+      slug: { $ne: "dummy-business" },
+    });
 
     const businessDataList = [];
 
@@ -877,7 +878,10 @@ const getBusinessByServiceType = async (req, res, next) => {
       })
     );
 
-    const businesses = await Business.find({ _id: { $in: myBusinessIds } });
+    const businesses = await Business.find({
+      _id: { $in: myBusinessIds },
+      slug: { $ne: "dummy-business" },
+    });
     let myBusinessList = [];
     await Promise.all(
       businesses.map(async (business) => {

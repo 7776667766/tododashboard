@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const businessSchema = new mongoose.Schema({
-
   name: {
     type: String,
     trim: true,
@@ -15,9 +14,9 @@ const businessSchema = new mongoose.Schema({
 
   slug: {
     type: String,
+    required: [true, "Slug is required"],
     unique: true,
   },
-
 
   bannerText: {
     type: String,
@@ -28,13 +27,11 @@ const businessSchema = new mongoose.Schema({
   },
 
   color: {
-    type: String
+    type: String,
   },
-
 
   logo: {
     type: String,
-
   },
   phone: {
     type: String,
@@ -62,13 +59,11 @@ const businessSchema = new mongoose.Schema({
   googleId: {
     type: String,
     trim: true,
-
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     trim: true,
-
   },
 
   bookingService: { type: Boolean, default: false },
