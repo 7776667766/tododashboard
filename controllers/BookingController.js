@@ -149,6 +149,7 @@ const addBookingApi = async (req, res, next) => {
 };
 
 const getBookingByBusinessApi = async (req, res, next) => {
+  console.log(req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -165,7 +166,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
 
     if (user.role === "manager" || user.role === "owner") {
       const { businessId } = req.body;
-      console.log("businessId",businessId)
+      console.log("businessId22222", businessId)
       let myBookings = [];
       const bookings = await Booking.find({
         businessId: businessId,
@@ -384,12 +385,148 @@ const getBookingbyUserId = async (req, res) => {
   }
 };
 
+const deleteBookingApi = async (req, res, next) => {
+  try {
+    const { bookingId } = req.params;
+
+    if (!bookingId || !validator.isMongoId(bookingId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid service type id",
+      });
+    }
+
+    const mybooking = await Booking.findById(bookingId);
+
+    if (!mybooking) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking not found",
+      });
+    }
+    await Booking.findByIdAndUpdate(
+      { _id: bookingId },
+      { deletedAt: new Date() }
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "Service deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in deleting service", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
+const cancelBookingApi = async (req, res, next) => {
+  try {
+    const { bookingId } = req.params;
+
+    if (!bookingId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking Id is required",
+      });
+    }
+
+    if (!validator.isMongoId(bookingId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking Id Id is invalid",
+      });
+    }
+
+    const updatedBooking = await Booking.findOneAndUpdate(
+      { _id: bookingId },
+      { $set: { status: 'cancelled' } },
+      { new: true }
+    );
+    
+  
+    if (!updatedBooking) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking not found",
+      });
+    }
+
+    const updateddata = await getBookingData(updatedBooking)
+    res.status(200).json({
+      status: "success",
+      data: updateddata,
+      message: "booking status updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in update booking", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const completeBookingApi = async (req, res, next) => {
+  try {
+
+    const { bookingId } = req.params;
+
+    if (!bookingId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking Id is required",
+      });
+    }
+
+    if (!validator.isMongoId(bookingId)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking Id  is invalid",
+      });
+    }
+
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { status: 'completed' },
+      { new: true }
+    );
+
+    if (!updatedBooking) {
+      return res.status(400).json({
+        status: "error",
+        message: "Booking Id is invalid",
+      });
+    }
+
+    const updateddata = await getBookingData({...updatedBooking, status : "completed"})
+    res.status(200).json({
+      status: "success",
+      data: updateddata,
+      message: "booking status updated successfully",
+    })
+  } catch (error) {
+    console.log("Error in update booking", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
 module.exports = {
   addBookingApi,
   updateBookingApi,
   getBookingByBusinessApi,
   getBookingbyUserId,
   getBookedTimeSlots,
+  completeBookingApi,
+  deleteBookingApi,
+  cancelBookingApi,
 };
 
 const getBookingData = async (data) => {
