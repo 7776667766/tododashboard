@@ -8,6 +8,7 @@ const { sendEmail } = require("../util/sendEmail");
 const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
+const ServiceType = require("../models/Service/ServiceTypeModel");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -851,22 +852,24 @@ const businessData = async (businessData) => {
 
 const getBusinessByServiceType = async (req, res, next) => {
   try {
-    const { serviceTypeId } = req.params;
-    if (!serviceTypeId) {
+    const { serviceTypeSlug } = req.params;
+    if (!serviceTypeSlug) {
       return res.status(400).json({
         status: "error",
-        message: "Service Type Id is required",
+        message: "Service Type Slug is required",
       });
     }
-
-    if (!validator.isMongoId(serviceTypeId)) {
+    const mySelectedServiceType = await ServiceType.findOne({
+      slug: serviceTypeSlug,
+    });
+    if (!mySelectedServiceType) {
       return res.status(400).json({
         status: "error",
-        message: "Service Type Id is invalid",
+        message: "Service Type not found",
       });
     }
     let myBusinessIds = [];
-    const services = await Service.find({ typeId: serviceTypeId });
+    const services = await Service.find({ typeId: mySelectedServiceType._id });
     await Promise.all(
       services.map(async (service) => {
         const myServiceData = await getServiceData(service);

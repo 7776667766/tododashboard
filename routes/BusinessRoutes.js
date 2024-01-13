@@ -24,7 +24,7 @@ router.post("/manager/update/:managerId", auth, updateManagerApi);
 router.get("/manager/delete/:managerId", auth, deleteManagerApi);
 router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
 router.get(
-  "/business-by-service-type/:serviceTypeId",
+  "/business-by-service-type/:serviceTypeSlug",
   getBusinessByServiceType
 );
 
