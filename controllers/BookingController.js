@@ -149,7 +149,7 @@ const addBookingApi = async (req, res, next) => {
 };
 
 const getBookingByBusinessApi = async (req, res, next) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -166,7 +166,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
 
     if (user.role === "manager" || user.role === "owner") {
       const { businessId } = req.body;
-      console.log("businessId22222", businessId)
+      console.log("businessId22222", businessId);
       let myBookings = [];
       const bookings = await Booking.find({
         businessId: businessId,
@@ -422,7 +422,6 @@ const deleteBookingApi = async (req, res, next) => {
   }
 };
 
-
 const cancelBookingApi = async (req, res, next) => {
   try {
     const { bookingId } = req.params;
@@ -443,11 +442,10 @@ const cancelBookingApi = async (req, res, next) => {
 
     const updatedBooking = await Booking.findOneAndUpdate(
       { _id: bookingId },
-      { $set: { status: 'cancelled' } },
+      { $set: { status: "cancelled" } },
       { new: true }
     );
-    
-  
+
     if (!updatedBooking) {
       return res.status(400).json({
         status: "error",
@@ -455,11 +453,11 @@ const cancelBookingApi = async (req, res, next) => {
       });
     }
 
-    const updateddata = await getBookingData(updatedBooking)
+    const updateddata = await getBookingData(updatedBooking);
     res.status(200).json({
       status: "success",
       data: updateddata,
-      message: "booking status updated successfully",
+      message: "Booking Status Updated Successfully",
     });
   } catch (error) {
     console.log("Error in update booking", error);
@@ -472,7 +470,6 @@ const cancelBookingApi = async (req, res, next) => {
 
 const completeBookingApi = async (req, res, next) => {
   try {
-
     const { bookingId } = req.params;
 
     if (!bookingId) {
@@ -489,9 +486,9 @@ const completeBookingApi = async (req, res, next) => {
       });
     }
 
-    const updatedBooking = await Booking.findByIdAndUpdate(
-      bookingId,
-      { status: 'completed' },
+    const updatedBooking = await Booking.findOneAndUpdate(
+      { _id: bookingId },
+      { $set: { status: "completed" } },
       { new: true }
     );
 
@@ -502,12 +499,12 @@ const completeBookingApi = async (req, res, next) => {
       });
     }
 
-    const updateddata = await getBookingData({...updatedBooking, status : "completed"})
+    const updateddata = await getBookingData(updatedBooking);
     res.status(200).json({
       status: "success",
       data: updateddata,
-      message: "booking status updated successfully",
-    })
+      message: "Booking Status Updated Successfully",
+    });
   } catch (error) {
     console.log("Error in update booking", error);
     res.status(500).json({
@@ -516,7 +513,6 @@ const completeBookingApi = async (req, res, next) => {
     });
   }
 };
-
 
 module.exports = {
   addBookingApi,
