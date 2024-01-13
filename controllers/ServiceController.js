@@ -10,18 +10,30 @@ const { businessData } = require("./BusinessController");
 require("dotenv").config();
 
 const addServiceTypeApi = async (req, res, next) => {
+  console.log("req.body", req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
-    const { name } = req.body;
+    const { name, slug } = req.body;
     if (!name) {
       return res.status(400).json({
         status: "error",
         message: "Name is required",
       });
     }
+
+    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
+
+    const slugAlreadyExist = await ServiceType.findOne({ slug: mySlug });
+    if (slugAlreadyExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
 
     const user = await User.findById(id);
     if (!user) {
@@ -30,7 +42,7 @@ const addServiceTypeApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-
+    
     if (user.role === "user") {
       return res.status(400).json({
         status: "error",
@@ -48,6 +60,7 @@ const addServiceTypeApi = async (req, res, next) => {
 
     const newServiceType = await ServiceType.create({
       name,
+      slug:slugify,
       image: req.file.path,
       createdBy: id,
     });
@@ -699,6 +712,7 @@ const getServiceTypeData = async (data) => {
   return {
     id: data._id,
     name: data.name,
+    slug:data.slug,
     image: imgFullPath(data.image),
   };
 };
