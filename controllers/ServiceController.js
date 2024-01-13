@@ -10,30 +10,27 @@ const { businessData } = require("./BusinessController");
 require("dotenv").config();
 
 const addServiceTypeApi = async (req, res, next) => {
-  console.log("req.body", req.body)
+  console.log("req.body", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
     const { name, slug } = req.body;
-    if (!name) {
+    if (!name || !slug || !req.file) {
       return res.status(400).json({
         status: "error",
-        message: "Name is required",
+        message: "All fields required",
       });
     }
 
-    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
-
-    const slugAlreadyExist = await ServiceType.findOne({ slug: mySlug });
+    const slugAlreadyExist = await ServiceType.findOne({ slug: slug });
     if (slugAlreadyExist) {
       return res.status(400).json({
         status: "error",
         message: "Slug already exists",
       });
     }
-
 
     const user = await User.findById(id);
     if (!user) {
@@ -42,7 +39,7 @@ const addServiceTypeApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-    
+
     if (user.role === "user") {
       return res.status(400).json({
         status: "error",
@@ -50,23 +47,30 @@ const addServiceTypeApi = async (req, res, next) => {
       });
     }
 
-    const isServiceTypeExist = await ServiceType.findOne({ name });
-    if (isServiceTypeExist) {
+    const isServiceTypeSlugExist = await ServiceType.findOne({ slug });
+    if (isServiceTypeSlugExist) {
       return res.status(400).json({
         status: "error",
-        message: "Service type already exists",
+        message: "Service type slug already exists",
+      });
+    }
+
+    const isServiceTypeNameExist = await ServiceType.findOne({ name });
+    if (isServiceTypeNameExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Service type name already exists",
       });
     }
 
     const newServiceType = await ServiceType.create({
       name,
-      slug:slugify,
+      slug,
       image: req.file.path,
       createdBy: id,
     });
 
     const myServiceType = await getServiceTypeData(newServiceType);
-
     res.status(200).json({
       status: "success",
       data: myServiceType,
@@ -358,6 +362,7 @@ const updateServiceApi = async (req, res, next) => {
     });
   }
 };
+
 const getAllServicesApi = async (req, res, next) => {
   try {
     let myServices = [];
@@ -385,6 +390,7 @@ const getAllServicesApi = async (req, res, next) => {
     });
   }
 };
+
 const updateServiceTypeApi = async (req, res) => {
   try {
     console.log(req.body);
@@ -550,7 +556,6 @@ const deleteServiceApi = async (req, res, next) => {
 };
 
 const addDummyServiceApi = async (req, res, next) => {
-  console.log(req.body);
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -712,7 +717,7 @@ const getServiceTypeData = async (data) => {
   return {
     id: data._id,
     name: data.name,
-    slug:data.slug,
+    slug: data.slug,
     image: imgFullPath(data.image),
   };
 };
