@@ -165,6 +165,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
 
     if (user.role === "manager" || user.role === "owner") {
       const { businessId } = req.body;
+      console.log("businessId",businessId)
       let myBookings = [];
       const bookings = await Booking.find({
         businessId: businessId,
