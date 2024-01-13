@@ -14,6 +14,11 @@ const serviceTypeSchema = new mongoose.Schema({
   image:{
     type : String,
   },
+  
+  slug: {
+    type: String,
+    unique: true,
+  },
   deletedAt: {
     type: Date,
   },
