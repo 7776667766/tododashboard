@@ -11,12 +11,12 @@ const serviceTypeSchema = new mongoose.Schema({
     type: Date,
     default: new Date(),
   },
-  image:{
-    type : String,
+  image: {
+    type: String,
   },
-  
   slug: {
     type: String,
+    required: [true, "Slug is required"],
     unique: true,
   },
   deletedAt: {
