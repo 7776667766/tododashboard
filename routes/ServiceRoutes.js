@@ -50,6 +50,7 @@ router.post(
   upload("service").single("image"),
   updateServiceApi
 );
+
 router.get("/services/delete/:serviceId", deleteServiceApi);
 
 router.get("/services/detail/:slug", getServiceDetailBySlugApi);

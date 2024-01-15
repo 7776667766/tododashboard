@@ -221,54 +221,63 @@ const addManagerApi = async (req, res, next) => {
   }
 };
 
-const updateManagerApi = async (req, res, next) => {
+
+const deleteSpecialistApi = async (req, res, next) => {
   try {
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
-    const { id } = req.user;
-    const { managerId } = req.params;
-    if (!validator.isMongoId(managerId)) {
+    const { specilaistId } = req.params;
+    console.log("specilaistId", specilaistId)
+    if (!specilaistId || !validator.isMongoId(specilaistId)) {
       return res.status(400).json({
         status: "error",
-        message: "Manager Id is invalid",
-      });
-    }
-    const manager = await Manager.findOne({ managerId });
-    if (!manager) {
-      return res.status(400).json({
-        status: "error",
-        message: "Manager not found",
+        message: "Invalid plan ID",
       });
     }
 
-    if (manager.createdBy.toString() !== id) {
+    const specilaist = await Specialist.findById(specilaistId);
+    console.log("specialist", specilaist)
+
+    if (!specilaist) {
       return res.status(400).json({
         status: "error",
-        message: "You are not authorized to update this manager",
+        message: "specilaist not found",
       });
     }
-    const managerData = await User.findById(managerId);
-    if (!managerData) {
-      return res.status(400).json({
-        status: "error",
-        message: "Manager not found",
-      });
-    }
-    const updatedManagerData = await User.findByIdAndUpdate(
-      managerId,
-      req.body
+    await Specialist.findByIdAndUpdate(
+      { _id: specilaistId },
+      { deletedAt: new Date() }
     );
+
     res.status(200).json({
       status: "success",
-      data: {
-        id: updatedManagerData._id,
-        name: updatedManagerData.name,
-        email: updatedManagerData.email,
-        phone: updatedManagerData.phone,
-        ...req.body,
-      },
-      message: "Manager updated successfully",
+      message: "sp deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in deleting plan", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+const updateSpecialsitApi = async (req, res, next) => {
+  try {
+    const { specilaistId } = req.params;
+    console.log(specilaistId)
+    const updatedServiceType = await Specialist.findOneAndUpdate(
+      {_id: specilaistId},
+      { $set: { ...req.body } },
+      { new: true }
+    );
+    console.log(updatedServiceType,"type")
+
+    const myServiceType = await getSpecialistData(updatedServiceType);
+  
+    console.log(myServiceType,"type")
+    res.status(200).json({
+      status: "success",
+      data: myServiceType,
+      message: "Template updated successfully",
     });
   } catch (error) {
     console.log("Error in update manager", error);
@@ -902,9 +911,11 @@ const getBusinessByServiceType = async (req, res, next) => {
 
 module.exports = {
   addSpecialistApi,
+  updateSpecialsitApi,
+  deleteSpecialistApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,
-  updateManagerApi,
+  // updateManagerApi,
   deleteManagerApi,
   getManagersByBusinessIdApi,
   getAllBusinessApi,
@@ -915,6 +926,7 @@ module.exports = {
   addDummyBusinessApi,
   getBusinessByServiceType,
   businessData,
+  updateSpecialsitApi,
 };
 
 const getServiceData = async (service) => {
@@ -922,5 +934,12 @@ const getServiceData = async (service) => {
 
   return {
     businessId,
+  };
+};
+const getSpecialistData = async (data) => {
+  return {
+   
+    name: data.name,
+    email: data.email,
   };
 };
