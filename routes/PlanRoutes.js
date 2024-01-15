@@ -9,9 +9,13 @@ const {
 
 router.post("/plan/add", auth, addPlanApi);
 router.get("/plan/get", getBusinessPlanListApi);
+
 router.get("/plan/delete/:planId", deletePlanApi);
 
-router.post(
-  "/plan/update/:planId", updatePlanApi);
+// router.post(
+//   "/plan/update/:planId", updatePlanApi);
+
+
+router.post("/plan/update/:packageId", updatePlanApi);
 
 module.exports = router;

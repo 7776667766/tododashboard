@@ -8,8 +8,8 @@ const validator = require("validator");
 const addTemplateApi = async (req, res, next) => {
   let bookingImg = req.files["bookingImage"][0].path;
   let websiteImg = req.files["websiteImage"][0].path;
-  console.log("bookingImg",bookingImg)
-  console.log("websiteImg",websiteImg)
+  console.log("bookingImg", bookingImg)
+  console.log("websiteImg", websiteImg)
 
   try {
     const { id } = req.user;
@@ -88,11 +88,8 @@ const getTepmlateApi = async (req, res, next) => {
 };
 
 const updateTemplateApi = async (req, res, next) => {
-  console.log(req.file, "----");
   try {
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
+
     const { templateId } = req.params;
 
     if (!templateId) {
@@ -109,12 +106,23 @@ const updateTemplateApi = async (req, res, next) => {
       });
     }
 
-    // const mytemplateImg = req.file?.path ? req.file.path : service.image;
 
-  
- await Template.findOneAndUpdate(
+    const template = await Template.findById(templateId);
+
+    let bookingImg = req.files?.["bookingImage"]?.[0]?.path ?? template.bookingImage;
+    let websiteImg = req.files?.["websiteImage"]?.[0]?.path ?? template.websiteImage;
+
+    await Template.findOneAndUpdate(
       { _id: templateId },
-      { $set: { ...req.body} },
+      {
+        $set: {
+          ...req.body,
+
+          bookingImage: bookingImg,
+          websiteImage: websiteImg,
+
+        }
+      },
       { new: true }
     );
 
@@ -138,7 +146,7 @@ const updateTemplateApi = async (req, res, next) => {
 const deleteTemplateApi = async (req, res, next) => {
   try {
     const { templateId } = req.params;
-    console.log(templateId,"templateId")
+    console.log(templateId, "templateId")
 
     if (!templateId || !validator.isMongoId(templateId)) {
       return res.status(400).json({
