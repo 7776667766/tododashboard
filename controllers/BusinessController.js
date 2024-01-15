@@ -262,22 +262,31 @@ const deleteSpecialistApi = async (req, res, next) => {
 
 const updateSpecialsitApi = async (req, res, next) => {
   try {
-    const { specilaistId } = req.params;
-    console.log(specilaistId)
-    const updatedServiceType = await Specialist.findOneAndUpdate(
-      {_id: specilaistId},
-      { $set: { ...req.body } },
+    console.log("req.body",req.body)
+    console.log("req.params",req.params)
+
+    const { specialistId } = req.params;
+
+    console.log("specialistId", specialistId)
+
+      
+    await Specialist.findOneAndUpdate(
+      { _id: specialistId },
+      {
+        $set: {
+          ...req.body,
+
+        }
+      },
       { new: true }
     );
-    console.log(updatedServiceType,"type")
-
-    const myServiceType = await getSpecialistData(updatedServiceType);
-  
-    console.log(myServiceType,"type")
+    const mySpecialistData = await Specialist.findOne({ _id: specialistId });
+    const mySpecialistUpdatedData = await getSpecialistData(mySpecialistData);
+   
     res.status(200).json({
       status: "success",
-      data: myServiceType,
-      message: "Template updated successfully",
+      data: mySpecialistUpdatedData,
+      message: "Specialist updated successfully",
     });
   } catch (error) {
     console.log("Error in update manager", error);
@@ -937,9 +946,9 @@ const getServiceData = async (service) => {
   };
 };
 const getSpecialistData = async (data) => {
-  return {
-   
+  const mySpecialistData = {
     name: data.name,
-    email: data.email,
+    email:data.email
   };
+  return mySpecialistData;
 };
