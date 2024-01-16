@@ -9,6 +9,7 @@ const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
+const Transaction = require("../models/TransactionModel");
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -262,14 +263,14 @@ const deleteSpecialistApi = async (req, res, next) => {
 
 const updateSpecialsitApi = async (req, res, next) => {
   try {
-    console.log("req.body",req.body)
-    console.log("req.params",req.params)
+    console.log("req.body", req.body)
+    console.log("req.params", req.params)
 
     const { specialistId } = req.params;
 
     console.log("specialistId", specialistId)
 
-      
+
     await Specialist.findOneAndUpdate(
       { _id: specialistId },
       {
@@ -282,7 +283,7 @@ const updateSpecialsitApi = async (req, res, next) => {
     );
     const mySpecialistData = await Specialist.findOne({ _id: specialistId });
     const mySpecialistUpdatedData = await getSpecialistData(mySpecialistData);
-   
+
     res.status(200).json({
       status: "success",
       data: mySpecialistUpdatedData,
@@ -383,6 +384,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
 
 const registerBusinessApi = async (req, res, next) => {
   try {
@@ -866,6 +868,7 @@ const businessData = async (businessData) => {
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
     color: businessData.color,
+    amount: businessData.amount
   };
 };
 
@@ -918,6 +921,11 @@ const getBusinessByServiceType = async (req, res, next) => {
   }
 };
 
+const showAllBusinessApi = async (req, res, next) => {
+
+
+};
+
 module.exports = {
   addSpecialistApi,
   updateSpecialsitApi,
@@ -936,6 +944,7 @@ module.exports = {
   getBusinessByServiceType,
   businessData,
   updateSpecialsitApi,
+  showAllBusinessApi,
 };
 
 const getServiceData = async (service) => {
@@ -948,7 +957,7 @@ const getServiceData = async (service) => {
 const getSpecialistData = async (data) => {
   const mySpecialistData = {
     name: data.name,
-    email:data.email
+    email: data.email
   };
   return mySpecialistData;
 };

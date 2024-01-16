@@ -16,9 +16,9 @@ const {
   updateSpecialsitApi,
   deleteSpecialistApi,
   getBusinessByServiceType,
+  showAllBusinessApi
 } = require("../controllers/BusinessController");
 const upload = require("../middlewares/uploadImage");
-
 
 router.post("/specialist/add", auth, addSpecialistApi);
 router.get("/specialist/delete/:specilaistId", deleteSpecialistApi);
@@ -26,6 +26,10 @@ router.get("/specialist/delete/:specilaistId", deleteSpecialistApi);
 router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);
 
+router.get(
+  "/show-all-business-api",
+  showAllBusinessApi
+);
 router.get("/specialist/:businessId", auth, getSpecialistByBusinessIdApi);
 router.post("/manager/add", auth, addManagerApi);
 // router.post("/manager/update/:managerId", auth, updateManagerApi);
@@ -51,7 +55,7 @@ router.post(
   upload("business/banners").single("bannerImg"),
   selectedTheme
 );
-//dummy-business-Api
+
 
 router.post(
   "/add-dummy-business",

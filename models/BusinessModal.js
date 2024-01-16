@@ -80,6 +80,16 @@ const businessSchema = new mongoose.Schema({
   deletedAt: {
     type: Date,
   },
+
+  status: {
+    type: String,
+    enum: ["true", "rejected", "pending"],
+    default: "pending",
+  },
+  payment: {
+    type: String,
+  }
+
 });
 
 module.exports = mongoose.model("Business", businessSchema);
