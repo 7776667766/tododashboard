@@ -222,11 +222,10 @@ const addManagerApi = async (req, res, next) => {
   }
 };
 
-
 const deleteSpecialistApi = async (req, res, next) => {
   try {
     const { specilaistId } = req.params;
-    console.log("specilaistId", specilaistId)
+    console.log("specilaistId", specilaistId);
     if (!specilaistId || !validator.isMongoId(specilaistId)) {
       return res.status(400).json({
         status: "error",
@@ -235,7 +234,7 @@ const deleteSpecialistApi = async (req, res, next) => {
     }
 
     const specilaist = await Specialist.findById(specilaistId);
-    console.log("specialist", specilaist)
+    console.log("specialist", specilaist);
 
     if (!specilaist) {
       return res.status(400).json({
@@ -263,21 +262,19 @@ const deleteSpecialistApi = async (req, res, next) => {
 
 const updateSpecialsitApi = async (req, res, next) => {
   try {
-    console.log("req.body", req.body)
-    console.log("req.params", req.params)
+    console.log("req.body", req.body);
+    console.log("req.params", req.params);
 
     const { specialistId } = req.params;
 
-    console.log("specialistId", specialistId)
-
+    console.log("specialistId", specialistId);
 
     await Specialist.findOneAndUpdate(
       { _id: specialistId },
       {
         $set: {
           ...req.body,
-
-        }
+        },
       },
       { new: true }
     );
@@ -384,7 +381,6 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 const registerBusinessApi = async (req, res, next) => {
   try {
@@ -868,39 +864,43 @@ const businessData = async (businessData) => {
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
     color: businessData.color,
-    amount: businessData.amount
+    amount: businessData.amount,
   };
 };
 
 const getBusinessByServiceType = async (req, res, next) => {
   try {
-  
     const { serviceTypeSlug, minPrice, maxPrice } = req.body;
-    
-    if (!serviceTypeSlug) {
-      return res.status(400).json({
-        status: "error",
-        message: "Service Type Slug is required",
+    let myServiceTypeId = null;
+    // if (!serviceTypeSlug) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Service Type Slug is required",
+    //   });
+    // }
+    if (serviceTypeSlug) {
+      const mySelectedServiceType = await ServiceType.findOne({
+        slug: serviceTypeSlug,
       });
-    }
-    const mySelectedServiceType = await ServiceType.findOne({
-      slug: serviceTypeSlug,
-    });
 
-    if (!mySelectedServiceType) {
-      return res.status(400).json({
-        status: "error",
-        message: "Service Type not found",
-      });
+      if (!mySelectedServiceType) {
+        return res.status(400).json({
+          status: "error",
+          message: "Service Type not found",
+        });
+      }
+      myServiceTypeId = mySelectedServiceType._id;
     }
+
     let myBusinessIds = [];
     // const services = await Service.find({ typeId: mySelectedServiceType._id, price });
-   
+
     const services = await Service.find({
-      typeId: mySelectedServiceType._id,
-      price: { $gte: minPrice, $lte: maxPrice },
+      typeId: myServiceTypeId ? myServiceTypeId : { $ne: null },
+      price:
+        minPrice && maxPrice ? { $gte: minPrice, $lte: maxPrice } : { $gte: 0 },
     });
-     console.log("services",services)
+    console.log("services", services);
     // const myBusinessIds = services.map((service) => service.businessId);
 
     await Promise.all(
@@ -932,10 +932,7 @@ const getBusinessByServiceType = async (req, res, next) => {
   }
 };
 
-const showAllBusinessApi = async (req, res, next) => {
-
-
-};
+const showAllBusinessApi = async (req, res, next) => {};
 
 module.exports = {
   addSpecialistApi,
@@ -956,7 +953,6 @@ module.exports = {
   businessData,
   updateSpecialsitApi,
   showAllBusinessApi,
-  
 };
 
 const getServiceData = async (service) => {
@@ -973,7 +969,6 @@ const getServiceData = async (service) => {
     timeSlots: service.timeSlots,
   };
 };
-
 
 // const getServiceData = async (data) => {
 //   // const { typeId, specialistId } = data;
@@ -1003,11 +998,10 @@ const getServiceData = async (service) => {
 //   return myServiceData;
 // };
 
-
 const getSpecialistData = async (data) => {
   const mySpecialistData = {
     name: data.name,
-    email: data.email
+    email: data.email,
   };
   return mySpecialistData;
 };
