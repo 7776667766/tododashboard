@@ -514,6 +514,41 @@ const completeBookingApi = async (req, res, next) => {
   }
 };
 
+
+const resehduledBookingApi = async (req, res, next) => {
+  try {
+    const { date, timeSlot } = req.body;
+    const { bookingId } = req.params;
+
+    console.log("bookingId", bookingId)
+
+    const reseheduleBooking = await Booking.findOneAndUpdate(
+      { _id: bookingId },
+      {
+        $set: {
+          date: new Date(date),
+          timeSlot: timeSlot,
+          status: "reseheduled"
+        },
+      },
+      { new: true }
+    );
+
+    const updateddata = await getBookingData(reseheduleBooking);
+    res.status(200).json({
+      status: "success",
+      data: updateddata,
+      message: "Booking Reseheduled Successfully",
+    });
+  } catch (error) {
+    console.log("Error in Reseheduling booking", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   addBookingApi,
   updateBookingApi,
@@ -523,6 +558,7 @@ module.exports = {
   completeBookingApi,
   deleteBookingApi,
   cancelBookingApi,
+  resehduledBookingApi,
 };
 
 const getBookingData = async (data) => {
@@ -542,11 +578,13 @@ const getBookingData = async (data) => {
     logo: 1,
     address: 1,
   });
+
   const serviceData = await Service.findById(serviceId).select({
     _id: 1,
     name: 1,
     image: 1,
   });
+
   const myBookingData = {
     id: data._id,
     name: data.name,
@@ -569,5 +607,6 @@ const getBookingData = async (data) => {
       image: imgFullPath(serviceData.image),
     },
   };
+
   return myBookingData;
 };

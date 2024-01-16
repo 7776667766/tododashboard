@@ -874,7 +874,9 @@ const businessData = async (businessData) => {
 
 const getBusinessByServiceType = async (req, res, next) => {
   try {
-    const { serviceTypeSlug } = req.params;
+  
+    const { serviceTypeSlug, minPrice, maxPrice } = req.body;
+    
     if (!serviceTypeSlug) {
       return res.status(400).json({
         status: "error",
@@ -884,6 +886,7 @@ const getBusinessByServiceType = async (req, res, next) => {
     const mySelectedServiceType = await ServiceType.findOne({
       slug: serviceTypeSlug,
     });
+
     if (!mySelectedServiceType) {
       return res.status(400).json({
         status: "error",
@@ -891,7 +894,15 @@ const getBusinessByServiceType = async (req, res, next) => {
       });
     }
     let myBusinessIds = [];
-    const services = await Service.find({ typeId: mySelectedServiceType._id });
+    // const services = await Service.find({ typeId: mySelectedServiceType._id, price });
+   
+    const services = await Service.find({
+      typeId: mySelectedServiceType._id,
+      price: { $gte: minPrice, $lte: maxPrice },
+    });
+     console.log("services",services)
+    // const myBusinessIds = services.map((service) => service.businessId);
+
     await Promise.all(
       services.map(async (service) => {
         const myServiceData = await getServiceData(service);
@@ -945,6 +956,7 @@ module.exports = {
   businessData,
   updateSpecialsitApi,
   showAllBusinessApi,
+  
 };
 
 const getServiceData = async (service) => {
@@ -952,8 +964,46 @@ const getServiceData = async (service) => {
 
   return {
     businessId,
+    name: service.name,
+    description: service.description,
+    // image: imgFullPath(service.image),
+    slug: service.slug,
+    price: service.price,
+    timeInterval: service.timeInterval,
+    timeSlots: service.timeSlots,
   };
 };
+
+
+// const getServiceData = async (data) => {
+//   // const { typeId, specialistId } = data;
+//   // const type = await ServiceType.findById(typeId);
+//   // const serviceType = await getServiceTypeData(type);
+//   // const specialist = await Specialist.findById(specialistId).select({
+//   //   _id: 0,
+//   //   name: 1,
+//   //   id: {
+//   //     $toString: "$_id",
+//   //   },
+//   //   email: 1,
+//   // });
+//   // const business = await Business.findById(data.businessId);
+//   // const myBusinessData = await businessData(business);
+//   const myServiceData = {
+//     id: data._id,
+//     name: data.name,
+//     description: data.description,
+//     image: imgFullPath(data.image),
+//     slug: data.slug,
+//     price: data.price,
+//     timeInterval: data.timeInterval,
+//     slug: data.slug,
+//     timeSlots: data.timeSlots,
+//   };
+//   return myServiceData;
+// };
+
+
 const getSpecialistData = async (data) => {
   const mySpecialistData = {
     name: data.name,
