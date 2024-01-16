@@ -47,7 +47,6 @@ const serviceSchema = new mongoose.Schema({
     type:String
   },
 
-
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
