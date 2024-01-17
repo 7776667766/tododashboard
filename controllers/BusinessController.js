@@ -99,7 +99,7 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
         message: "Business Id is invalid",
       });
     }
-    const specialists = await Specialist.find({ businessId }).select({
+    const specialists = await Specialist.find({ deletedAt: { $exists: false } ,businessId }).select({
       _id: 0,
       id: {
         $toString: "$_id",

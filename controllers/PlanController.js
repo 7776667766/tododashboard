@@ -51,8 +51,8 @@ const addPlanApi = async (req, res, next) => {
 
 const getBusinessPlanListApi = async (req, res, next) => {
   try {
-    const planData = await Plan.find({});
-    if (!planData) {
+    const planData = await Plan.find({ deletedAt: { $exists: false } })
+        if (!planData) {
       return res.status(400).json({
         status: "error",
         message: "Plan not found",
@@ -123,8 +123,11 @@ const deletePlanApi = async (req, res, next) => {
       });
     }
 
-    plan.deletedAt = new Date();
-    await plan.save();
+    await Plan.findByIdAndUpdate(
+      { _id: planId },
+      { deletedAt: new Date() }
+    );
+
 
     res.status(200).json({
       status: "success",

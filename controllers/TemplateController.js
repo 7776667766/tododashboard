@@ -6,8 +6,8 @@ const validator = require("validator");
 
 
 const addTemplateApi = async (req, res, next) => {
-  let bookingImg = req.files["bookingImage"][0].path;
-  let websiteImg = req.files["websiteImage"][0].path;
+  let bookingImg = req.files?.["bookingImage"]?.[0]?.path;
+  let websiteImg = req.files?.["websiteImage"]?.[0]?.path;
   console.log("bookingImg", bookingImg)
   console.log("websiteImg", websiteImg)
 
@@ -68,7 +68,7 @@ const addTemplateApi = async (req, res, next) => {
 const getTepmlateApi = async (req, res, next) => {
   try {
     let myTemplate = [];
-    const templates = await Template.find();
+    const templates = await Template.find({ deletedAt: { $exists: false } });
 
     await Promise.all(
       templates.map(async (template) => {
