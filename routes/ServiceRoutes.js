@@ -35,6 +35,8 @@ router.get("/servicetype/delete/:serviceTypeId", deleteServicTypeApi);
 
 // Services Routes
 router.post("/services/all-services", getServicesApi);
+
+//all service
 router.get("/services/get-all-services", getAllServicesApi);
 
 router.post(

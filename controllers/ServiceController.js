@@ -179,7 +179,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    if (user.role !== "owner") {
+    if (user.role !== "owner" && user.role !== "manager") {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to add service",

@@ -112,7 +112,7 @@ const addBookingApi = async (req, res, next) => {
       timeSlot,
       price,
     });
-
+       ///user notification 
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "Booking Confirmation",
@@ -315,6 +315,7 @@ const updateBookingApi = async (req, res, next) => {
     });
   }
 };
+
 const getBookedTimeSlots = async (req, res, next) => {
   try {
     const { serviceId, date } = req.body;
@@ -426,6 +427,21 @@ const cancelBookingApi = async (req, res, next) => {
   try {
     const { bookingId } = req.params;
 
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
     if (!bookingId) {
       return res.status(400).json({
         status: "error",
@@ -453,11 +469,25 @@ const cancelBookingApi = async (req, res, next) => {
       });
     }
 
+    const userMailSend = await sendEmail({
+      email: user.email,
+      subject: "Booking Cancellation",
+      html: `<p>Your Booking is Booked. <br /> Thank You</p>`,
+    });
+
+    if (!userMailSend) {
+      console.error("Error sending confirmation emails");
+      return res.status(500).json({
+        status: "error",
+        message: "Error sending confirmation emails",
+      });
+    }
+
     const updateddata = await getBookingData(updatedBooking);
     res.status(200).json({
       status: "success",
       data: updateddata,
-      message: "Booking Status Updated Successfully",
+      message: "Booking Status Cancelled Successfully",
     });
   } catch (error) {
     console.log("Error in update booking", error);
