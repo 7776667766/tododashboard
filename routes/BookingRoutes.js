@@ -23,7 +23,7 @@ router.get("/get-booking-by-userId", auth , getBookingbyUserId);
 
 router.get("/booking/delete/:bookingId", deleteBookingApi);
 router.get("/booking/completed/:bookingId", completeBookingApi);
-router.get("/booking/cancel/:bookingId", cancelBookingApi);
+router.get("/booking/cancel/:bookingId", auth ,cancelBookingApi);
 router.post("/booking/rescheduled/:bookingId", resehduledBookingApi);
 
 
