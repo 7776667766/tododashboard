@@ -17,6 +17,12 @@ const templateSchema = new mongoose.Schema({
 
     trim: true,
   },
+  fontFamily:{
+    type : String,
+  },
+  fontSize:{
+    type:Number
+  },
   websiteImage: {
     type: String,
     required: [true, "WebsiteImage is required"],

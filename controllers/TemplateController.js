@@ -31,10 +31,10 @@ const addTemplateApi = async (req, res, next) => {
       });
     }
 
-    const { name, status } = req.body;
+    const { name, status, fontFamily, fontSize } = req.body;
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
-    if (!name || !slug) {
+    if (!name || !slug || !fontFamily || !fontSize) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -44,6 +44,8 @@ const addTemplateApi = async (req, res, next) => {
     const newTemplate = await Template.create({
       name,
       slug,
+      fontFamily,
+      fontSize,
       bookingImage: bookingImg,
       websiteImage: websiteImg,
       createdBy: id,
@@ -197,6 +199,8 @@ const getTemplateData = async (data) => {
     websiteImage: imgFullPath(data.websiteImage),
     slug: data.slug,
     status: data.status,
+    fontFamily: data.fontFamily,
+    fontSize: data.fontSize
   };
   return myTemplateData;
 };
