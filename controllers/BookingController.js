@@ -13,9 +13,7 @@ const addBookingApi = async (req, res, next) => {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-
     const { id } = req.user;
-
     const user = await User.findById(id);
 
     if (!user) {
@@ -112,7 +110,7 @@ const addBookingApi = async (req, res, next) => {
       timeSlot,
       price,
     });
-       ///user notification 
+    ///user notification 
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "Booking Confirmation",
@@ -179,7 +177,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
           myBookings.push(myBookingData);
         })
       );
-
+      console.log("myBookings----123", myBookings)
       return res.status(200).json({
         status: "success",
         data: myBookings,
@@ -317,6 +315,7 @@ const updateBookingApi = async (req, res, next) => {
 };
 
 const getBookedTimeSlots = async (req, res, next) => {
+  console.log(req.body, "for booked slots")
   try {
     const { serviceId, date } = req.body;
     if (!serviceId) {
@@ -550,7 +549,7 @@ const resehduledBookingApi = async (req, res, next) => {
     const { date, timeSlot } = req.body;
     const { bookingId } = req.params;
 
-    console.log("bookingId", bookingId)
+    console.log("bookingId for reseduled booking", bookingId)
 
     const reseheduleBooking = await Booking.findOneAndUpdate(
       { _id: bookingId },
@@ -613,7 +612,11 @@ const getBookingData = async (data) => {
     _id: 1,
     name: 1,
     image: 1,
-  });
+    timeSlots: 1,
+    timeInterval: 1,
+  }).exec();
+
+
 
   const myBookingData = {
     id: data._id,
@@ -635,6 +638,8 @@ const getBookingData = async (data) => {
       id: serviceData._id,
       name: serviceData.name,
       image: imgFullPath(serviceData.image),
+      timeSlots: serviceData.timeSlots,
+      timeInterval:serviceData.timeInterval
     },
   };
 

@@ -24,7 +24,7 @@ router.get("/get-booking-by-userId", auth , getBookingbyUserId);
 router.get("/booking/delete/:bookingId", deleteBookingApi);
 router.get("/booking/completed/:bookingId", completeBookingApi);
 router.get("/booking/cancel/:bookingId", auth ,cancelBookingApi);
-router.post("/booking/rescheduled/:bookingId", resehduledBookingApi);
+router.patch("/booking/rescheduled/:bookingId", resehduledBookingApi);
 
 
 // router.get("/get-available-Slots", getRemainingTimeSlots)
