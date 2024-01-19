@@ -395,9 +395,6 @@ const registerBusinessApi = async (req, res, next) => {
       phone,
       description,
       address,
-      socialLinks,
-      images,
-      googleId,
       slug,
     } = req.body;
 
@@ -407,9 +404,6 @@ const registerBusinessApi = async (req, res, next) => {
       !phone ||
       !description ||
       !address ||
-      !socialLinks ||
-      !images ||
-      !googleId ||
       !slug
     ) {
       return res.status(400).json({
@@ -921,6 +915,137 @@ const addDummyBusinessApi = async (req, res) => {
   }
 };
 
+
+const handleCustomBusinessApi = async (req, res) => {
+  console.log("body request", req.body);
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user;
+    const businessId = req.body.businessId;
+
+    if (!businessId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business ID is required",
+      });
+    }
+
+    const {
+      rejectreason
+    } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to add business rejection",
+      });
+    }
+
+    await Business.findByIdAndUpdate(
+      businessId,
+      {
+        $set: {
+          requestStatus: "Rejected",
+          rejectReason: rejectreason,
+        },
+      },
+      { new: true }
+    );
+
+    const myCustomBusinessData = await Business.findOne({ _id: businessId });
+
+    const myCustomBusiness = await businessData(myCustomBusinessData);
+
+
+    console.log("Checking MYBuisness Payload ", myCustomBusiness);
+    res.status(200).json({
+      status: "success",
+      data: myCustomBusiness,
+      message: "Reason Send and Status Updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in Sending and Updating business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+
+
+const handleCancelBusinessApi = async (req, res) => {
+  console.log("body request", req.body);
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user;
+    const businessId = req.body.businessId;
+
+    if (!businessId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business ID is required",
+      });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to add business rejection",
+      });
+    }
+
+    await Business.findByIdAndUpdate(
+      businessId,
+      {
+        $set: {
+          requestStatus: "Approved",
+        },
+      },
+      { new: true }
+    );
+
+    const myCustomBusinessData = await Business.findOne({ _id: businessId });
+
+    const myCustomBusiness = await businessData(myCustomBusinessData);
+
+
+    console.log("Checking MYBuisness Payload ", myCustomBusiness);
+    res.status(200).json({
+      status: "success",
+      data: myCustomBusiness,
+      message: "Reason Send and Status Updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in Sending and Updating business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+
+
+
 const businessData = async (businessData) => {
   if (!businessData) {
     return null;
@@ -935,6 +1060,7 @@ const businessData = async (businessData) => {
     socialLinks: businessData.socialLinks,
     bookingService: businessData.bookingService,
     websiteService: businessData.websiteService,
+    requestStatus: businessData.requestStatus,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleId: businessData.googleId,
@@ -1017,6 +1143,7 @@ module.exports = {
   addSpecialistApi,
   updateSpecialsitApi,
   deleteSpecialistApi,
+  handleCustomBusinessApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,
   // updateManagerApi,
@@ -1028,6 +1155,7 @@ module.exports = {
   getBusinessDetailBySlugApi,
   selectedTheme,
   addDummyBusinessApi,
+  handleCancelBusinessApi,
   getBusinessByServiceType,
   businessData,
   updateSpecialsitApi,
@@ -1048,34 +1176,6 @@ const getServiceData = async (service) => {
     timeSlots: service.timeSlots,
   };
 };
-
-// const getServiceData = async (data) => {
-//   // const { typeId, specialistId } = data;
-//   // const type = await ServiceType.findById(typeId);
-//   // const serviceType = await getServiceTypeData(type);
-//   // const specialist = await Specialist.findById(specialistId).select({
-//   //   _id: 0,
-//   //   name: 1,
-//   //   id: {
-//   //     $toString: "$_id",
-//   //   },
-//   //   email: 1,
-//   // });
-//   // const business = await Business.findById(data.businessId);
-//   // const myBusinessData = await businessData(business);
-//   const myServiceData = {
-//     id: data._id,
-//     name: data.name,
-//     description: data.description,
-//     image: imgFullPath(data.image),
-//     slug: data.slug,
-//     price: data.price,
-//     timeInterval: data.timeInterval,
-//     slug: data.slug,
-//     timeSlots: data.timeSlots,
-//   };
-//   return myServiceData;
-// };
 
 const getSpecialistData = async (data) => {
   const mySpecialistData = {

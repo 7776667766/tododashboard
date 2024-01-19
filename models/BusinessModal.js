@@ -60,6 +60,11 @@ const businessSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  requestStatus:{
+    type: String,
+    enum: ["Approved", "Rejected","Pending"],
+    default: "Pending",
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -72,6 +77,10 @@ const businessSchema = new mongoose.Schema({
   theme: {
     type: String,
   },
+  rejectreason:{
+    type:String,
+  },
+  
   createdAt: {
     type: Date,
     default: new Date(),
