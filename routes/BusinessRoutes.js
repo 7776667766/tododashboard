@@ -7,6 +7,7 @@ const {
   deleteManagerApi,
   updateManagerApi,
   getManagersByBusinessIdApi,
+  handleCancelBusinessApi,
   registerBusinessApi,
   getBusinessByUserIdApi,
   getBusinessDetailBySlugApi,
@@ -16,6 +17,7 @@ const {
   updateSpecialsitApi,
   deleteSpecialistApi,
   getBusinessByServiceType,
+  handleCustomBusinessApi,
   showAllBusinessApi
 } = require("../controllers/BusinessController");
 const upload = require("../middlewares/uploadImage");
@@ -56,6 +58,20 @@ router.post(
   selectedTheme
 );
 
+//custom-business-app
+
+router.post(
+  "/business/custom-business",
+  auth,
+  handleCustomBusinessApi
+);
+// handleCancelBusinessApi
+
+router.post(
+  "/business/custom-business-cancelled",
+  auth,
+  handleCancelBusinessApi
+);
 
 router.post(
   "/add-dummy-business",

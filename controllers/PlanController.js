@@ -73,6 +73,8 @@ const updatePlanApi = async (req, res) => {
   try {
     const {packageId}=req.params
     console.log("packageID",packageId)
+
+    
     const plan = await Plan.findById(packageId);
     if (!plan) {
       return res.status(400).json({
