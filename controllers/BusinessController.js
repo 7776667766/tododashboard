@@ -490,6 +490,8 @@ const registerBusinessApi = async (req, res, next) => {
       images,
       googleId,
       bookingService: Ownerdata.bookingService,
+      fontService: Ownerdata.fontFamily,
+      fontSize: Ownerdata.fontSize,
       websiteService: Ownerdata.websiteService,
       theme: Ownerdata.theme || "",
       createdBy: id,
@@ -534,6 +536,15 @@ const registerBusinessApi = async (req, res, next) => {
         images: myBusiness.images,
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
+        fontFamily:myBusiness.fontFamily,
+        fontSize:myBusiness.fontSize,
+        // fontFamily:{
+        //   type : String,
+        // },
+        // fontSize:{
+        //   type:Number
+        // },
+
         ...myBusiness,
         logo: req.file.path,
         ...Ownerdata,
@@ -1064,6 +1075,8 @@ const businessData = async (businessData) => {
     theme: businessData?.theme || "",
     images: businessData.images,
     googleId: businessData.googleId,
+    fontFamily:businessData.fontFamily,
+    fontSize:businessData.fontSize,
     slug: businessData.slug,
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
