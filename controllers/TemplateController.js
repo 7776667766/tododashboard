@@ -34,7 +34,7 @@ const addTemplateApi = async (req, res, next) => {
     const { name, status, fontFamily, fontSize } = req.body;
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
-    if (!name || !slug || !fontFamily || !fontSize) {
+    if (!name || !slug ) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",

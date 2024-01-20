@@ -18,7 +18,7 @@ const addPlanApi = async (req, res, next) => {
     if (user.role !== "admin") {
       return res.status(400).json({
         status: "error",
-        message: "You are not authorized to add plan",
+        message: "You are not authorized to add Packages",
       });
     }
 
@@ -39,15 +39,13 @@ const addPlanApi = async (req, res, next) => {
     res.status(201).json({
       status: "success",
       data: newPlan,
-      message: "New plan added successfully",
+      message: "New Packages added successfully",
     });
   } catch (error) {
-    console.error("Error in adding Plan Details", error);
+    console.error("Error in adding Packages Details", error);
     res.status(500).json({ status: "error", message: error });
   }
 };
-
-
 
 const getBusinessPlanListApi = async (req, res, next) => {
   try {
@@ -55,7 +53,7 @@ const getBusinessPlanListApi = async (req, res, next) => {
         if (!planData) {
       return res.status(400).json({
         status: "error",
-        message: "Plan not found",
+        message: "Packages not found",
       });
     }
     res.status(200).json({
@@ -63,7 +61,7 @@ const getBusinessPlanListApi = async (req, res, next) => {
       data: planData,
     });
   } catch (error) {
-    console.log("Error in get planData by user id", error);
+    console.log("Error in get Packages by user id", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
@@ -79,7 +77,7 @@ const updatePlanApi = async (req, res) => {
     if (!plan) {
       return res.status(400).json({
         status: "error",
-        message: "Plan not found",
+        message: "Packages not found",
       });
     }
 
@@ -94,10 +92,10 @@ const updatePlanApi = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: myPlan,
-      message: "Service Type updated successfully",
+      message: "Packages Updated Successfully",
     });
   } catch (error) {
-    console.error("Error in updating service", error);
+    console.error("Error in Updating Packages", error);
     res.status(500).json({
       status: "error",
       message: "Internal Server Error",
@@ -112,7 +110,7 @@ const deletePlanApi = async (req, res, next) => {
     if (!planId || !validator.isMongoId(planId)) {
       return res.status(400).json({
         status: "error",
-        message: "Invalid plan ID",
+        message: "Invalid Packages ID",
       });
     }
 
@@ -121,7 +119,7 @@ const deletePlanApi = async (req, res, next) => {
     if (!plan) {
       return res.status(400).json({
         status: "error",
-        message: "Plan not found",
+        message: "Packages not found",
       });
     }
 
@@ -133,11 +131,11 @@ const deletePlanApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Plan deleted successfully",
+      message: "Packages deleted successfully",
       data: plan,
     });
   } catch (error) {
-    console.log("Error in deleting plan", error);
+    console.log("Error in deleting Packages", error);
     res.status(500).json({
       status: "error",
       message: error.message,

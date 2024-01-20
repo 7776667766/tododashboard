@@ -11,12 +11,17 @@ const ownerSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  fontFamily:{
-    type : String,
+  fontFamily: {
+    type: String,
   },
-  fontSize:{
-    type:Number
+  fontSize: {
+    type: Number
   },
+
+  rejectreason: {
+    type: String,
+  },
+  
   bookingService: {
     type: Boolean,
     default: false,

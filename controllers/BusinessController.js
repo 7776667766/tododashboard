@@ -394,6 +394,9 @@ const registerBusinessApi = async (req, res, next) => {
       email,
       phone,
       description,
+      images,
+      socialLinks,
+      googleId,
       address,
       slug,
     } = req.body;
@@ -428,7 +431,7 @@ const registerBusinessApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Invalid phone number" });
     }
-    images.map((image) => {
+    images?.map((image) => {
       if (!validator.isURL(image)) {
         return res.status(400).json({
           status: "error",
@@ -436,7 +439,7 @@ const registerBusinessApi = async (req, res, next) => {
         });
       }
     });
-    socialLinks.map((link) => {
+    socialLinks?.map((link) => {
       if (!validator.isURL(link.link)) {
         return res.status(400).json({
           status: "error",
@@ -486,7 +489,7 @@ const registerBusinessApi = async (req, res, next) => {
       address,
       socialLinks,
       slug: slug,
-      logo: req.file.path,
+      logo: req?.file?.path,
       images,
       googleId,
       bookingService: Ownerdata.bookingService,
@@ -498,6 +501,7 @@ const registerBusinessApi = async (req, res, next) => {
       bannerText: Ownerdata.bannerText,
       color: Ownerdata.color,
       bannerImg: Ownerdata.bannerImge,
+      rejectreason:Ownerdata.rejectreason
     });
 
     console.log(myBusiness, "myBusinessData111111");
@@ -538,26 +542,20 @@ const registerBusinessApi = async (req, res, next) => {
         slug: myBusiness.slug,
         fontFamily:myBusiness.fontFamily,
         fontSize:myBusiness.fontSize,
-        // fontFamily:{
-        //   type : String,
-        // },
-        // fontSize:{
-        //   type:Number
-        // },
-
         ...myBusiness,
-        logo: req.file.path,
+        logo: req?.file?.path,
         ...Ownerdata,
         theme: Ownerdata.theme,
         bannerText: Ownerdata.bannerText,
         bannerImg: Ownerdata.bannerImge,
         color: Ownerdata.color,
+        rejectreason: Ownerdata.rejectreason,
       }),
       message: "Business registered successfully",
     });
   } catch (error) {
     console.log("Error in register business", error);
-    res.status(400).json({ status: "error", data, message: error.message });
+    res.status(400).json({ status: "error", message: error.message });
   }
 };
 
@@ -1055,8 +1053,6 @@ const handleCancelBusinessApi = async (req, res) => {
 };
 
 
-
-
 const businessData = async (businessData) => {
   if (!businessData) {
     return null;
@@ -1083,6 +1079,7 @@ const businessData = async (businessData) => {
     bannerImg: imgFullPath(businessData.bannerImg),
     color: businessData.color,
     amount: businessData.amount,
+    rejectreason:businessData.rejectreason,
   };
 };
 
