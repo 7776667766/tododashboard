@@ -69,7 +69,7 @@ const bookingSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["completed", "pending", "cancelled","reseheduled"],
+    enum: ["completed", "pending", "cancelled","rescheduled"],
     default: "pending",
   },
 });

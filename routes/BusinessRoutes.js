@@ -15,6 +15,7 @@ const {
   addDummyBusinessApi,
   getAllBusinessApi,
   updateSpecialsitApi,
+  customizeThemeApi,
   deleteSpecialistApi,
   getBusinessByServiceType,
   handleCustomBusinessApi,
@@ -48,6 +49,7 @@ router.post(
   upload("business").single("logo"),
   registerBusinessApi
 );
+
 router.get("/business/get-all-business", getAllBusinessApi);
 router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
@@ -58,19 +60,23 @@ router.post(
   selectedTheme
 );
 
-//custom-business-app
-
 router.post(
   "/business/custom-business",
   auth,
   handleCustomBusinessApi
 );
-// handleCancelBusinessApi
 
 router.post(
   "/business/custom-business-cancelled",
   auth,
   handleCancelBusinessApi
+);
+
+
+router.post(
+  "/theme/customize-theme",
+  auth,
+  customizeThemeApi
 );
 
 router.post(

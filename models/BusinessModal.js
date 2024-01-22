@@ -29,6 +29,12 @@ const businessSchema = new mongoose.Schema({
   color: {
     type: String,
   },
+  fontFamily: {
+    type: String,
+  },
+  fontSize: {
+    type: Number
+  },
 
   logo: {
     type: String,
@@ -60,10 +66,10 @@ const businessSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  requestStatus:{
+  requestStatus: {
     type: String,
-    enum: ["Approved", "Rejected","Pending"],
-    default: "Pending",
+    enum: ["approved", "rejected", "pending"],
+    default: "pending",
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -77,10 +83,12 @@ const businessSchema = new mongoose.Schema({
   theme: {
     type: String,
   },
-  rejectreason:{
-    type:String,
+
+  rejectreason: {
+    type: String,
+    default: "payment is not clear"
   },
-  
+
   createdAt: {
     type: Date,
     default: new Date(),

@@ -147,7 +147,7 @@ const addBookingApi = async (req, res, next) => {
 };
 
 const getBookingByBusinessApi = async (req, res, next) => {
-  console.log(req.body);
+  console.log("body of booking",req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -549,7 +549,7 @@ const resehduledBookingApi = async (req, res, next) => {
     const { date, timeSlot } = req.body;
     const { bookingId } = req.params;
 
-    console.log("bookingId for reseduled booking", bookingId)
+    console.log("bookingId for rescheduled booking", bookingId)
 
     const reseheduleBooking = await Booking.findOneAndUpdate(
       { _id: bookingId },
@@ -557,7 +557,7 @@ const resehduledBookingApi = async (req, res, next) => {
         $set: {
           date: new Date(date),
           timeSlot: timeSlot,
-          status: "reseheduled"
+          status: "rescheduled"
         },
       },
       { new: true }
@@ -567,16 +567,17 @@ const resehduledBookingApi = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: updateddata,
-      message: "Booking Reseheduled Successfully",
+      message: "Booking Rescheduled Successfully",
     });
   } catch (error) {
-    console.log("Error in Reseheduling booking", error);
+    console.log("Error in Rescheduled booking", error);
     res.status(500).json({
       status: "error",
       message: error.message,
     });
   }
 };
+
 
 module.exports = {
   addBookingApi,

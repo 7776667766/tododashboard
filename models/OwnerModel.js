@@ -21,7 +21,7 @@ const ownerSchema = new mongoose.Schema({
   rejectreason: {
     type: String,
   },
-  
+
   bookingService: {
     type: Boolean,
     default: false,

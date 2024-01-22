@@ -397,6 +397,9 @@ const registerBusinessApi = async (req, res, next) => {
       images,
       socialLinks,
       googleId,
+      // fontFamily,
+      // fontSize,
+      // rejectreason,
       address,
       slug,
     } = req.body;
@@ -501,7 +504,7 @@ const registerBusinessApi = async (req, res, next) => {
       bannerText: Ownerdata.bannerText,
       color: Ownerdata.color,
       bannerImg: Ownerdata.bannerImge,
-      rejectreason:Ownerdata.rejectreason
+      rejectreason: Ownerdata.rejectreason
     });
 
     console.log(myBusiness, "myBusinessData111111");
@@ -540,8 +543,8 @@ const registerBusinessApi = async (req, res, next) => {
         images: myBusiness.images,
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
-        fontFamily:myBusiness.fontFamily,
-        fontSize:myBusiness.fontSize,
+        fontFamily: myBusiness.fontFamily,
+        fontSize: myBusiness.fontSize,
         ...myBusiness,
         logo: req?.file?.path,
         ...Ownerdata,
@@ -865,6 +868,8 @@ const addDummyBusinessApi = async (req, res) => {
       address,
       socialLinks,
       googleId,
+      fontFamily,
+      fontSize,
       slug,
     } = req.body;
 
@@ -910,6 +915,8 @@ const addDummyBusinessApi = async (req, res) => {
       theme: "theme-1",
       bookingService: true,
       websiteService: true,
+      fontFamily,
+      fontSize,
     });
 
     console.log("Checking MYBuisness Payload ", myBusiness);
@@ -967,7 +974,7 @@ const handleCustomBusinessApi = async (req, res) => {
       {
         $set: {
           requestStatus: "Rejected",
-          rejectReason: rejectreason,
+          rejectreason: rejectreason,
         },
       },
       { new: true }
@@ -1052,6 +1059,84 @@ const handleCancelBusinessApi = async (req, res) => {
   }
 };
 
+const customizeThemeApi = async (req, res) => {
+  console.log("body request IN CUSTOMIZE API", req.body);
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user;
+    const businessId = req.body.businessId;
+
+    if (!businessId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business ID is required",
+      });
+    }
+
+    const {
+      color,
+      bannerText,
+      bannerImg,
+      fontSize,
+      fontFamily,
+      theme
+    } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "owner") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to add business theme",
+      });
+    }
+
+    await Business.findByIdAndUpdate(
+      businessId,
+      {
+        $set: {
+
+          color,
+          bannerImg,
+          bannerText,
+          fontSize,
+          fontFamily,
+          theme
+
+        },
+      },
+      { new: true }
+    );
+
+    const myCustomBusinessData = await Business.findOne({ _id: businessId });
+
+    const myCustomBusiness = await businessData(myCustomBusinessData);
+
+
+    console.log("Checking My Buisness Payload for custom theme ", myCustomBusiness);
+    res.status(200).json({
+      status: "success",
+      data: myCustomBusiness,
+      message: "theme Updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in Updating theme", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+
+
 
 const businessData = async (businessData) => {
   if (!businessData) {
@@ -1071,15 +1156,15 @@ const businessData = async (businessData) => {
     theme: businessData?.theme || "",
     images: businessData.images,
     googleId: businessData.googleId,
-    fontFamily:businessData.fontFamily,
-    fontSize:businessData.fontSize,
+    fontFamily: businessData.fontFamily,
+    fontSize: businessData.fontSize,
     slug: businessData.slug,
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
     color: businessData.color,
     amount: businessData.amount,
-    rejectreason:businessData.rejectreason,
+    rejectreason: businessData.rejectreason,
   };
 };
 
@@ -1168,6 +1253,7 @@ module.exports = {
   handleCancelBusinessApi,
   getBusinessByServiceType,
   businessData,
+  customizeThemeApi,
   updateSpecialsitApi,
   showAllBusinessApi,
 };

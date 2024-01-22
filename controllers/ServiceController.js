@@ -364,6 +364,7 @@ const updateServiceApi = async (req, res, next) => {
 };
 
 const getAllServicesApi = async (req, res, next) => {
+  console.log("req.para, 367",req.param)
   try {
     let myServices = [];
     const services = await Service.find({
@@ -715,10 +716,10 @@ module.exports = {
 
 const getServiceTypeData = async (data) => {
   return {
-    id: data._id,
-    name: data.name,
-    slug: data.slug,
-    image: imgFullPath(data.image),
+    id: data?._id || data?.id,
+    name: data?.name,
+    slug: data?.slug,
+    image: imgFullPath(data?.image),
   };
 };
 
