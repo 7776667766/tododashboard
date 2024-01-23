@@ -39,10 +39,10 @@ const addPlanApi = async (req, res, next) => {
     res.status(201).json({
       status: "success",
       data: newPlan,
-      message: "New Packages added successfully",
+      message: "New Package added successfully",
     });
   } catch (error) {
-    console.error("Error in adding Packages Details", error);
+    console.error("Error in adding Package Details", error);
     res.status(500).json({ status: "error", message: error });
   }
 };
@@ -53,7 +53,7 @@ const getBusinessPlanListApi = async (req, res, next) => {
         if (!planData) {
       return res.status(400).json({
         status: "error",
-        message: "Packages not found",
+        message: "Package not found",
       });
     }
     res.status(200).json({
@@ -61,7 +61,7 @@ const getBusinessPlanListApi = async (req, res, next) => {
       data: planData,
     });
   } catch (error) {
-    console.log("Error in get Packages by user id", error);
+    console.log("Error in get Package by user id", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
@@ -77,7 +77,7 @@ const updatePlanApi = async (req, res) => {
     if (!plan) {
       return res.status(400).json({
         status: "error",
-        message: "Packages not found",
+        message: "Package not found",
       });
     }
 
@@ -92,10 +92,10 @@ const updatePlanApi = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: myPlan,
-      message: "Packages Updated Successfully",
+      message: "Package Updated Successfully",
     });
   } catch (error) {
-    console.error("Error in Updating Packages", error);
+    console.error("Error in Updating Package", error);
     res.status(500).json({
       status: "error",
       message: "Internal Server Error",
@@ -110,7 +110,7 @@ const deletePlanApi = async (req, res, next) => {
     if (!planId || !validator.isMongoId(planId)) {
       return res.status(400).json({
         status: "error",
-        message: "Invalid Packages ID",
+        message: "Invalid Package ID",
       });
     }
 
@@ -119,7 +119,7 @@ const deletePlanApi = async (req, res, next) => {
     if (!plan) {
       return res.status(400).json({
         status: "error",
-        message: "Packages not found",
+        message: "Package not found",
       });
     }
 
@@ -131,11 +131,11 @@ const deletePlanApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Packages deleted successfully",
+      message: "Package deleted successfully",
       data: plan,
     });
   } catch (error) {
-    console.log("Error in deleting Packages", error);
+    console.log("Error in deleting Package", error);
     res.status(500).json({
       status: "error",
       message: error.message,

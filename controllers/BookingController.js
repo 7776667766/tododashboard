@@ -162,7 +162,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
       });
     }
 
-    if (user.role === "manager" || user.role === "owner") {
+    if (user.role === "manager" || user.role === "owner" || user.role=== "admin" ) {
       const { businessId } = req.body;
       console.log("businessId22222", businessId);
       let myBookings = [];
@@ -545,6 +545,7 @@ const completeBookingApi = async (req, res, next) => {
 
 
 const resehduledBookingApi = async (req, res, next) => {
+  console.log("req.body reseheduled",req.body)
   try {
     const { date, timeSlot } = req.body;
     const { bookingId } = req.params;

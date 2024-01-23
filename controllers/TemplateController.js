@@ -137,7 +137,7 @@ const updateTemplateApi = async (req, res, next) => {
       message: "Template updated successfully",
     });
   } catch (error) {
-    console.log("Error in updating service", error);
+    console.log("Error in updating template", error);
     res.status(500).json({
       status: "error",
       message: error.message,
@@ -153,7 +153,7 @@ const deleteTemplateApi = async (req, res, next) => {
     if (!templateId || !validator.isMongoId(templateId)) {
       return res.status(400).json({
         status: "error",
-        message: "Invalid plan ID",
+        message: "Invalid template ID",
       });
     }
 
@@ -172,10 +172,10 @@ const deleteTemplateApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Plan deleted successfully",
+      message: "template deleted successfully",
     });
   } catch (error) {
-    console.log("Error in deleting plan", error);
+    console.log("Error in deleting template", error);
     res.status(500).json({
       status: "error",
       message: error.message,

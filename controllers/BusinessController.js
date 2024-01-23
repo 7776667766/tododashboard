@@ -249,10 +249,10 @@ const deleteSpecialistApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "sp deleted successfully",
+      message: "specilaist deleted successfully",
     });
   } catch (error) {
-    console.log("Error in deleting plan", error);
+    console.log("Error in deleting specilaist", error);
     res.status(500).json({
       status: "error",
       message: error.message,
@@ -998,7 +998,6 @@ const handleCustomBusinessApi = async (req, res) => {
 };
 
 
-
 const handleCancelBusinessApi = async (req, res) => {
   console.log("body request", req.body);
   try {
@@ -1134,9 +1133,6 @@ const customizeThemeApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
-
-
 
 const businessData = async (businessData) => {
   if (!businessData) {
