@@ -8,6 +8,7 @@ const { createSecretToken } = require("../util/SecretToken");
 const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
+const { sendSMS } = require("../util/twilo");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
@@ -286,56 +287,147 @@ const verifyOtpApi = async (req, res, next) => {
   }
 };
 
+// const forgetPasswordApi = async (req, res, next) => {
+//   try {
+//     const { phone } = req.body;
+//     if (!phone) {
+//       return res
+//         .status(400)
+//         .json({ status: "error", message: "Phone is required" });
+//     }
+//     if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+//       return res
+//         .status(400)
+//         .json({ status: "error", message: "Invalid phone number" });
+//     }
+//     const user = await User.findOne({ phone });
+//     if (!user) {
+//       return res
+//         .status(400)
+//         .json({ status: "error", message: "Phone not exist" });
+//     } else {
+
+
+//       const otp = await createOTPFun(user.phone);
+
+//       try {
+//         await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
+//         console.log(user.phone)
+//         console.log('SMS sent successfully');
+//       } catch (smsError) {
+//         console.error('Error sending SMS:', smsError.message);
+
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Error in sending SMS",
+//         });
+//       }
+
+
+//       const mailSend = await sendEmail({
+//         email: user.email,
+//         subject: "OTP for forget password",
+//         text: `Your OTP for forget password is ${otp}`,
+//         html: `<p>
+//         Your Makely Pro OTP ( One Time Passcode ) For Forget Password is : <b>${otp}</b>.
+//         <br />
+// OTP Is Valid For 05 Mins
+// <br />
+// Please Don't Share Your OTP With Anyone For Your Account Security
+// <br />
+// Thank You
+//         </p>`,
+//       });
+//       if (!mailSend) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Error in sending email",
+//         });
+//       }
+//       res.status(201).json({
+//         status: "success",
+//         message: "OTP sent successfully",
+//       });
+//     }
+//   } catch (error) {
+//     console.log("Error in forget password", error);
+//     res.status(400).json({ status: "error", message: error.message });
+//   }
+// };
+
 const forgetPasswordApi = async (req, res, next) => {
   try {
-    const { phone } = req.body;
-    if (!phone) {
+    const { phone, email } = req.body;
+
+    if (!phone && !email) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone is required" });
+        .json({ status: "error", message: "Phone or email is required" });
     }
-    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid phone number" });
+
+    let user;
+
+    if (phone) {
+      if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "Invalid phone number" });
+      }
+      user = await User.findOne({ phone });
+    } else {
+      user = await User.findOne({ email });
     }
-    const user = await User.findOne({ phone });
+
     if (!user) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone not exist" });
+        .json({ status: "error", message: "User not found" });
+    }
+
+    const otp = await createOTPFun(user.phone);
+
+    let sendingResult;
+
+    if (phone) {
+      try {
+        await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
+        console.log("user phone", user.phone);
+        sendingResult = 'SMS sent successfully';
+      } catch (smsError) {
+        console.error('Error sending SMS:', smsError.message);
+        sendingResult = 'Error in sending SMS';
+      }
     } else {
-      const otp = await createOTPFun(user.phone);
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for forget password",
         text: `Your OTP for forget password is ${otp}`,
-        html: `<p>
-        Your Makely Pro OTP ( One Time Passcode ) For Forget Password is : <b>${otp}</b>.
+        html: `<p>Your Makely Pro OTP ( One Time Passcode ) For Forget Password is : <b>${otp}</b>.
         <br />
-OTP Is Valid For 05 Mins
-<br />
-Please Don't Share Your OTP With Anyone For Your Account Security
-<br />
-Thank You
-        </p>`,
+        OTP Is Valid For 05 Mins
+        <br />
+        Please Don't Share Your OTP With Anyone For Your Account Security
+        <br />
+        Thank You</p>`,
       });
+
       if (!mailSend) {
-        return res.status(400).json({
-          status: "error",
-          message: "Error in sending email",
-        });
+        sendingResult = 'Error in sending email';
+      } else {
+        sendingResult = 'Email sent successfully';
       }
-      res.status(201).json({
-        status: "success",
-        message: "OTP sent successfully",
-      });
     }
+
+    res.status(201).json({
+      status: "success",
+      message: `OTP sent successfully. ${sendingResult}`,
+    });
   } catch (error) {
     console.log("Error in forget password", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
 
 const resetPasswordApi = async (req, res, next) => {
   try {
