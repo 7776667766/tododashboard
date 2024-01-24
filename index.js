@@ -1,9 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+// const { createServer } = require('http');
+// const { parse } = require('url');
+// const next = require('next');
 const app = express();
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+
 const stripe = require('stripe')('sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS');
 
 // Routes

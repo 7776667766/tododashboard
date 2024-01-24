@@ -9,6 +9,12 @@ const transactionSchema = new mongoose.Schema({
   price: {
     type: String,
   },
+  phoneNumber: {
+    type: Number
+  },
+  verificationCode: {
+    type: Number,
+  },
 
   name: {
     type: String,
