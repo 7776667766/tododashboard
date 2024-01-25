@@ -45,6 +45,9 @@ const transactionSchema = new mongoose.Schema({
   amount: {
     type: Number,
   },
+  clientSecret:{
+    type: String
+  },
   cardType: {
     type: String,
   },
