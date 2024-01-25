@@ -14,132 +14,6 @@ const createSubscription = async (customerId, priceId) => {
 };
 
 
-// const addTransactionApi = async (req, res, next) => {
-//   try {
-//     const { id } = req.user;
-
-//     const user = await User.findById(id);
-
-//     if (!user) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "User not found",
-//       });
-//     }
-
-//     const { name, token, subscriptionPlan, check, price, phoneNumber } = req.body;
-
-//     if (!name || !token || !subscriptionPlan) {
-//       return res.status(400).json({ status: "error", message: "Invalid request payload" });
-//     }
-
-//     const creditCardInfo = req.body.token;
-
-//     if (!creditCardInfo) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Invalid credit Transaction information in the token",
-//       });
-//     }
-
-//     const paymentMethod = await stripe.paymentMethods.create({
-//       type: "card",
-//       card: {
-//         token: creditCardInfo,
-//       },
-//     });
-
-//     const customer = await stripe.customers.create({
-//       payment_method: paymentMethod.id,
-//       invoice_settings: {
-//         default_payment_method: paymentMethod.id,
-//       },
-//       name: name,
-//     });
-
-//     try {
-//       await stripe.paymentMethods.attach(paymentMethod.id, {
-//         customer: customer.id,
-//       });
-//     } catch (err) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Something went wrong.",
-//       });
-//     }
-
-//     const verificationSession = await stripe.identity.verifySessions.create({
-//       type: 'phone_number',
-//       phone_number: phoneNumber,
-//     });
-
-//     console.log("verification-section",verificationSession)
-
-//     if (verificationSession.status === 'requires_input') {
-//       // Do nothing here or add any necessary code for handling input (e.g., waiting for user input)
-//     } else {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Unable to initiate phone number verification",
-//       });
-//     }
-
-//     const selectedPriceId = await createCustomPrice({
-//       name: name,
-//       amount: price,
-//     });
-
-//     const subscription = await createSubscription(customer.id, selectedPriceId);
-//     const amount = subscription.plan.amount;
-
-//     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
-//     console.log(
-//       exp_month,
-//       exp_year,
-//       last4,
-//       brand,
-//       "-------Transaction details to show"
-//     );
-
-//     let newcard;
-
-//     if (check === true) {
-//       newcard = {
-//         name,
-//         subscriptionPlan,
-//         expiryDate: `${exp_month}/${exp_year}`,
-//         cardDigits: last4,
-//         cardType: brand,
-//         amount: amount,
-//       };
-//     } else {
-//       const newTransaction = await Transaction.create({
-//         userId: user._id,
-//         name,
-//         stripeCustomerId: customer.id,
-//         stripePaymentMethodId: paymentMethod.id,
-//         stripeSubscriptionId: subscription.id,
-//         subscriptionPlan,
-//         expiryDate: `${exp_month}/${exp_year}`,
-//         cardDigits: last4,
-//         cardType: brand,
-//         amount: amount,
-//       });
-
-//       res.status(201).json({
-//         status: "success",
-//         message: "Transaction saved successfully",
-//         data: newTransaction,
-//         newcard,
-//       });
-//     }
-//   } catch (error) {
-//     console.error("Error in Adding Transaction Details", error);
-//     res.status(500).json({ status: "error", message: "Internal Server Error" });
-//   }
-// };
-
-
 
 const addTransactionApi = async (req, res, next) => {
   try {
@@ -201,8 +75,26 @@ const addTransactionApi = async (req, res, next) => {
       amount: price,
     });
 
+   
+
+
     const subscription = await createSubscription(customer.id, selectedPriceId);
     const amount = subscription.plan.amount;
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: 'usd',
+      payment_method: paymentMethod.id,
+      customer: customer.id, 
+      confirmation_method: 'automatic',
+
+    });
+
+   
+      // const paymentIntent84 = await stripe.paymentIntents.confirm(paymentMethod.id);
+      // console.log('Payment confirmed:', paymentIntent84);
+  
+   
 
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
     console.log(
@@ -235,7 +127,10 @@ const addTransactionApi = async (req, res, next) => {
         cardDigits: last4,
         cardType: brand,
         amount: amount,
+        paymentIntentId: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret,
       });
+      console.log("newTransaction",newTransaction)
 
       res.status(201).json({
         status: "success",
@@ -313,43 +208,10 @@ const getTransactionbyUserId = async (req, res, next) => {
 };
 
 
-const verificationPhone = async (req, res, next) => {
-  console.log(req.body)
-  try {
-    const { phoneNumber, verificationCode, verificationSessionId } = req.body;
-
-    const verificationCheck = await stripe.identity.verifySessions.create({
-      type: 'phone_number',
-      phone_number: phoneNumber,
-      verification_code: verificationCode,
-      id: verificationSessionId,
-    });
-    console.log("<----1233----> Verification Code 327 <----1233---->", verificationCheck)
-
-    if (verificationCheck.status === 'verified') {
-      res.status(200).json({
-        status: 'success',
-        message: 'Phone number verified successfully.',
-      });
-    } else {
-      res.status(400).json({
-        status: 'error',
-        message: 'Invalid verification code. Please try again.',
-      });
-    }
-  } catch (error) {
-    console.error('Error confirming phone number verification:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Internal Server Error',
-    });
-  }
-};
 
 
 
 module.exports = {
-  verificationPhone,
   addTransactionApi,
   getTransactionbyUserId,
 };
