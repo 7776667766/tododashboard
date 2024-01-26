@@ -112,7 +112,7 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
       data: specialists,
     });
   } catch (error) {
-    console.log("Error in get specialist", error);
+    console.log("Error in Get Specialist", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
@@ -239,7 +239,7 @@ const deleteSpecialistApi = async (req, res, next) => {
     if (!specilaist) {
       return res.status(400).json({
         status: "error",
-        message: "specilaist not found",
+        message: "Specilaist Not Found",
       });
     }
     await Specialist.findByIdAndUpdate(
@@ -249,10 +249,10 @@ const deleteSpecialistApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "specilaist deleted successfully",
+      message: "Specilaist Deleted Successfully",
     });
   } catch (error) {
-    console.log("Error in deleting specilaist", error);
+    console.log("Error in Deleting Specilaist", error);
     res.status(500).json({
       status: "error",
       message: error.message,
@@ -694,7 +694,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       }
 
       business = await Business.findById(manager.businessId);
-      console.log("businessBy manager business Id", business);
+      console.log("business By manager business Id", business);
 
       if (!business) {
         return res.status(400).json({
@@ -919,14 +919,14 @@ const addDummyBusinessApi = async (req, res) => {
       fontSize,
     });
 
-    console.log("Checking MYBuisness Payload ", myBusiness);
+    console.log("Checking MY Buisness Payload ", myBusiness);
     res.status(200).json({
       status: "success",
       data: myBusiness,
-      message: "Dummy Business added successfully",
+      message: "Dummy Business Added Successfully",
     });
   } catch (error) {
-    console.log("Error in Dummy business", error);
+    console.log("Error in Dummy Business", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
@@ -1120,16 +1120,14 @@ const customizeThemeApi = async (req, res) => {
     const myCustomBusinessData = await Business.findOne({ _id: businessId });
 
     const myCustomBusiness = await businessData(myCustomBusinessData);
-
-
     console.log("Checking My Buisness Payload for custom theme ", myCustomBusiness);
     res.status(200).json({
       status: "success",
       data: myCustomBusiness,
-      message: "theme Updated successfully",
+      message: "Theme Updated successfully",
     });
   } catch (error) {
-    console.log("Error in Updating theme", error);
+    console.log("Error in Updating Theme", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
