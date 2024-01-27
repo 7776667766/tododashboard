@@ -76,6 +76,7 @@ router.post(
 router.post(
   "/theme/customize-theme",
   auth,
+  upload("business/banners").single("bannerImg"),
   customizeThemeApi
 );
 

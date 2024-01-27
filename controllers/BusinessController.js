@@ -1058,8 +1058,7 @@ const handleCancelBusinessApi = async (req, res) => {
   }
 };
 
-const customizeThemeApi = async (req, res) => {
-  console.log("body request IN CUSTOMIZE API", req.body);
+const customizeThemeApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1075,10 +1074,14 @@ const customizeThemeApi = async (req, res) => {
       });
     }
 
+    const themeData = await Business.findById(businessId);
+
+    let themeImg = req?.file?.path ?? themeData.bannerImg;
+    console.log("updated Image", themeImg)
+
     const {
       color,
       bannerText,
-      bannerImg,
       fontSize,
       fontFamily,
       theme
@@ -1106,7 +1109,7 @@ const customizeThemeApi = async (req, res) => {
         $set: {
 
           color,
-          bannerImg,
+          bannerImg: themeImg,
           bannerText,
           fontSize,
           fontFamily,
@@ -1120,7 +1123,6 @@ const customizeThemeApi = async (req, res) => {
     const myCustomBusinessData = await Business.findOne({ _id: businessId });
 
     const myCustomBusiness = await businessData(myCustomBusinessData);
-    console.log("Checking My Buisness Payload for custom theme ", myCustomBusiness);
     res.status(200).json({
       status: "success",
       data: myCustomBusiness,

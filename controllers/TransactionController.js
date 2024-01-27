@@ -13,8 +13,6 @@ const createSubscription = async (customerId, priceId) => {
   return subscription;
 };
 
-
-
 const addTransactionApi = async (req, res, next) => {
   try {
     const { id } = req.user;
@@ -75,9 +73,6 @@ const addTransactionApi = async (req, res, next) => {
       amount: price,
     });
 
-   
-
-
     const subscription = await createSubscription(customer.id, selectedPriceId);
     const amount = subscription.plan.amount;
 
@@ -85,16 +80,9 @@ const addTransactionApi = async (req, res, next) => {
       amount: amount,
       currency: 'usd',
       payment_method: paymentMethod.id,
-      customer: customer.id, 
+      customer: customer.id,
       confirmation_method: 'automatic',
-
     });
-
-   
-      // const paymentIntent84 = await stripe.paymentIntents.confirm(paymentMethod.id);
-      // console.log('Payment confirmed:', paymentIntent84);
-  
-   
 
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
     console.log(
@@ -130,21 +118,28 @@ const addTransactionApi = async (req, res, next) => {
         paymentIntentId: paymentIntent.id,
         clientSecret: paymentIntent.client_secret,
       });
-      console.log("newTransaction",newTransaction)
+      console.log("newTransaction", newTransaction)
 
       res.status(201).json({
         status: "success",
-        message: "Transaction saved successfully",
+        message: "Transaction Saved Successfully",
         data: newTransaction,
         newcard,
       });
     }
+
   } catch (error) {
     console.error("Error in Adding Transaction Details", error);
-    res.status(500).json({ status: "error", message: "Internal Server Error" });
+    if (error.type === 'StripeCardError' && error.decline_code === 'insufficient_funds') {
+      res.status(400).json({
+        status: "error",
+        message: "Your card has insufficient funds. Please use another card or add funds to your card.",
+      });
+    } else {
+      res.status(500).json({ status: "error", message: "Internal Server Error" });
+    }
   }
 };
-
 const createCustomPrice = async ({ name, amount }) => {
   try {
     const product = await stripe.products.create({

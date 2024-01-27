@@ -371,6 +371,7 @@ const getAllServicesApi = async (req, res, next) => {
       deletedAt: null || undefined,
       active: true,
     });
+    
 
     await Promise.all(
       services.map(async (service) => {

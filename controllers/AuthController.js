@@ -174,20 +174,13 @@ Please Don't Share Your OTP With Anyone For Your Account Security
 Thank You
         </p>`,
       });
-      // res.status(201).json({
-      //   status: "success",
-      //   message: "OTP sent successfully",
-      // });
+
       if (!mailSend) {
         return res.status(400).json({
           status: "error",
           message: "Error in sending email",
         });
       }
-      // res.status(201).json({
-      //   status: "success",
-      //   message: "OTP sent successfully",
-      // });
       const token = createSecretToken({ id: user._id });
       const userData = await getUserData(user);
 
@@ -611,7 +604,7 @@ const getAllUsersApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "User not found" });
     }
-    if (myUser.role !== "admin") {
+    if (myUser.role !== "admin" && myUser.role !== "owner") {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to access users",

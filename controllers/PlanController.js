@@ -22,7 +22,7 @@ const addPlanApi = async (req, res, next) => {
       });
     }
 
-    const { name, duration, price, features } = req.body;
+    const { name, duration, price, features  } = req.body;
 
     if (!name || !duration || !price || !features) {
       return res.status(400).json({
@@ -39,10 +39,10 @@ const addPlanApi = async (req, res, next) => {
     res.status(201).json({
       status: "success",
       data: newPlan,
-      message: "New Package added successfully",
+      message: "New Package Added Successfully",
     });
   } catch (error) {
-    console.error("Error in adding Package Details", error);
+    console.error("Error in Adding Package Details", error);
     res.status(500).json({ status: "error", message: error });
   }
 };
@@ -65,8 +65,7 @@ const getBusinessPlanListApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
-
+ 
 const updatePlanApi = async (req, res) => {
   try {
     const {packageId}=req.params
@@ -127,7 +126,6 @@ const deletePlanApi = async (req, res, next) => {
       { _id: planId },
       { deletedAt: new Date() }
     );
-
 
     res.status(200).json({
       status: "success",
