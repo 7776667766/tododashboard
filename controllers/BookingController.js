@@ -471,7 +471,7 @@ const cancelBookingApi = async (req, res, next) => {
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "Booking Cancellation",
-      html: `<p>Your Booking is Booked. <br /> Thank You</p>`,
+      html: `<p>Your Booking is cancelled. <br /> Thank You</p>`,
     });
 
     if (!userMailSend) {

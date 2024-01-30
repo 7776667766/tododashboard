@@ -8,6 +8,7 @@ const planRoutes = require("./PlanRoutes");
 const transactionRoutes = require("./TransactionRoutes");
 const templateRoutes = require("./TemplateRoutes");
 const reviewRoutes = require("./ReviewRoutes");
+const contactRoutes = require("./ContactRoutes");
 
 router.use("/api", authRoutes);
 router.use("/api", serviceRoutes);
@@ -18,5 +19,6 @@ router.use("/api", planRoutes);
 router.use("/api", transactionRoutes);
 router.use("/api", templateRoutes);
 router.use("/api", reviewRoutes);
+router.use("/api", contactRoutes);
 
 module.exports = router;
