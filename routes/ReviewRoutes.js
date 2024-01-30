@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { getAllReviews } = require("../controllers/ReviewsController");
+const { getAllReviews } = require("../controllers/reviewsController");
 
 router.get("/reviews/get:businessId", getAllReviews);
 

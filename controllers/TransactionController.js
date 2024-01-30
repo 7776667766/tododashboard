@@ -30,7 +30,7 @@ const addTransactionApi = async (req, res, next) => {
     if (!name || !token || !subscriptionPlan) {
       return res
         .status(400)
-        .json({ status: "error", message: "Invalid request payload" });
+        .json({ status: "error", message: "please select buiness plan" });
     }
 
     const creditCardInfo = req.body.token;
