@@ -452,6 +452,7 @@ const registerBusinessApi = async (req, res, next) => {
     });
 
     const user = await User.findById(id);
+    console.log("user email",user.email)
 
     if (!user) {
       return res.status(400).json({
@@ -508,6 +509,7 @@ const registerBusinessApi = async (req, res, next) => {
     });
 
     console.log(myBusiness, "myBusinessData111111");
+     console.log("user email5511",user.email)
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -521,6 +523,7 @@ const registerBusinessApi = async (req, res, next) => {
       If you have any questions or require further assistance,
        feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
     });
+    console.log("user mail send",userMailSend)
 
     if (!userMailSend) {
       console.error("Error sending confirmation emails");
