@@ -7,6 +7,11 @@ const ownerSchema = new mongoose.Schema({
     required: [true, "Owner Id is required"],
     trim: true,
   },
+  businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Business",
+    required: [true, "Business Id is required"],
+  },
   theme: {
     type: String,
     trim: true,

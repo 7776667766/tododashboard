@@ -16,6 +16,8 @@ const {
   getAllBusinessApi,
   updateSpecialsitApi,
   customizeThemeApi,
+  // getBusinessBybusinessIdApi,
+  getBusinessByOwnerIdApi,
   deleteSpecialistApi,
   getBusinessByServiceType,
   handleCustomBusinessApi,
@@ -33,6 +35,8 @@ router.get(
   "/show-all-business-api",
   showAllBusinessApi
 );
+router.get("/business-by-ownerId", auth,  getBusinessByOwnerIdApi);
+
 router.get("/specialist/:businessId", auth, getSpecialistByBusinessIdApi);
 router.post("/manager/add", auth, addManagerApi);
 // router.post("/manager/update/:managerId", auth, updateManagerApi);
@@ -51,7 +55,7 @@ router.post(
 );
 
 router.get("/business/get-all-business", getAllBusinessApi);
-router.get("/business/get-my-business-list", auth, getBusinessByUserIdApi);
+router.post("/business/get-my-business-list/", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
 router.post(
   "/theme/theme-Api",
