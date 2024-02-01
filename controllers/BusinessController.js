@@ -117,6 +117,45 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
   }
 };
 
+// const getBusinessBybusinessIdApi = async (req, res, next) => {
+//   try {
+//     const { businessId } = req.params;
+//     if (!businessId) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "Business Id is required",
+//       });
+//     }
+//     if (!validator.isMongoId(businessId)) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "Business Id is invalid",
+//       });
+//     }
+//     console.log("businessId", businessId)
+
+//     const business = await Business.findById(businessId)
+//     console.log("business", business)
+//     // const businessDataList = [];
+
+//     // await Promise.all(
+//     //   business.map(async (business) => {
+//     //     businessDataList.push(await businessData(business));
+//     //   })
+//     // );
+//     // console.log("businessDataList",businessDataList)
+
+//     res.status(200).json({
+//       status: "success",
+//       data: business,
+//     });
+//   } catch (error) {
+//     console.log("Error in getting all business", error);
+//     res.status(400).json({ status: "error", message: error.message });
+//   }
+// }
+
+
 const addManagerApi = async (req, res) => {
   try {
     if (req.user === undefined) {
@@ -452,7 +491,7 @@ const registerBusinessApi = async (req, res, next) => {
     });
 
     const user = await User.findById(id);
-    console.log("user email",user.email)
+    console.log("user email", user.email)
 
     if (!user) {
       return res.status(400).json({
@@ -509,7 +548,7 @@ const registerBusinessApi = async (req, res, next) => {
     });
 
     console.log(myBusiness, "myBusinessData111111");
-     console.log("user email5511",user.email)
+    console.log("user email5511", user.email)
 
     const userMailSend = await sendEmail({
       email: user.email,
@@ -523,7 +562,7 @@ const registerBusinessApi = async (req, res, next) => {
       If you have any questions or require further assistance,
        feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
     });
-    console.log("user mail send",userMailSend)
+    console.log("user mail send", userMailSend)
 
     if (!userMailSend) {
       console.error("Error sending confirmation emails");
@@ -578,7 +617,7 @@ const getAllBusinessApi = async (req, res, next) => {
         businessDataList.push(await businessData(business));
       })
     );
-
+    console.log("businessDataList", businessDataList)
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -589,90 +628,96 @@ const getAllBusinessApi = async (req, res, next) => {
   }
 };
 
-// const getBusinessByUserIdApi = async (req, res, next) => {
-//   try {
-//     if (req.user === undefined) {
-//       return res.status(400).json({ status: "error", message: "Invalid user" });
-//     }
+const getBusinessByOwnerIdApi = async (req, res, next) => {
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
 
-//     const { id } = req.user;
-//     const user = await User.findById(id);
+    const { id } = req.user;
+    const user = await User.findById(id);
+    console.log("businessbyowneridusers", id)
 
-//     if (!user) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "User not found",
-//       });
-//     }
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
 
-//     let business;
+    let business;
 
-//     if (user.role === "manager") {
-//       const manager = await Manager.findOne({ managerId: id });
+    if (user.role === "owner") {
+      const owner = await Owner.findOne({ ownerId: id });
+      console.log("ownerId ", owner)
+      if (!owner) {
+        return res.status(400).json({
+          status: "error",
+          message: "Owner not found",
+        });
+      }
 
-//       if (!manager) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Manager not found",
-//         });
-//       }
+      business = await Business.find({ createdBy: owner.ownerId });
+      console.log("business", business)
 
-//       const business = await Business.findById(manager.businessId);
-//       console.log("businessBy manager business Id", business)
+      if (!business || business.length === 0) {
+        return res.status(400).json({
+          status: "error",
+          message: "Businesses not found for this owner",
+        });
+      }
+    }
 
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Business not found",
-//         });
-//       }
-//     } else if (user.role === "admin") {
-//       const targetSlug = "dummy-business";
-//       business = await Business.findOne({ slug: targetSlug });
+    res.status(200).json({
+      status: "success",
+      data: await MultiplebusinessData(business),
+    });
+  } catch (error) {
+    console.log("Error in get business by user id", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
 
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "dummy business not found",
-//         });
-//       }
-//       console.log("businessId", business._id);
-//     } else if (user.role === "owner") {
-//       const owner = await Owner.findOne({ ownerId: id });
-//       if (!owner) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Owner not found",
-//         });
-//       }
-
-//       business = await Business.findOne({
-//         createdBy: id,
-//       });
-
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Business not found",
-//         });
-//       }
-//     }
-
-//     res.status(200).json({
-//       status: "success",
-//       data: await businessData(business),
-//     });
-//   } catch (error) {
-//     console.log("Error in get business by user id", error);
-//     res.status(400).json({ status: "error", message: error.message });
-//   }
-// };
+const MultiplebusinessData = async (businessData) => {
+  if (!businessData || businessData.length === 0) {
+    return []; 
+  }
+  return businessData.map(business => ({
+    id: business._id,
+    name: business.name,
+    email: business.email,
+    phone: business.phone,
+    description: business.description,
+    address: business.address,
+    socialLinks: business.socialLinks,
+    bookingService: business.bookingService,
+    websiteService: business.websiteService,
+    requestStatus: business.requestStatus,
+    theme: business.theme || "",
+    images: business.images,
+    googleId: business.googleId,
+    fontFamily: business.fontFamily,
+    fontSize: business.fontSize,
+    slug: business.slug,
+    logo: imgFullPath(business.logo),
+    bannerText: business.bannerText,
+    bannerImg: imgFullPath(business.bannerImg),
+    color: business.color,
+    amount: business.amount,
+    rejectreason: business.rejectreason,
+  }));
+};
 
 const getBusinessByUserIdApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
+    
+
+    const { businessId } = req.body;
+    console.log("businessId",businessId)
+    
 
     const { id } = req.user;
     const user = await User.findById(id);
@@ -685,19 +730,18 @@ const getBusinessByUserIdApi = async (req, res, next) => {
     }
 
     let business;
-
+    
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
-
       if (!manager) {
         return res.status(400).json({
           status: "error",
           message: "Manager not found",
         });
       }
+      console.log("manager",manager)
 
       business = await Business.findById(manager.businessId);
-      console.log("business By manager business Id", business);
 
       if (!business) {
         return res.status(400).json({
@@ -934,7 +978,6 @@ const addDummyBusinessApi = async (req, res) => {
   }
 };
 
-
 const handleCustomBusinessApi = async (req, res) => {
   console.log("body request", req.body);
   try {
@@ -999,7 +1042,6 @@ const handleCustomBusinessApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 const handleCancelBusinessApi = async (req, res) => {
   console.log("body request", req.body);
@@ -1242,6 +1284,8 @@ module.exports = {
   addManagerApi,
   // updateManagerApi,
   deleteManagerApi,
+  // getBusinessBybusinessIdApi,
+  getBusinessByOwnerIdApi,
   getManagersByBusinessIdApi,
   getAllBusinessApi,
   registerBusinessApi,
