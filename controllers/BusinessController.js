@@ -680,7 +680,7 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
 
 const MultiplebusinessData = async (businessData) => {
   if (!businessData || businessData.length === 0) {
-    return []; 
+    return [];
   }
   return businessData.map(business => ({
     id: business._id,
@@ -708,17 +708,99 @@ const MultiplebusinessData = async (businessData) => {
   }));
 };
 
+
+// const getBusinessByUserIdApi = async (req, res, next) => {
+//   try {
+//     if (req.user === undefined) {
+//       return res.status(400).json({ status: "error", message: "Invalid user" });
+//     }
+  
+//     const { id } = req.user;
+//     const user = await User.findById(id);
+
+//     if (!user) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "User not found",
+//       });
+//     }
+//     const { businessId } = req.body;
+//     // console.log("businessId728",businessId)
+
+//     let business;
+  
+//     if (user.role === "manager") {
+//       const manager = await Manager.findOne({ managerId: id });
+//       if (!manager) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Manager not found",
+//         });
+//       }
+//       console.log("manager", manager)
+
+//       business = await Business.findById(manager.businessId);
+
+//       if (!business) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Business not found",
+//         });
+//       }
+//     } else if (user.role === "admin") {
+//       const targetSlug = "dummy-business";
+//       business = await Business.findOne({ slug: targetSlug });
+
+//       if (!business) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "dummy business not found",
+//         });
+//       }
+//       console.log("businessId760", business._id);
+//     } else if (user.role === "owner") {
+
+//       const owner = await Owner.findOne({ ownerId: id });
+//       if (!owner) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Owner not found",
+//         });
+//       }
+    
+//       business = await Business.findById(businessId);
+
+//       console.log("business774",business)
+
+//       // business = await Business.findOne({
+//       //   createdBy: id,
+//       // });
+//       console.log("business773",business)
+
+//       if (!business) {
+//         return res.status(400).json({
+//           status: "error",
+//           message: "Business not found",
+//         });
+//       }
+//     }
+    
+//     res.status(200).json({
+//       status: "success",
+//       data: await businessData(business),
+//     });
+//   } catch (error) {
+//     console.log("Error in get business by user id", error);
+//     res.status(400).json({ status: "error", message: error.message });
+//   }
+// };
 const getBusinessByUserIdApi = async (req, res, next) => {
+  console.log("789",req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-    
-
-    const { businessId } = req.body;
-    console.log("businessId",businessId)
-    
-
+  
     const { id } = req.user;
     const user = await User.findById(id);
 
@@ -728,9 +810,9 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-
-    let business;
     
+    let business;
+  
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
       if (!manager) {
@@ -739,8 +821,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "Manager not found",
         });
       }
-      console.log("manager",manager)
-
+      
       business = await Business.findById(manager.businessId);
 
       if (!business) {
@@ -756,10 +837,9 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       if (!business) {
         return res.status(400).json({
           status: "error",
-          message: "dummy business not found",
+          message: "Dummy business not found",
         });
       }
-      console.log("businessId", business._id);
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
       if (!owner) {
@@ -768,19 +848,32 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "Owner not found",
         });
       }
+    
+      let businessId = req.body.businessId; 
 
-      business = await Business.findOne({
-        createdBy: id,
-      });
+      console.log("businessId852", businessId);
+      
+      if (!businessId) {
+          return res.status(400).json({
+              status: "error",
+              message: "Business ID is required for owner role",
+          });
+      }
+      
+      businessId = businessId.replace(/^"(.*)"$/, '$1'); 
+      business = await Business.findById(businessId);
+      console.log("business862",business)
+
+
 
       if (!business) {
         return res.status(400).json({
           status: "error",
-          message: "Business not found",
+          message: "Business not found with the provided ID",
         });
       }
     }
-
+    
     res.status(200).json({
       status: "success",
       data: await businessData(business),
@@ -790,6 +883,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
 
 const getBusinessDetailBySlugApi = async (req, res, next) => {
   try {
