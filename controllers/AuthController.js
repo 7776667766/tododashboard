@@ -9,6 +9,7 @@ const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
 const { sendSMS } = require("../util/twilo");
+const path = require("path");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
@@ -100,17 +101,58 @@ const registerApi = async (req, res, next) => {
       email: user.email,
       subject: "OTP for signup",
       text: `Your OTP for signup is ${otp}`,
-      html: `<p>
-          Your Makely Pro OTP ( One Time Passcode ) For Signup is : <b>${otp}</b>.
-          <br />
-    OTP Is Valid For 05 Mins
-    <br />
-    Please Don't Share Your OTP With Anyone For Your Account Security
-    <br />
-    Thank You
-          </p>`,
+      html: `
+      <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+    
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+    </style>
+  </head>
+  <body style="background-color: rgb(241, 236, 236)">
+    <div style="display: flex; justify-content: center; align-items: center" >
+      <div style="background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
+        <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="images/logo.png" width="190px" height="auto" alt="Description of the image">
+        </div>
+       <div><p style="text-align: center;font-weight: 500;font-size: 26px;margin-top:10px;font-family: 'Poppins', sans-serif;font-size: 18px;">Let’s Sign You Up  </p></div>
+<div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
+    <div style="color: #303030;font-size: 14px; margin-top:20px"><p>Dear User,</p></div>
+
+<div><p style="color: #303030;font-size: 14px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
+<div style="display: flex;justify-content: center;align-items: center;text-align: center;height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;text-align: center;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;">
+  <span>${otp}</span>
+  <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
+</div>
+<div style="padding-top: 10px; color: #303030;font-size: 14px;"><p>This OTP is Valid For 05 Mins</p></div>
+<div ><p style="color: #FF5151;font-size: 14px;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
+
+<p style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;">Thank You</p>
+</div>
+      
+    </div>
+</div>
+    </body>
+     
+  </body>
+</html>
+
+
+`,
+      attachments: [
+        {
+          filename: "logo.png",
+          // path: path.join(__dirname, 'logo.png'),
+          cid: "logoImage",
+        },
+      ],
     });
 
+    // console.log("dirname is",__dirname);
     if (!mailSend) {
       return res.status(400).json({
         status: "error",
@@ -164,15 +206,45 @@ const loginApi = async (req, res, next) => {
         email: user.email,
         subject: "OTP for login",
         text: `Your OTP for login is ${otp}`,
-        html: `<p>
-        Your Makely Pro OTP ( One Time Passcode ) For Login is : <b>${otp}</b>.
-        <br />
-OTP Is Valid For 05 Mins
-<br />
-Please Don't Share Your OTP With Anyone For Your Account Security
-<br />
-Thank You
-        </p>`,
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Document</title>
+        
+            <style>
+            
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+            </style>
+          </head>
+          <body style="background-color: rgb(241, 236, 236)">
+            <div style="display: flex; justify-content: center; align-items: center" >
+              <div style="background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
+                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="../src/images/makely.png" width="160px" height="auto" alt="Description of the image">
+                </div>
+            <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;">Let’s Sign You In  </p></div>
+            <div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
+            <div style="color: #303030;font-size: 14px;"><p>Dear User,</p></div>
+        
+        <div><p style="color: #303030;font-size: 14px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
+        <div style="text-align: center;height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;text-align: center;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display: flex;justify-content: center;align-items: center;">
+          <span>532150</span>
+          <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
+        </div>
+        <div style="padding-top: 10px; color: #303030;font-size: 14px;"><p>This OTP is Valid For 05 Mins</p></div>
+        <div ><p style="color: #FF5151;font-size: 14px;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
+        
+        <p style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;">Thank You</p>
+        </div>
+              
+            </div>
+        </div>
+            </body>
+             
+          </body>
+        </html>
+        `,
       });
 
       if (!mailSend) {
@@ -300,7 +372,6 @@ const verifyOtpApi = async (req, res, next) => {
 //         .json({ status: "error", message: "Phone not exist" });
 //     } else {
 
-
 //       const otp = await createOTPFun(user.phone);
 
 //       try {
@@ -315,7 +386,6 @@ const verifyOtpApi = async (req, res, next) => {
 //           message: "Error in sending SMS",
 //         });
 //       }
-
 
 //       const mailSend = await sendEmail({
 //         email: user.email,
@@ -385,10 +455,10 @@ const forgetPasswordApi = async (req, res, next) => {
       try {
         await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
         console.log("user phone", user.phone);
-        sendingResult = 'SMS sent successfully';
+        sendingResult = "SMS sent successfully";
       } catch (smsError) {
-        console.error('Error sending SMS:', smsError.message);
-        sendingResult = 'Error in sending SMS';
+        console.error("Error sending SMS:", smsError.message);
+        sendingResult = "Error in sending SMS";
       }
     } else {
       const mailSend = await sendEmail({
@@ -405,9 +475,9 @@ const forgetPasswordApi = async (req, res, next) => {
       });
 
       if (!mailSend) {
-        sendingResult = 'Error in sending email';
+        sendingResult = "Error in sending email";
       } else {
-        sendingResult = 'Email sent successfully';
+        sendingResult = "Email sent successfully";
       }
     }
 
@@ -420,7 +490,6 @@ const forgetPasswordApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 const resetPasswordApi = async (req, res, next) => {
   try {

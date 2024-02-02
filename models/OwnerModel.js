@@ -1,17 +1,8 @@
 const mongoose = require("mongoose");
 
 const ownerSchema = new mongoose.Schema({
-  ownerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: [true, "Owner Id is required"],
-    trim: true,
-  },
-  businessId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Business",
-    required: [true, "Business Id is required"],
-  },
+
+
   theme: {
     type: String,
     trim: true,
