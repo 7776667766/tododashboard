@@ -9,6 +9,7 @@ const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
 const { sendSMS } = require("../util/twilo");
+const fs = require('fs');
 const path = require("path");
 require("dotenv").config();
 
@@ -95,7 +96,7 @@ const registerApi = async (req, res, next) => {
       });
       console.log("FATA OWNER", OwnerData);
     }
-
+   
     const otp = await createOTPFun(user.phone);
     const mailSend = await sendEmail({
       email: user.email,
@@ -103,8 +104,8 @@ const registerApi = async (req, res, next) => {
       text: `Your OTP for signup is ${otp}`,
       html: `
       <!DOCTYPE html>
-<html lang="en">
-  <head>
+    <html lang="en">
+    <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
@@ -116,8 +117,8 @@ const registerApi = async (req, res, next) => {
   </head>
   <body style="background-color: rgb(241, 236, 236)">
     <div style="display: flex; justify-content: center; align-items: center" >
-      <div style="background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
-        <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="images/logo.png" width="190px" height="auto" alt="Description of the image">
+      <div style="text-align: center; background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
+        <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="http://localhost:3001/_next/static/media/makely.b4c87dfe.png" width="190px" height="auto" alt="Description of the image">
         </div>
        <div><p style="text-align: center;font-weight: 500;font-size: 26px;margin-top:10px;font-family: 'Poppins', sans-serif;font-size: 18px;">Let’s Sign You Up  </p></div>
 <div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
@@ -143,13 +144,13 @@ const registerApi = async (req, res, next) => {
 
 
 `,
-      attachments: [
-        {
-          filename: "logo.png",
-          // path: path.join(__dirname, 'logo.png'),
-          cid: "logoImage",
-        },
-      ],
+      // attachments: [
+      //   {
+      //     filename: "logo.png",
+      //     path: "../images/logo.png",
+      //     cid: "logo",
+      //   },
+      // ],
     });
 
     // console.log("dirname is",__dirname);
@@ -173,6 +174,19 @@ const registerApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
+// const getImageBase64 = (imagePath) => {
+//   return new Promise((resolve, reject) => {
+//     fs.readFile(imagePath, (err, data) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         const base64Image = Buffer.from(data).toString('base64');
+//         resolve(base64Image);
+//       }
+//     });
+//   });
+// };
 
 const loginApi = async (req, res, next) => {
   try {
@@ -202,6 +216,8 @@ const loginApi = async (req, res, next) => {
       }
 
       const otp = await createOTPFun(user.phone);
+
+
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for login",
@@ -221,7 +237,7 @@ const loginApi = async (req, res, next) => {
           <body style="background-color: rgb(241, 236, 236)">
             <div style="display: flex; justify-content: center; align-items: center" >
               <div style="background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
-                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="../src/images/makely.png" width="160px" height="auto" alt="Description of the image">
+                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="http://localhost:3001/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
                 </div>
             <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;">Let’s Sign You In  </p></div>
             <div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
@@ -229,7 +245,7 @@ const loginApi = async (req, res, next) => {
         
         <div><p style="color: #303030;font-size: 14px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
         <div style="text-align: center;height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;text-align: center;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display: flex;justify-content: center;align-items: center;">
-          <span>532150</span>
+          <span>${otp}</span>
           <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
         </div>
         <div style="padding-top: 10px; color: #303030;font-size: 14px;"><p>This OTP is Valid For 05 Mins</p></div>
@@ -245,6 +261,11 @@ const loginApi = async (req, res, next) => {
           </body>
         </html>
         `,
+       
+        headers: {
+          'Content-Type': 'multipart/mixed',
+          'Content-Disposition': 'inline',
+        },
       });
 
       if (!mailSend) {

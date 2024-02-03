@@ -21,6 +21,8 @@ module.exports.sendEmail = async ({ email, subject, text, html }) => {
         subject: subject,
         text: text,
         html: html,
+       
+      
       },
       function error(err, info) {
         if (err) {

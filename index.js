@@ -75,3 +75,5 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/", routes);
+
+// app.use('/logos', express.static(path.join(__dirname, 'logos')));
