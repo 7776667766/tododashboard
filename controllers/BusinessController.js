@@ -864,8 +864,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       business = await Business.findById(businessId);
       console.log("business862",business)
 
-
-
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -1304,6 +1302,7 @@ const businessData = async (businessData) => {
 };
 
 const getBusinessByServiceType = async (req, res, next) => {
+  console.log("1305",req.body)
   try {
     const { serviceTypeSlug, minPrice, maxPrice } = req.body;
     let myServiceTypeId = null;
@@ -1361,6 +1360,8 @@ const getBusinessByServiceType = async (req, res, next) => {
       status: "success",
       data: myBusinessList,
     });
+    console.log("myBusinessList",myBusinessList)
+    
   } catch (error) {
     console.log("Error in get business by service type", error);
     res.status(400).json({ status: "error", data, message: error.message });
