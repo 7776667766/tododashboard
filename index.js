@@ -8,7 +8,9 @@ require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 
-const stripe = require('stripe')('sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS');
+const stripe = require("stripe")(
+  "sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS"
+);
 
 // Routes
 const routes = require("./routes/index");
@@ -21,37 +23,37 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
 
-app.post('/webhook', async (req, res) => {
+app.post("/webhook", async (req, res) => {
   const payload = req.body;
-  const sig = req.headers['stripe-signature'];
+  const sig = req.headers["stripe-signature"];
 
   let event;
 
   try {
-      event = stripe.webhooks.constructEvent(payload, sig, 'whsec_67u1FD9VDA8UfgEHJh4xCsxNqdu6cjSV');
+    event = stripe.webhooks.constructEvent(
+      payload,
+      sig,
+      "whsec_67u1FD9VDA8UfgEHJh4xCsxNqdu6cjSV"
+    );
   } catch (err) {
-      console.log(`Webhook Error: ${err.message}`);
-      return res.status(400).end();
+    console.log(`Webhook Error: ${err.message}`);
+    return res.status(400).end();
   }
   switch (event.type) {
-      case 'invoice.payment_succeeded':
-          const subscriptionId = event.data.object.subscription;
-          console.log(`Payment succeeded for subscription ${subscriptionId}`);
-          break;
-      case 'invoice.payment_failed':
-          const failedSubscriptionId = event.data.object.subscription;
-          console.log(`Payment failed for subscription ${failedSubscriptionId}`);
-          break;
-      default:
-    
-          return res.status(400).end();
+    case "invoice.payment_succeeded":
+      const subscriptionId = event.data.object.subscription;
+      console.log(`Payment succeeded for subscription ${subscriptionId}`);
+      break;
+    case "invoice.payment_failed":
+      const failedSubscriptionId = event.data.object.subscription;
+      console.log(`Payment failed for subscription ${failedSubscriptionId}`);
+      break;
+    default:
+      return res.status(400).end();
   }
 
   res.status(200).end();
 });
-
-
-
 
 const PORT = process.env.PORT || 8080;
 
