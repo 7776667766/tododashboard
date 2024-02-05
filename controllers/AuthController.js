@@ -104,43 +104,43 @@ const registerApi = async (req, res, next) => {
       text: `Your OTP for signup is ${otp}`,
       html: `
       <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-
-    <style>
-    
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
-    </style>
-  </head>
-  <body style="background-color: rgb(241, 236, 236)">
-    <div style="display: flex; justify-content: center; align-items: center" >
-      <div style="text-align: center; background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
-        <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="http://localhost:3001/_next/static/media/makely.b4c87dfe.png" width="190px" height="auto" alt="Description of the image">
-        </div>
-       <div><p style="text-align: center;font-weight: 500;font-size: 26px;margin-top:10px;font-family: 'Poppins', sans-serif;font-size: 18px;">Let’s Sign You Up  </p></div>
-<div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-    <div style="color: #303030;font-size: 14px; margin-top:20px"><p>Dear User,</p></div>
-
-<div><p style="color: #303030;font-size: 14px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
-<div style="display: flex;justify-content: center;align-items: center;text-align: center;height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;text-align: center;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;">
-  <span>${otp}</span>
-  <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
-</div>
-<div style="padding-top: 10px; color: #303030;font-size: 14px;"><p>This OTP is Valid For 05 Mins</p></div>
-<div ><p style="color: #FF5151;font-size: 14px;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
-
-<p style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;">Thank You</p>
-</div>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Document</title>
       
-    </div>
-</div>
-    </body>
-     
-  </body>
-</html>
+          <style>
+          
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+          </style>
+        </head>
+        <body style="background-color: #E3E3E3;padding:30px";>
+          <div style="width:100%">
+            <div style="background-color: white !important; max-width: 500px; height: auto;padding: 15px; margin:auto;" >
+              <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
+              </div>
+          <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Let’s Sign You Up  </p></div>
+          <div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
+          <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
+      
+      <div><p style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
+      <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
+      <span style="font-size:30px;margin:auto">${otp}</span>
+        <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
+      </div>
+      <div style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
+      <div ><p style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
+      
+      <p style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
+      </div>
+            
+          </div>
+      </div>
+          </body>
+           
+        
+      </html>
 
 
 `,
@@ -234,31 +234,31 @@ const loginApi = async (req, res, next) => {
             @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
             </style>
           </head>
-          <body style="background-color: rgb(241, 236, 236)">
-            <div style="display: flex; justify-content: center; align-items: center" >
-              <div style="background-color: white; max-width: 500px; height: auto;padding: 15px; margin-top: 30px;margin-bottom: 30px;" >
-                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="http://localhost:3001/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
+          <body style="background-color: #E3E3E3;padding:30px";>
+            <div style="width:100%">
+              <div style="background-color: white !important; max-width: 500px; height: auto;padding: 15px; margin:auto;" >
+                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
                 </div>
-            <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;">Let’s Sign You In  </p></div>
+            <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Let’s Sign You In  </p></div>
             <div style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-            <div style="color: #303030;font-size: 14px;"><p>Dear User,</p></div>
+            <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
         
-        <div><p style="color: #303030;font-size: 14px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
-        <div style="text-align: center;height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;text-align: center;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display: flex;justify-content: center;align-items: center;">
-          <span>${otp}</span>
+        <div><p style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
+        <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
+        <span style="font-size:30px;margin:auto">${otp}</span>
           <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
         </div>
-        <div style="padding-top: 10px; color: #303030;font-size: 14px;"><p>This OTP is Valid For 05 Mins</p></div>
-        <div ><p style="color: #FF5151;font-size: 14px;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
+        <div style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
+        <div ><p style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
         
-        <p style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;">Thank You</p>
+        <p style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
         </div>
               
             </div>
         </div>
             </body>
              
-          </body>
+          
         </html>
         `,
        

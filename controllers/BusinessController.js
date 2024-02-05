@@ -553,14 +553,60 @@ const registerBusinessApi = async (req, res, next) => {
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "New Business Created Successfully",
-      html: `<p>Dear ${user.name},<br /><br />We are pleased to inform you that 
-      a new business has been successfully created. 
-      Thank you for choosing ${myBusiness.name}.<br /><br />
-      For your reference, here are some important details:<br />
-      - Business Website: www.business/${slug} <br />
-      - Date of Creation: ${myBusiness.createdAt}<br /><br />
-      If you have any questions or require further assistance,
-       feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
+      html:`<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Document</title>
+      
+          <style>
+          
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+          </style>
+        </head>
+        <body style="background-color: rgb(241, 236, 236);padding:30px">
+          <div style="display: flex; justify-content: center; align-items: center" >
+            <div style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
+              <div style="text-align: center;padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png" width="160px" height="auto" alt="Description of the image">
+              </div>
+              <div style="text-align: center; padding-top: 20px;"> <img src="https://makely.bixosoft.com/E:\front-end\booking-website-frontend\src\images\checkedlogin_1.png" width="66px" height="auto" alt="Description of the image">
+              </div>
+              <div style="text-align: center; color:#CAFF82; font-size: 22px; margin-top: 12px; margin-bottom : 15px;">
+                  Congratulations
+              </div>
+      <div style="text-align: center; color: white; font-size: 22px; "> 
+          Your Business Has Been<br/>
+          Added Successfully
+      </div>
+          
+          <div style="color: white;font-size: 14px;padding-top:40px; padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
+        
+              <p style="padding: 12px 0px 12px 0px;">Dear ${user.name},</p>
+              <p>
+              Thank you for using ${myBusiness.name}. 
+              We are heartfelt congratulations to you on successfully <br/>registering your business!
+              </p>
+      
+      </div>
+            
+          </div>
+      </div>
+          </body>
+           
+        </body>
+      </html>
+      `
+      //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that 
+      // a new business has been successfully created. 
+      // Thank you for choosing ${myBusiness.name}.<br /><br />
+      // For your reference, here are some important details:<br />
+      // - Business Website: www.business/${slug} <br />
+      // - Date of Creation: ${myBusiness.createdAt}<br /><br />
+      // If you have any questions or require further assistance,
+      //  feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
+
+
     });
     console.log("user mail send", userMailSend)
 
