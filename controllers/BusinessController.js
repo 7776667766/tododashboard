@@ -10,6 +10,8 @@ const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const Transaction = require("../models/TransactionModel");
+const path = require('path');
+const fs = require('fs');
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -421,6 +423,9 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
   }
 };
 
+
+
+
 const registerBusinessApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
@@ -549,7 +554,13 @@ const registerBusinessApi = async (req, res, next) => {
 
     console.log(myBusiness, "myBusinessData111111");
     console.log("user email5511", user.email)
+    const imageName = 'checkedlogin_1.png';
 
+    // Get the absolute path of the image file
+    const imagePath = path.join(__dirname, 'images', 'checkedlogin_1.png');
+console.log(imagePath )
+    
+    console.log('Image path:', imagePath);
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "New Business Created Successfully",
@@ -570,7 +581,7 @@ const registerBusinessApi = async (req, res, next) => {
             <div style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
               <div style="text-align: center;padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png" width="160px" height="auto" alt="Description of the image">
               </div>
-              <div style="text-align: center; padding-top: 20px;"> <img src="https://makely.bixosoft.com/E:\front-end\booking-website-frontend\src\images\checkedlogin_1.png" width="66px" height="auto" alt="Description of the image">
+              <div style="text-align: center; padding-top: 20px;"> <img src="../controllers/images/checkedlogin_1.png" width="66px" height="auto" alt="Description of the image">
               </div>
               <div style="text-align: center; color:#CAFF82; font-size: 22px; margin-top: 12px; margin-bottom : 15px;">
                   Congratulations
@@ -596,7 +607,14 @@ const registerBusinessApi = async (req, res, next) => {
            
         </body>
       </html>
-      `
+      `,
+      attachments: [
+        {
+          filename: 'checkedlogin_1.png',
+          path: imagePath,
+          cid: 'checkedlogin_1'
+        }
+      ]
       //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that 
       // a new business has been successfully created. 
       // Thank you for choosing ${myBusiness.name}.<br /><br />
