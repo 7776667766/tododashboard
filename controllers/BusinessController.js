@@ -426,6 +426,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 
 
 
+
 const registerBusinessApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
