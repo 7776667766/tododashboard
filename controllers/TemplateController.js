@@ -13,7 +13,6 @@ const addTemplateApi = async (req, res, next) => {
 
   try {
     const { id } = req.user;
-
     const user = await User.findById(id);
     console.log("user", user);
 

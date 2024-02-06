@@ -543,7 +543,6 @@ const completeBookingApi = async (req, res, next) => {
   }
 };
 
-
 const resehduledBookingApi = async (req, res, next) => {
   console.log("req.body reseheduled",req.body)
   try {
@@ -617,8 +616,6 @@ const getBookingData = async (data) => {
     timeSlots: 1,
     timeInterval: 1,
   }).exec();
-
-
 
   const myBookingData = {
     id: data._id,

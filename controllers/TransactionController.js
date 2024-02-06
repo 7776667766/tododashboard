@@ -3,7 +3,6 @@ const stripe = require("stripe")(
   "sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS"
 );
 const User = require("../models/UserModel");
-// const Plan = require('../models/PlanModel');
 
 const createSubscription = async (customerId, priceId) => {
   const subscription = await stripe.subscriptions.create({
