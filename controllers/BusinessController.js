@@ -9,9 +9,6 @@ const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
-const Transaction = require("../models/TransactionModel");
-const path = require('path');
-const fs = require('fs');
 
 const addSpecialistApi = async (req, res, next) => {
   try {
@@ -101,7 +98,10 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
         message: "Business Id is invalid",
       });
     }
-    const specialists = await Specialist.find({ deletedAt: { $exists: false }, businessId }).select({
+    const specialists = await Specialist.find({
+      deletedAt: { $exists: false },
+      businessId,
+    }).select({
       _id: 0,
       id: {
         $toString: "$_id",
@@ -156,7 +156,6 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
 //     res.status(400).json({ status: "error", message: error.message });
 //   }
 // }
-
 
 const addManagerApi = async (req, res) => {
   try {
@@ -423,9 +422,6 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
   }
 };
 
-
-
-
 const registerBusinessApi = async (req, res, next) => {
   try {
     if (req.user === undefined) {
@@ -448,14 +444,7 @@ const registerBusinessApi = async (req, res, next) => {
       slug,
     } = req.body;
 
-    if (
-      !name ||
-      !email ||
-      !phone ||
-      !description ||
-      !address ||
-      !slug
-    ) {
+    if (!name || !email || !phone || !description || !address || !slug) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -496,7 +485,7 @@ const registerBusinessApi = async (req, res, next) => {
     });
 
     const user = await User.findById(id);
-    console.log("user email", user.email)
+    console.log("user email", user.email);
 
     if (!user) {
       return res.status(400).json({
@@ -549,22 +538,22 @@ const registerBusinessApi = async (req, res, next) => {
       bannerText: Ownerdata.bannerText,
       color: Ownerdata.color,
       bannerImg: Ownerdata.bannerImge,
-      rejectreason: Ownerdata.rejectreason
+      rejectreason: Ownerdata.rejectreason,
     });
 
     console.log(myBusiness, "myBusinessData111111");
-    console.log("user email5511", user.email)
-    const imageName = 'checkedlogin_1.png';
+    console.log("user email5511", user.email);
+    const imageName = "checkedlogin_1.png";
 
     // Get the absolute path of the image file
-    const imagePath = path.join(__dirname, 'images', 'checkedlogin_1.png');
-console.log(imagePath )
-    
-    console.log('Image path:', imagePath);
+    const imagePath = path.join(__dirname, "images", "checkedlogin_1.png");
+    console.log(imagePath);
+
+    console.log("Image path:", imagePath);
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "New Business Created Successfully",
-      html:`<!DOCTYPE html>
+      html: `<!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8" />
@@ -610,23 +599,21 @@ console.log(imagePath )
       `,
       attachments: [
         {
-          filename: 'checkedlogin_1.png',
+          filename: "checkedlogin_1.png",
           path: imagePath,
-          cid: 'checkedlogin_1'
-        }
-      ]
-      //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that 
-      // a new business has been successfully created. 
+          cid: "checkedlogin_1",
+        },
+      ],
+      //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that
+      // a new business has been successfully created.
       // Thank you for choosing ${myBusiness.name}.<br /><br />
       // For your reference, here are some important details:<br />
       // - Business Website: www.business/${slug} <br />
       // - Date of Creation: ${myBusiness.createdAt}<br /><br />
       // If you have any questions or require further assistance,
       //  feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
-
-
     });
-    console.log("user mail send", userMailSend)
+    console.log("user mail send", userMailSend);
 
     if (!userMailSend) {
       console.error("Error sending confirmation emails");
@@ -681,7 +668,7 @@ const getAllBusinessApi = async (req, res, next) => {
         businessDataList.push(await businessData(business));
       })
     );
-    console.log("businessDataList", businessDataList)
+    console.log("businessDataList", businessDataList);
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -700,7 +687,7 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-    console.log("businessbyowneridusers", id)
+    console.log("businessbyowneridusers", id);
 
     if (!user) {
       return res.status(400).json({
@@ -713,7 +700,7 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
 
     if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
-      console.log("ownerId ", owner)
+      console.log("ownerId ", owner);
       if (!owner) {
         return res.status(400).json({
           status: "error",
@@ -722,7 +709,6 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
       }
 
       business = await Business.find({ createdBy: owner.ownerId });
-      console.log("business", business)
 
       if (!business || business.length === 0) {
         return res.status(400).json({
@@ -746,7 +732,7 @@ const MultiplebusinessData = async (businessData) => {
   if (!businessData || businessData.length === 0) {
     return [];
   }
-  return businessData.map(business => ({
+  return businessData.map((business) => ({
     id: business._id,
     name: business.name,
     email: business.email,
@@ -772,13 +758,12 @@ const MultiplebusinessData = async (businessData) => {
   }));
 };
 
-
 // const getBusinessByUserIdApi = async (req, res, next) => {
 //   try {
 //     if (req.user === undefined) {
 //       return res.status(400).json({ status: "error", message: "Invalid user" });
 //     }
-  
+
 //     const { id } = req.user;
 //     const user = await User.findById(id);
 
@@ -792,7 +777,7 @@ const MultiplebusinessData = async (businessData) => {
 //     // console.log("businessId728",businessId)
 
 //     let business;
-  
+
 //     if (user.role === "manager") {
 //       const manager = await Manager.findOne({ managerId: id });
 //       if (!manager) {
@@ -831,7 +816,7 @@ const MultiplebusinessData = async (businessData) => {
 //           message: "Owner not found",
 //         });
 //       }
-    
+
 //       business = await Business.findById(businessId);
 
 //       console.log("business774",business)
@@ -848,7 +833,7 @@ const MultiplebusinessData = async (businessData) => {
 //         });
 //       }
 //     }
-    
+
 //     res.status(200).json({
 //       status: "success",
 //       data: await businessData(business),
@@ -859,12 +844,12 @@ const MultiplebusinessData = async (businessData) => {
 //   }
 // };
 const getBusinessByUserIdApi = async (req, res, next) => {
-  console.log("789",req.body)
+  console.log("789", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-  
+
     const { id } = req.user;
     const user = await User.findById(id);
 
@@ -874,9 +859,9 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         message: "User not found",
       });
     }
-    
+
     let business;
-  
+
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
       if (!manager) {
@@ -885,7 +870,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "Manager not found",
         });
       }
-      
+
       business = await Business.findById(manager.businessId);
 
       if (!business) {
@@ -912,21 +897,20 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "Owner not found",
         });
       }
-    
-      let businessId = req.body.businessId; 
 
-      console.log("businessId852", businessId);
-      
+      let businessId = req.body.businessId;
+      // console.log("businessId852", businessId);
+
       if (!businessId) {
-          return res.status(400).json({
-              status: "error",
-              message: "Business ID is required for owner role",
-          });
+        return res.status(400).json({
+          status: "error",
+          message: "Business ID is required for owner role",
+        });
       }
-      
-      businessId = businessId.replace(/^"(.*)"$/, '$1'); 
+
+      businessId = businessId.replace(/^"(.*)"$/, "$1");
       business = await Business.findById(businessId);
-      console.log("business862",business)
+      // console.log("business862",business)
 
       if (!business) {
         return res.status(400).json({
@@ -935,7 +919,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
         });
       }
     }
-    
+
     res.status(200).json({
       status: "success",
       data: await businessData(business),
@@ -945,7 +929,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
 
 const getBusinessDetailBySlugApi = async (req, res, next) => {
   try {
@@ -1151,9 +1134,7 @@ const handleCustomBusinessApi = async (req, res) => {
       });
     }
 
-    const {
-      rejectreason
-    } = req.body;
+    const { rejectreason } = req.body;
 
     const user = await User.findById(id);
 
@@ -1185,7 +1166,6 @@ const handleCustomBusinessApi = async (req, res) => {
     const myCustomBusinessData = await Business.findOne({ _id: businessId });
 
     const myCustomBusiness = await businessData(myCustomBusinessData);
-
 
     console.log("Checking MYBuisness Payload ", myCustomBusiness);
     res.status(200).json({
@@ -1246,7 +1226,6 @@ const handleCancelBusinessApi = async (req, res) => {
 
     const myCustomBusiness = await businessData(myCustomBusinessData);
 
-
     console.log("Checking MYBuisness Payload ", myCustomBusiness);
     res.status(200).json({
       status: "success",
@@ -1278,15 +1257,9 @@ const customizeThemeApi = async (req, res, next) => {
     const themeData = await Business.findById(businessId);
 
     let themeImg = req?.file?.path ?? themeData.bannerImg;
-    console.log("updated Image", themeImg)
+    console.log("updated Image", themeImg);
 
-    const {
-      color,
-      bannerText,
-      fontSize,
-      fontFamily,
-      theme
-    } = req.body;
+    const { color, bannerText, fontSize, fontFamily, theme } = req.body;
 
     const user = await User.findById(id);
 
@@ -1308,14 +1281,12 @@ const customizeThemeApi = async (req, res, next) => {
       businessId,
       {
         $set: {
-
           color,
           bannerImg: themeImg,
           bannerText,
           fontSize,
           fontFamily,
-          theme
-
+          theme,
         },
       },
       { new: true }
@@ -1366,7 +1337,7 @@ const businessData = async (businessData) => {
 };
 
 const getBusinessByServiceType = async (req, res, next) => {
-  console.log("1305",req.body)
+  console.log("1305", req.body);
   try {
     const { serviceTypeSlug, minPrice, maxPrice } = req.body;
     let myServiceTypeId = null;
@@ -1424,15 +1395,13 @@ const getBusinessByServiceType = async (req, res, next) => {
       status: "success",
       data: myBusinessList,
     });
-    console.log("myBusinessList",myBusinessList)
-    
   } catch (error) {
     console.log("Error in get business by service type", error);
     res.status(400).json({ status: "error", data, message: error.message });
   }
 };
 
-const showAllBusinessApi = async (req, res, next) => { };
+const showAllBusinessApi = async (req, res, next) => {};
 
 module.exports = {
   addSpecialistApi,
