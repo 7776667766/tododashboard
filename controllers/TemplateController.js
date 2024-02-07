@@ -4,7 +4,6 @@ const slugify = require("slugify");
 const imgFullPath = require("../util/imgFullPath");
 const validator = require("validator");
 
-
 const addTemplateApi = async (req, res, next) => {
   let bookingImg = req.files?.["bookingImage"]?.[0]?.path;
   let websiteImg = req.files?.["websiteImage"]?.[0]?.path;
@@ -25,12 +24,12 @@ const addTemplateApi = async (req, res, next) => {
 
     if (user.role !== "admin") {
       return res.status(400).json({
-        status: "error",
+        status: "eerror",
         message: "You are not authorized to add plan",
       });
     }
 
-    const { name, status, fontFamily, fontSize } = req.body;
+    const { name, status, fontFamily, fontSize , description} = req.body;
     const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
 
     if (!name || !slug ) {
@@ -45,6 +44,7 @@ const addTemplateApi = async (req, res, next) => {
       slug,
       fontFamily,
       fontSize,
+      description,
       bookingImage: bookingImg,
       websiteImage: websiteImg,
       createdBy: id,
@@ -107,7 +107,6 @@ const updateTemplateApi = async (req, res, next) => {
       });
     }
 
-
     const template = await Template.findById(templateId);
 
     let bookingImg = req.files?.["bookingImage"]?.[0]?.path ?? template.bookingImage;
@@ -147,8 +146,6 @@ const updateTemplateApi = async (req, res, next) => {
 const deleteTemplateApi = async (req, res, next) => {
   try {
     const { templateId } = req.params;
-    console.log(templateId, "templateId")
-
     if (!templateId || !validator.isMongoId(templateId)) {
       return res.status(400).json({
         status: "error",
@@ -157,7 +154,6 @@ const deleteTemplateApi = async (req, res, next) => {
     }
 
     const template = await Template.findById(templateId);
-
     if (!template) {
       return res.status(400).json({
         status: "error",
@@ -171,17 +167,16 @@ const deleteTemplateApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "template deleted successfully",
+      message: "template Deleted Successfully",
     });
   } catch (error) {
-    console.log("Error in deleting template", error);
+    console.log("Error in Deleting Template", error);
     res.status(500).json({
       status: "error",
       message: error.message,
     });
   }
 };
-
 
 module.exports = {
   addTemplateApi,
@@ -196,6 +191,7 @@ const getTemplateData = async (data) => {
     name: data.name,
     bookingImage: imgFullPath(data.bookingImage),
     websiteImage: imgFullPath(data.websiteImage),
+    description: data.description,
     slug: data.slug,
     status: data.status,
     fontFamily: data.fontFamily,

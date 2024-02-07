@@ -20,6 +20,18 @@ const businessSchema = new mongoose.Schema({
     required: [true, "Email is required"],
   },
 
+  timeSlots: {
+    type: [
+      {
+        day: String,
+        startTime: String,
+        endTime: String,
+        active: Boolean,
+      },
+    ],
+    // required: [true, "TimeSlots is required"],
+    trim: true,
+  },
   slug: {
     type: String,
     required: [true, "Slug is required"],

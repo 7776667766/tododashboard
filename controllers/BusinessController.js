@@ -10,7 +10,7 @@ const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 
-const addSpecialistApi = async (req, res, next) => {
+const addSpecialistApi = async (req, res) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -364,15 +364,14 @@ const deleteManagerApi = async (req, res, next) => {
     if (manager.createdBy.toString() !== id) {
       return res.status(400).json({
         status: "error",
-        message: "You are not authorized to delete this manager",
+        message: "You are not Authorized to delete this manager",
       });
     }
-
     await User.findByIdAndUpdate(manager.managerId, { deletedAt: new Date() });
     await Manager.findOneAndUpdate({ managerId }, { deletedAt: new Date() });
     res.status(200).json({
       status: "success",
-      message: "Manager deleted successfully",
+      message: "Manager Deleted Successfully",
     });
   } catch (error) {
     console.log("Error in delete manager", error);
@@ -544,8 +543,6 @@ const registerBusinessApi = async (req, res, next) => {
     console.log(myBusiness, "myBusinessData111111");
     console.log("user email5511", user.email);
     const imageName = "checkedlogin_1.png";
-
-    // Get the absolute path of the image file
     const imagePath = path.join(__dirname, "images", "checkedlogin_1.png");
     console.log(imagePath);
 
@@ -578,18 +575,14 @@ const registerBusinessApi = async (req, res, next) => {
       <div style="text-align: center; color: white; font-size: 22px; "> 
           Your Business Has Been<br/>
           Added Successfully
-      </div>
-          
-          <div style="color: white;font-size: 14px;padding-top:40px; padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-        
+      </div>  
+          <div style="color: white;font-size: 14px;padding-top:40px; padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;">  
               <p style="padding: 12px 0px 12px 0px;">Dear ${user.name},</p>
               <p>
               Thank you for using ${myBusiness.name}. 
               We are heartfelt congratulations to you on successfully <br/>registering your business!
-              </p>
-      
-      </div>
-            
+              </p> 
+      </div>    
           </div>
       </div>
           </body>
@@ -604,14 +597,6 @@ const registerBusinessApi = async (req, res, next) => {
           cid: "checkedlogin_1",
         },
       ],
-      //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that
-      // a new business has been successfully created.
-      // Thank you for choosing ${myBusiness.name}.<br /><br />
-      // For your reference, here are some important details:<br />
-      // - Business Website: www.business/${slug} <br />
-      // - Date of Creation: ${myBusiness.createdAt}<br /><br />
-      // If you have any questions or require further assistance,
-      //  feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
     });
     console.log("user mail send", userMailSend);
 
@@ -1250,7 +1235,7 @@ const customizeThemeApi = async (req, res, next) => {
     if (!businessId) {
       return res.status(400).json({
         status: "error",
-        message: "Business ID is required",
+        message: "Businsess customize thes ID is required",
       });
     }
 
@@ -1348,7 +1333,7 @@ const getBusinessByServiceType = async (req, res, next) => {
     //   });
     // }
     if (serviceTypeSlug) {
-      const mySelectedServiceType = await ServiceType.findOne({
+      const mySelectedServiceType = await ServiceType.cdcfindOne({
         slug: serviceTypeSlug,
       });
 
