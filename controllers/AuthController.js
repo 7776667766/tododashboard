@@ -118,8 +118,14 @@ const registerApi = async (req, res, next) => {
 
   /* Media query for screen width up to 768px */
   @media screen and (max-width: 800px) {
+    .para-makely1{
+      font-size: 0.625rem !important;
+      line-height: 19px !important;
+      
+    }
     .para-makely{
-      font-size: 9px !important;
+      font-size: 0.625rem !important;
+      
       
     }
     .hole-container{
@@ -127,20 +133,22 @@ const registerApi = async (req, res, next) => {
       padding-right: 8px !important;
     }
     body{
-      background-color: white !important;
+      
       padding-top:10px !important;
       padding-bottom:10px !important;
+      padding-right:20px !important;
+      padding-left:20px !important;
     }
-    .card-w{
-      max-width: 690px !important;
+    .card-wdth{
+      max-width: 400px !important;
   
     }
   }
 </style>
         </head>
-        <body  style="background-color: #E3E3E3;padding:30px";>
+        <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
          
-            <div class="card-w" style="background-color: white !important; max-width: 500px; height: auto;padding: 15px; margin:auto;" >
+            <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
               <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
               </div>
           <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Let’s Sign You Up  </p></div>
@@ -251,8 +259,14 @@ const loginApi = async (req, res, next) => {
 
     /* Media query for screen width up to 768px */
     @media screen and (max-width: 800px) {
+      .para-makely1{
+        font-size: 0.625rem !important;
+        line-height: 19px !important;
+        
+      }
       .para-makely{
-        font-size: 9px !important;
+        font-size: 0.625rem !important;
+        
         
       }
       .hole-container{
@@ -263,17 +277,19 @@ const loginApi = async (req, res, next) => {
         background-color: white !important;
         padding-top:10px !important;
         padding-bottom:10px !important;
+        padding-right:20px !important;
+        padding-left:20px !important;
       }
-      .card-w{
-        max-width: 690px !important;
+      .card-wdth{
+        max-width: 400px !important;
     
       }
     }
   </style>
           </head>
-          <body  style="background-color: #E3E3E3;padding:30px";>
+          <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
            
-              <div class="card-w" style="background-color: white !important; max-width: 500px; height: auto;padding: 15px; margin:auto;" >
+              <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
                 <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
                 </div>
             <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Let’s Sign You In  </p></div>
