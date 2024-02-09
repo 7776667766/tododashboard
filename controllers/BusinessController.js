@@ -9,7 +9,6 @@ const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
-const Transaction = require("../models/TransactionModel");
 const path = require("path");
 const fs = require("fs");
 
@@ -727,7 +726,6 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
       }
 
       business = await Business.find({ createdBy: owner.ownerId });
-      console.log("business", business);
 
       if (!business || business.length === 0) {
         return res.status(400).json({
@@ -918,8 +916,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       }
 
       let businessId = req.body.businessId;
-
-      console.log("businessId852", businessId);
+      // console.log("businessId852", businessId);
 
       if (!businessId) {
         return res.status(400).json({
@@ -930,7 +927,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
       businessId = businessId.replace(/^"(.*)"$/, "$1");
       business = await Business.findById(businessId);
-      console.log("business862", business);
+      // console.log("business862",business)
 
       if (!business) {
         return res.status(400).json({
@@ -1415,7 +1412,6 @@ const getBusinessByServiceType = async (req, res, next) => {
       status: "success",
       data: myBusinessList,
     });
-    console.log("myBusinessList", myBusinessList);
   } catch (error) {
     console.log("Error in get business by service type", error);
     res.status(400).json({ status: "error", data, message: error.message });

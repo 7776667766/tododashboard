@@ -113,7 +113,7 @@ const getAllServicesTypeApi = async (req, res, next) => {
 };
 
 const addServiceApi = async (req, res, next) => {
-  console.log(req.body, "request of services");
+  // console.log(req.body, "request of services");
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -210,7 +210,7 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    console.log(businessId, "businessId");
+    // console.log(businessId, "businessId");
 
     const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
 
@@ -238,7 +238,7 @@ const addServiceApi = async (req, res, next) => {
 
     const myService = await Service.findOne({ _id: data._id });
     const myServiceData = await getServiceData(myService);
-    console.log("myServicesData", myServiceData);
+    // console.log("myServicesData", myServiceData);
     res.status(200).json({
       status: "success",
       data: myServiceData,
@@ -255,15 +255,17 @@ const addServiceApi = async (req, res, next) => {
 };
 
 const updateServiceApi = async (req, res, next) => {
-  console.log(req.file, "----");
+  console.log(req.file, "----258");
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { serviceId } = req.params;
+    console.log("serviceId264", serviceId)
 
     const { id } = req.user;
     const { businessId, typeId, specialistId } = req.body;
+    console.log("req.body 68",typeId)
     if (!serviceId) {
       return res.status(400).json({
         status: "error",
@@ -364,14 +366,13 @@ const updateServiceApi = async (req, res, next) => {
 };
 
 const getAllServicesApi = async (req, res, next) => {
-  console.log("req.para, 367",req.param)
+  console.log("req.para, 367", req.params)
   try {
     let myServices = [];
     const services = await Service.find({
       deletedAt: null || undefined,
       active: true,
     });
-    
 
     await Promise.all(
       services.map(async (service) => {
@@ -379,6 +380,7 @@ const getAllServicesApi = async (req, res, next) => {
         myServices.push(myServiceData);
       })
     );
+    console.log("myServicess", myServices)
 
     res.status(200).json({
       status: "success",
@@ -460,8 +462,10 @@ const updateServiceTypeApi = async (req, res) => {
 };
 
 const getServicesApi = async (req, res, next) => {
+  console.log("463", req.body)
   try {
     const { businessId } = req.body;
+    console.log("businessId466", businessId)
 
     let myServices = [];
     const services = await Service.find({
@@ -476,7 +480,7 @@ const getServicesApi = async (req, res, next) => {
         myServices.push(myServiceData);
       })
     );
-
+    console.log("myServiceData", myServices)
     res.status(200).json({
       status: "success",
       data: myServices,
