@@ -3,7 +3,7 @@ const Template = require("../models/TemplateModal");
 const slugify = require("slugify");
 const imgFullPath = require("../util/imgFullPath");
 const validator = require("validator");
-
+ 
 const addTemplateApi = async (req, res, next) => {
   let bookingImg = req.files?.["bookingImage"]?.[0]?.path;
   let websiteImg = req.files?.["websiteImage"]?.[0]?.path;

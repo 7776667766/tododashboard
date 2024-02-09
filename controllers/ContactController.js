@@ -5,7 +5,6 @@ const Contact = require("../models/ContactModal");
 
 const addContactApi = async (req, res, next) => {
     try {
-
         const { name, message, email } = req.body;
 
         if (!name || !message || !email) {

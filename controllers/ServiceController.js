@@ -210,8 +210,6 @@ const addServiceApi = async (req, res, next) => {
       });
     }
 
-    // console.log(businessId, "businessId");
-
     const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
 
     const slugAlreadyExist = await Service.findOne({ slug: mySlug });
