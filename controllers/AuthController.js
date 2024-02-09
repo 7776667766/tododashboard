@@ -208,8 +208,8 @@ const registerApi = async (req, res, next) => {
 //     });
 //   });
 // };
-const imagePath = path.join(__dirname ,'uplaods/images/checkedlogin_1.png');
-console.log(imagePath)
+const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
+console.log(imagePath);
 const loginApi = async (req, res, next) => {
   try {
     const { phone, password } = req.body;

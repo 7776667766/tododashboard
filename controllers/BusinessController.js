@@ -544,10 +544,12 @@ const registerBusinessApi = async (req, res, next) => {
 
     console.log(myBusiness, "myBusinessData111111");
     console.log("user email5511", user.email);
-    const imageName = "checkedlogin_1.png";
 
     // Get the absolute path of the image file
-    const imagePath = path.resolve(__dirname, "../uploads/emails/", imageName);
+    const imagePath = path.resolve(
+      __dirname,
+      "../uploads/emails/check-icon.png"
+    );
     console.log(imagePath);
     console.log("Image path:", imagePath);
     const userMailSend = await sendEmail({
@@ -611,7 +613,7 @@ const registerBusinessApi = async (req, res, next) => {
       `,
       attachments: [
         {
-          filename: "checkedlogin_1.png",
+          filename: "check-icon.png",
           path: imagePath,
           cid: "checkedlogin_1",
         },
