@@ -543,9 +543,10 @@ const registerBusinessApi = async (req, res, next) => {
     console.log(myBusiness, "myBusinessData111111");
     console.log("user email5511", user.email);
     const imageName = "checkedlogin_1.png";
-    const imagePath = path.join(__dirname, "images", "checkedlogin_1.png");
-    console.log(imagePath);
 
+    // Get the absolute path of the image file
+    const imagePath = path.resolve(__dirname, "../uploads/emails/", imageName);
+    console.log(imagePath);
     console.log("Image path:", imagePath);
     const userMailSend = await sendEmail({
       email: user.email,
@@ -560,19 +561,35 @@ const registerBusinessApi = async (req, res, next) => {
           <style>
           
           @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+          @media screen and (max-width: 800px) {
+            .success-business{
+              font-size: 12px !important;
+                    }
+                    .successfully-business{
+                      font-size: 16px !important;
+                    }
+            .main-card{
+             max-height:470px !important;
+              padding:5px !important;
+            }
+            .sub-card{
+              padding-right:5px !important;
+              padding-left:10px !important;
+            }
+                }
           </style>
         </head>
         <body style="background-color: rgb(241, 236, 236);padding:30px">
           <div style="display: flex; justify-content: center; align-items: center" >
-            <div style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
+            <div class="main-card" style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
               <div style="text-align: center;padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png" width="160px" height="auto" alt="Description of the image">
               </div>
-              <div style="text-align: center; padding-top: 20px;"> <img src="../controllers/images/checkedlogin_1.png" width="66px" height="auto" alt="Description of the image">
+              <div style="text-align: center; padding-top: 20px;"> <img src="cid:checkedlogin_1" width="66px" height="auto" alt="Description of the image">
               </div>
               <div style="text-align: center; color:#CAFF82; font-size: 22px; margin-top: 12px; margin-bottom : 15px;">
                   Congratulations
               </div>
-      <div style="text-align: center; color: white; font-size: 22px; "> 
+      <div class="successfully-business" style="text-align: center; color: white; font-size: 22px; "> 
           Your Business Has Been<br/>
           Added Successfully
       </div>  
@@ -597,6 +614,14 @@ const registerBusinessApi = async (req, res, next) => {
           cid: "checkedlogin_1",
         },
       ],
+      //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that
+      // a new business has been successfully created.
+      // Thank you for choosing ${myBusiness.name}.<br /><br />
+      // For your reference, here are some important details:<br />
+      // - Business Website: www.business/${slug} <br />
+      // - Date of Creation: ${myBusiness.createdAt}<br /><br />
+      // If you have any questions or require further assistance,
+      //  feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
     });
     console.log("user mail send", userMailSend);
 
