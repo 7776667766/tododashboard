@@ -9,6 +9,8 @@ const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
+const path = require("path");
+const fs = require("fs");
 
 const addSpecialistApi = async (req, res) => {
   try {
