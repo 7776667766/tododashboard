@@ -6,7 +6,7 @@ const getAllReviews = (req, res) => {
     return res.status(400).json({
       status: "error",
       message: "Business id is required",
-    });
+    });  
   }
   try {
     const myReviews = [

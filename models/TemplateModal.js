@@ -6,6 +6,10 @@ const templateSchema = new mongoose.Schema({
     required: [true, "Name is required"],
     trim: true,
   },
+  description: {
+    type: String,
+    trim: true
+  },
   slug: {
     type: String,
     required: [true, "Slug is required"],
@@ -17,11 +21,11 @@ const templateSchema = new mongoose.Schema({
 
     trim: true,
   },
-  fontFamily:{
-    type : String,
+  fontFamily: {
+    type: String,
   },
-  fontSize:{
-    type:Number
+  fontSize: {
+    type: Number
   },
   websiteImage: {
     type: String,
