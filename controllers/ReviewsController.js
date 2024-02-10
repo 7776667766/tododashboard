@@ -26,6 +26,70 @@ const getAllReviews = (req, res) => {
           "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
         deletedAt: null,
       },
+      {
+        name: "Review 3",
+        message: "fine service really impressive.",
+        rating: 3.5,
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+        deletedAt: null,
+      },
+      {
+        name: "Review 4",
+        message: "This is a test review 2.",
+        rating: 4.0,
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+        deletedAt: null,
+      },
+      {
+        name: "Review 5",
+        message: "fine service .",
+        rating: 1.5,
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+        deletedAt: null,
+      },
+      {
+        name: "Review 6",
+        message: "This is a test review 2.",
+        rating: 2.5,
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+        deletedAt: null,
+      },
+      {
+        name: "Review 7",
+        message: "fine service really impressive.",
+        rating: 3.5,
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+        deletedAt: null,
+      },
+      {
+        name: "Review 8",
+        message: "This is a test review 2.",
+        rating: 4.0,
+        image:
+          "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+        deletedAt: null,
+      },
+      // {
+      //   name: "Review 3",
+      //   message: "not bad.",
+      //   rating: 2.0,
+      //   image:
+      //     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+      //   deletedAt: null,
+      // },
+      // {
+      //   name: "Review 4",
+      //   message: "This is a test review 2.",
+      //   rating: 4.0,
+      //   image:
+      //     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
+      //   deletedAt: null,
+      // },
     ];
 
     res.status(200).json({
