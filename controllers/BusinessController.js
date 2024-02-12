@@ -10,14 +10,12 @@ const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const path = require("path");
-const fs = require("fs");
 
 const addSpecialistApi = async (req, res) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
-
+    } 
     const { id } = req.user;
     const { name, email, businessId } = req.body;
     if (!name || !email || !businessId) {

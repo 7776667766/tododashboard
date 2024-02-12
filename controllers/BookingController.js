@@ -111,165 +111,19 @@ const addBookingApi = async (req, res, next) => {
       price,
     });
     ///user notification 
-    const userMailSend = await sendEmail({
-      email: user.email,
-      subject: "Booking Confirmation",
-      html: `<!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Document</title>
-      
-          <style>
-  
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
-  
-  /* Default styles outside of media query */
+    // const userMailSend = await sendEmail({
+    //   email: user.email,
+    //   subject: "Booking Confirmation",
 
+    // });
 
-  /* Media query for screen width up to 768px */
-  @media screen and (max-width: 800px) {
-    .para-makely1{
-      font-size: 0.625rem !important;
-      line-height: 19px !important;
-      
-    }
-    .para-makely{
-      font-size: 0.625rem !important;
-      
-      
-    }
-    .hole-container{
-      padding-left: 0px !important;
-      padding-right: 8px !important;
-    }
-    body{
-      
-      padding-top:10px !important;
-      padding-bottom:10px !important;
-      padding-right:20px !important;
-      padding-left:20px !important;
-    }
-    .card-wdth{
-      max-width: 400px !important;
-  
-    }
-  }
-</style>
-        </head>
-        <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
-         
-            <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
-              <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
-              </div>
-          <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Your Booking is Booked  </p></div>
-          <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-          <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
-      
-      <div><p class="para-makely" style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
-      <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
-      <span style="font-size:30px;margin:auto"></span>
-        <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
-      </div>
-      <div class="para-makely" style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
-      <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
-      
-      <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
-      </div>
-            
-          </div>
-    
-          </body>
-           
-        
-      </html>
-      `,
-    });
-
-    const businessOwnerMailSend = await sendEmail({
-      email: businessOwner.email,
-      subject: "New Booking Notification",
-      html: `<!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Document</title>
-        
-            <style>
-    
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
-    
-    /* Default styles outside of media query */
-  
-  
-    /* Media query for screen width up to 768px */
-    @media screen and (max-width: 800px) {
-      .para-makely1{
-        font-size: 0.625rem !important;
-        line-height: 19px !important;
-        
-      }
-      .para-makely{
-        font-size: 0.625rem !important;
-        
-        
-      }
-      .hole-container{
-        padding-left: 0px !important;
-        padding-right: 8px !important;
-      }
-      body{
-        
-        padding-top:10px !important;
-        padding-bottom:10px !important;
-        padding-right:20px !important;
-        padding-left:20px !important;
-      }
-      .card-wdth{
-        max-width: 400px !important;
-    
-      }
-    }
-  </style>
-          </head>
-          <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
-           
-              <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
-                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
-                </div>
-            <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">owner Email varification </p></div>
-            <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-            <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
-        
-        <div><p class="para-makely" style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
-        <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
-        <span style="font-size:30px;margin:auto">${otp}</span>
-          <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
-        </div>
-        <div class="para-makely" style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
-        <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
-        
-        <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
-        </div>
-              
-            </div>
-      
-            </body>
-             
-          
-        </html>
-        `,
-    });
-
-    if (!userMailSend || !businessOwnerMailSend) {
-      console.error("Error sending confirmation emails");
-      return res.status(500).json({
-        status: "error",
-        message: "Error sending confirmation emails",
-      });
-    }
+    // if (!userMailSend || !businessOwnerMailSend) {
+    //   console.error("Error sending confirmation emails");
+    //   return res.status(500).json({
+    //     status: "error",
+    //     message: "Error sending confirmation emails",
+    //   });
+    // }
     const myBookingData = await getBookingData(newBooking);
     res.status(200).json({
       status: "success",
@@ -287,7 +141,7 @@ const addBookingApi = async (req, res, next) => {
 };
 
 const getBookingByBusinessApi = async (req, res, next) => {
-  console.log("body of booking",req.body);
+  console.log("body of booking", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -302,7 +156,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
       });
     }
 
-    if (user.role === "manager" || user.role === "owner" || user.role=== "admin" ) {
+    if (user.role === "manager" || user.role === "owner" || user.role === "admin") {
       const { businessId } = req.body;
       console.log("businessId22222", businessId);
       let myBookings = [];
@@ -754,7 +608,7 @@ const completeBookingApi = async (req, res, next) => {
 };
 
 const resehduledBookingApi = async (req, res, next) => {
-  console.log("req.body reseheduled",req.body)
+  console.log("req.body reseheduled", req.body)
   try {
     const { date, timeSlot } = req.body;
     const { bookingId } = req.params;
@@ -848,7 +702,7 @@ const getBookingData = async (data) => {
       name: serviceData.name,
       image: imgFullPath(serviceData.image),
       timeSlots: serviceData.timeSlots,
-      timeInterval:serviceData.timeInterval
+      timeInterval: serviceData.timeInterval
     },
   };
 
