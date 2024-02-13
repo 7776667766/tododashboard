@@ -3,7 +3,6 @@ const stripe = require("stripe")(
   "sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS"
 );
 const User = require("../models/UserModel");
-var cron = require('node-cron');
 
 const createSubscription = async (customerId, priceId) => {
   const subscription = await stripe.subscriptions.create({
@@ -13,33 +12,27 @@ const createSubscription = async (customerId, priceId) => {
   return subscription;
 };
 
-const checkSubscriptions = async () => {
-  try {
-    const transactions = await Transaction.find();
-    console.log("transactions19", transactions);
-    const currentDate = new Date();
+// const checkSubscriptions = async () => {
+//   try {
+//     const transactions = await Transaction.find();
+//     console.log("transactions19", transactions);
+//     const currentDate = new Date();
 
-    for (const transaction of transactions) {
-      const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
-      const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+//     for (const transaction of transactions) {
+//       const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
+//       const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
       
-      console.log("end date of subscription", subscriptionEndDate);
-      console.log("seven days before 28", sevenDaysBefore);
+//       console.log("end date of subscription", subscriptionEndDate);
+//       console.log("seven days before 28", sevenDaysBefore);
        
-      
-      if (currentDate.getTime() >= sevenDaysBefore.getTime()) {
-        console.log(`Show popup notification to user ${transaction.userId} about the subscription ending soon.`);
-      }
-    }
-  } catch (error) {
-    console.error("Error in checking subscriptions:", error);
-  }
-};
-
-// cron.schedule('0 0 * * *', () => {
-checkSubscriptions();
-// });
-
+//       if (currentDate.getTime() >= sevenDaysBefore.getTime()) {
+//         console.log(`Show popup notification to user ${transaction.userId} about the subscription ending soon.`);
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error in checking subscriptions:", error);
+//   }
+// };
 
 const addTransactionApi = async (req, res, next) => {
   try {
@@ -112,8 +105,8 @@ const addTransactionApi = async (req, res, next) => {
       confirmation_method: 'automatic',
     });
 
-    const subscriptionEndDate = new Date(subscription.current_period_end * 1000);
-    const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    // const subscriptionEndDate = new Date(subscription.current_period_end * 1000);
+    // const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
 
 
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
@@ -149,8 +142,7 @@ const addTransactionApi = async (req, res, next) => {
         amount: amount,
         paymentIntentId: paymentIntent.id,
         clientSecret: paymentIntent.client_secret,
-        stripeSubscriptionEndDate: subscription.current_period_end, // Provide the subscription end date here
-
+        stripeSubscriptionEndDate: subscription.current_period_end,
       });
       console.log("newTransaction", newTransaction)
 
@@ -240,10 +232,6 @@ const getTransactionbyUserId = async (req, res, next) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
-
-
-
 
 module.exports = {
   addTransactionApi,

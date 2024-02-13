@@ -10,6 +10,7 @@ const Owner = require("../models/OwnerModel");
 const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const path = require("path");
+const Transaction = require("../models/TransactionModel");
 
 const addSpecialistApi = async (req, res) => {
   try {
@@ -616,14 +617,6 @@ const registerBusinessApi = async (req, res, next) => {
           cid: "checkedlogin_1",
         },
       ],
-      //  `<p>Dear ${user.name},<br /><br />We are pleased to inform you that
-      // a new business has been successfully created.
-      // Thank you for choosing ${myBusiness.name}.<br /><br />
-      // For your reference, here are some important details:<br />
-      // - Business Website: www.business/${slug} <br />
-      // - Date of Creation: ${myBusiness.createdAt}<br /><br />
-      // If you have any questions or require further assistance,
-      //  feel free to contact us.<br /><br />Best Regards,<br />www.makely.com</p>`,
     });
     console.log("user mail send", userMailSend);
 
@@ -864,6 +857,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
+    console.log("user860",user)
 
     if (!user) {
       return res.status(400).json({
@@ -876,6 +870,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
+      console.log("manger873",manager)
       if (!manager) {
         return res.status(400).json({
           status: "error",
@@ -885,12 +880,28 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
       business = await Business.findById(manager.businessId);
 
+      const transactions = await Transaction.find({ businessId: manager.businessId });
+      console.log("transactions8888888888888888888885",transactions)
+      const transactionDates = []; 
+
+      for (const transaction of transactions) {
+        const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
+        const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        console.log("end date of subscription", subscriptionEndDate);
+        console.log("seven days before 28", sevenDaysBefore);
+
+        transactionDates.push(sevenDaysBefore); 
+      }
+
       if (!business) {
         return res.status(400).json({
           status: "error",
           message: "Business not found",
         });
       }
+      business.TransactionDate = transactionDates
+
     } else if (user.role === "admin") {
       const targetSlug = "dummy-business";
       business = await Business.findOne({ slug: targetSlug });
@@ -901,8 +912,11 @@ const getBusinessByUserIdApi = async (req, res, next) => {
           message: "Dummy business not found",
         });
       }
+      // ROLE OF OWNER
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
+      console.log("owner900",owner.ownerId)
+      
       if (!owner) {
         return res.status(400).json({
           status: "error",
@@ -911,7 +925,6 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       }
 
       let businessId = req.body.businessId;
-      // console.log("businessId852", businessId);
 
       if (!businessId) {
         return res.status(400).json({
@@ -922,8 +935,23 @@ const getBusinessByUserIdApi = async (req, res, next) => {
 
       businessId = businessId.replace(/^"(.*)"$/, "$1");
       business = await Business.findById(businessId);
-      // console.log("business862",business)
 
+      // OWNER TRANSACTION HANDLING
+      const transactions = await Transaction.find({ userId: owner.ownerId });
+      console.log("transactions919", transactions);
+
+      const transactionDates = []; 
+
+      for (const transaction of transactions) {
+        const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
+        const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        console.log("end date of subscription", subscriptionEndDate);
+        console.log("seven days before 28", sevenDaysBefore);
+
+        transactionDates.push(sevenDaysBefore); 
+      }
+      business.TransactionDate = transactionDates
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -1333,6 +1361,7 @@ const businessData = async (businessData) => {
     bookingService: businessData.bookingService,
     websiteService: businessData.websiteService,
     requestStatus: businessData.requestStatus,
+    timeSlots: businessData.timeSlots,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleId: businessData.googleId,
@@ -1345,6 +1374,7 @@ const businessData = async (businessData) => {
     color: businessData.color,
     amount: businessData.amount,
     rejectreason: businessData.rejectreason,
+    TransactionDate:businessData.TransactionDate,
   };
 };
 
@@ -1353,14 +1383,9 @@ const getBusinessByServiceType = async (req, res, next) => {
   try {
     const { serviceTypeSlug, minPrice, maxPrice } = req.body;
     let myServiceTypeId = null;
-    // if (!serviceTypeSlug) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Service Type Slug is required",
-    //   });
-    // }
+   
     if (serviceTypeSlug) {
-      const mySelectedServiceType = await ServiceType.cdcfindOne({
+      const mySelectedServiceType = await ServiceType.findOne({
         slug: serviceTypeSlug,
       });
 
@@ -1374,7 +1399,6 @@ const getBusinessByServiceType = async (req, res, next) => {
     }
 
     let myBusinessIds = [];
-    // const services = await Service.find({ typeId: mySelectedServiceType._id, price });
 
     const services = await Service.find({
       typeId: myServiceTypeId ? myServiceTypeId : { $ne: null },
@@ -1382,7 +1406,6 @@ const getBusinessByServiceType = async (req, res, next) => {
         minPrice && maxPrice ? { $gte: minPrice, $lte: maxPrice } : { $gte: 0 },
     });
     console.log("services", services);
-    // const myBusinessIds = services.map((service) => service.businessId);
 
     await Promise.all(
       services.map(async (service) => {
@@ -1463,3 +1486,25 @@ const getSpecialistData = async (data) => {
   };
   return mySpecialistData;
 };
+
+// const checkSubscriptions = async () => {
+//   try {
+//     const transactions = await Transaction.find();
+//     console.log("transactions19", transactions);
+//     const currentDate = new Date();
+
+//     for (const transaction of transactions) {
+//       const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
+//       const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+      
+//       console.log("end date of subscription", subscriptionEndDate);
+//       console.log("seven days before 28", sevenDaysBefore);
+       
+//       if (currentDate.getTime() >= sevenDaysBefore.getTime()) {
+//         console.log(`Show popup notification to user ${transaction.userId} about the subscription ending soon.`);
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error in checking subscriptions:", error);
+//   }
+// };

@@ -30,6 +30,19 @@ const ownerSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  
+  timeSlots: {
+    type: [
+      {
+        day: String,
+        startTime: String,
+        endTime: String,
+        active: Boolean,
+      },
+    ],
+    // required: [true, "TimeSlots is required"],
+    trim: true,
+  },
 
   bannerText: {
     type: String,
