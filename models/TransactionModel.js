@@ -15,7 +15,10 @@ const transactionSchema = new mongoose.Schema({
   verificationCode: {
     type: Number,
   },
-
+  stripeSubscriptionEndDate: {
+    type: Number,
+    required: true
+},
   name: {
     type: String,
     required: [true, "Cardholder Name is required"],

@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const businessSchema = new mongoose.Schema({
-  businessId:{
-    type:String,
+  businessId: {
+    type: String,
   },
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,9 +29,21 @@ const businessSchema = new mongoose.Schema({
         active: Boolean,
       },
     ],
-    // required: [true, "TimeSlots is required"],
+    default: [
+      { day: "Monday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
+      { day: "Tuesday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
+      { day: "Wednesday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
+      { day: "Thursday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
+      { day: "Friday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
+      { day: "Saturday", startTime: "07:00 AM", endTime: "04:00 PM", active: true },
+    ],
     trim: true,
   },
+
+  TransactionDates: [{
+    type: Date,
+  }],
+
   slug: {
     type: String,
     required: [true, "Slug is required"],
