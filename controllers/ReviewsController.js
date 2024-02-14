@@ -27,10 +27,6 @@
 // const url = 'https://www.google.com/maps/place/Massage+Envy/@28.4823101,-81.5046458,11z/data=!4m10!1m2!2m1!1smassage+envy+orlando!3m6!1s0x88e77b74af2ff56f:0xfe39ab793ddbce80!8m2!3d28.515467!4d-81.378958!15sChRtYXNzYWdlIGVudnkgb3JsYW5kbyIDiAEBkgELbWFzc2FnZV9zcGHgAQA!16s%2Fg%2F1tfv1ct3?entry=ttu';
 // scrapeBusinessInfo(url);
 
-   
-
-
-
 // const getAllReviews = async (req, res) => {
 
 //   try {
@@ -323,23 +319,6 @@ const myReviews = [
       "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
     deletedAt: null,
   },
-
-  // {
-  //   name: "Review 3",
-  //   message: "not bad.",
-  //   rating: 2.0,
-  //   image:
-  //     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
-  //   deletedAt: null,
-  // },
-  // {
-  //   name: "Review 4",
-  //   message: "This is a test review 2.",
-  //   rating: 4.0,
-  //   image:
-  //     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
-  //   deletedAt: null,
-  // },
 ];
 
 

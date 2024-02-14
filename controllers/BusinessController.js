@@ -881,9 +881,8 @@ const getBusinessByUserIdApi = async (req, res, next) => {
       business = await Business.findById(manager.businessId);
 
       const transactions = await Transaction.find({ businessId: manager.businessId });
-      console.log("transactions8888888888888888888885",transactions)
       const transactionDates = []; 
-
+      
       for (const transaction of transactions) {
         const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
         const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
