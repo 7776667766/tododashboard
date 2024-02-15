@@ -192,7 +192,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
   }
 };
 
-const updateBookingApi = async (req, res, next) => {
+const updateBookingApi = async (req, res) => {
   try {
     const { bookingId } = req.params;
     const { id } = req.user;
@@ -533,7 +533,6 @@ const cancelBookingApi = async (req, res, next) => {
     
           </body>
            
-        
       </html>
       `,
     });
@@ -543,7 +542,7 @@ const cancelBookingApi = async (req, res, next) => {
       return res.status(500).json({
         status: "error",
         message: "Error sending confirmation emails",
-      });
+      });  
     }
 
     const updateddata = await getBookingData(updatedBooking);

@@ -108,7 +108,6 @@ const addTransactionApi = async (req, res, next) => {
     // const subscriptionEndDate = new Date(subscription.current_period_end * 1000);
     // const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
     console.log(
       exp_month,
@@ -238,13 +237,10 @@ module.exports = {
   getTransactionbyUserId,
 };
 
-
-
 // const addTransactionApi = async (req, res, next) => {
 //   try {
 //     const { id } = req.user;
 //     const { name, token, subscriptionPlan, check, price, phoneNumber } = req.body;
-
 //     // Validate request payload
 //     if (!id || !name || !token || !subscriptionPlan || !phoneNumber) {
 //       return res.status(400).json({

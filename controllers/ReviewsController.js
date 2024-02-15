@@ -320,23 +320,6 @@ const myReviews = [
       "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
     deletedAt: null,
   },
-
-  // {
-  //   name: "Review 3",
-  //   message: "not bad.",
-  //   rating: 2.0,
-  //   image:
-  //     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
-  //   deletedAt: null,
-  // },
-  // {
-  //   name: "Review 4",
-  //   message: "This is a test review 2.",
-  //   rating: 4.0,
-  //   image:
-  //     "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
-  //   deletedAt: null,
-  // },
 ];
 
 const getAllReviews = (req, res) => {
