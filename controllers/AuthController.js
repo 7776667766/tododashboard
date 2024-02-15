@@ -14,6 +14,7 @@ const path = require("path");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
+  console.log("req.body ",req.body)
   try {
     const {
       name,
@@ -38,11 +39,20 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Invalid email" });
     }
 
-    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+    const { countryCode, phoneNumber } = phone;
+
+    if (!countryCode || !phoneNumber) {
       return res
         .status(400)
-        .json({ status: "error", message: "Invalid phone number" });
+        .json({ status: "error", message: "Phone object is incomplete" });
     }
+  
+
+    // if (!validator.isMobilePhone(`+${countryCode}${phoneNumber}`, "any", { strictMode: true })) {
+    //   return res
+    //     .status(400)
+    //     .json({ status: "error", message: "Invalid phone number" });
+    // }
 
     if (password.length < 8) {
       return res
@@ -81,11 +91,15 @@ const registerApi = async (req, res, next) => {
     const user = await User.create({
       email,
       name,
-      phone,
+      phone: {
+        countryCode,
+        phoneNumber,
+      },
       image: req.file.path,
       role,
       password,
     });
+    console.log("user102",user)
 
     if (role === "owner") {
       const OwnerData = await Owner.create({
@@ -163,13 +177,9 @@ const registerApi = async (req, res, next) => {
       <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
       
       <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
-      </div>
-            
-          </div>
-    
-          </body>
-           
-        
+      </div>           
+          </div>    
+          </body>  
       </html>
       `,
     });
@@ -368,16 +378,19 @@ const checkTokenIsValidApi = async (req, res, next) => {
 };
 
 const verifyOtpApi = async (req, res, next) => {
+  console.log("381req....body....",req.body)
   try {
-    const { phone, otp, type } = req.body;
-    if (!phone || !otp) {
+    const { phone , otp, type } = req.body;
+    if (!phone || !otp) { 
       return res
         .status(400)
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
+    const phone1=phone.phoneNumber
+    console.log("phone1111391",phone1)
     const otpDoc = await Otp.findOne({
-      phone,
+      phone1,
       otp,
     }).sort({ $natural: 1 });
     if (!otpDoc) {

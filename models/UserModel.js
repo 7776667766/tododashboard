@@ -15,11 +15,16 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
   },
   phone: {
-    type: String,
-    required: [true, "Phone is required"],
-    trim: true,
-    unique: true,
+    countryCode: {
+      type: String,
+    },
+    phoneNumber: {
+      type: String,
+      trim: true,
+      unique: true,
+    },
   },
+
   image: {
     type: String,
     default: "/uploads/user-image.jpg",
