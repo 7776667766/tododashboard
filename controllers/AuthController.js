@@ -438,208 +438,208 @@ const verifyOtpApi = async (req, res, next) => {
   }
 };
 
-// const forgetPasswordApi = async (req, res, next) => {
-//   try {
-//     const { phone } = req.body;
-//     if (!phone) {
-//       return res
-//         .status(400)
-//         .json({ status: "error", message: "Phone is required" });
-//     }
-//     if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-//       return res
-//         .status(400)
-//         .json({ status: "error", message: "Invalid phone number" });
-//     }
-//     const user = await User.findOne({ phone });
-//     if (!user) {
-//       return res
-//         .status(400)
-//         .json({ status: "error", message: "Phone not exist" });
-//     } else {
-
-//       const otp = await createOTPFun(user.phone);
-
-//       try {
-//         await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
-//         console.log(user.phone)
-//         console.log('SMS sent successfully');
-//       } catch (smsError) {
-//         console.error('Error sending SMS:', smsError.message);
-
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Error in sending SMS",
-//         });
-//       }
-
-//       const mailSend = await sendEmail({
-//         email: user.email,
-//         subject: "OTP for forget password",
-//         text: `Your OTP for forget password is ${otp}`,
-//         html: `<p>
-//         Your Makely Pro OTP ( One Time Passcode ) For Forget Password is : <b>${otp}</b>.
-//         <br />
-// OTP Is Valid For 05 Mins
-// <br />
-// Please Don't Share Your OTP With Anyone For Your Account Security
-// <br />
-// Thank You
-//         </p>`,
-//       });
-//       if (!mailSend) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Error in sending email",
-//         });
-//       }
-//       res.status(201).json({
-//         status: "success",
-//         message: "OTP sent successfully",
-//       });
-//     }
-//   } catch (error) {
-//     console.log("Error in forget password", error);
-//     res.status(400).json({ status: "error", message: error.message });
-//   }
-// };
-
 const forgetPasswordApi = async (req, res, next) => {
   try {
-    const { phone, email } = req.body;
-
-    if (!phone && !email) {
+    const { phone } = req.body;
+    console.log("phone 432", phone);
+    if (!phone) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone or email is required" });
+        .json({ status: "error", message: "Phone is required" });
     }
-
-    let user;
-
-    if (phone) {
-      if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-        return res
-          .status(400)
-          .json({ status: "error", message: "Invalid phone number" });
-      }
-      user = await User.findOne({ phone });
-    } else {
-      user = await User.findOne({ email });
-    }
-
+    // if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+    //   return res
+    //     .status(400)
+    //     .json({ status: "error", message: "Invalid phone number" });
+    // }
+    const user = await User.findOne({
+      $or: [{ email: phone }, { phone: phone }],
+    });
+    console.log("phone 442", user);
     if (!user) {
       return res
         .status(400)
-        .json({ status: "error", message: "User not found" });
-    }
-
-    const otp = await createOTPFun(user.phone);
-
-    let sendingResult;
-
-    if (phone) {
-      try {
-        await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
-        console.log("user phone", user.phone);
-        sendingResult = "SMS sent successfully";
-      } catch (smsError) {
-        console.error("Error sending SMS:", smsError.message);
-        sendingResult = "Error in sending SMS";
-      }
+        .json({ status: "error", message: "Invalid Credientials" });
     } else {
+      const otp = await createOTPFun(user.phone);
+
+      // try {
+      //   await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
+      //   console.log(user.phone);
+      //   console.log("SMS sent successfully");
+      // } catch (smsError) {
+      //   console.error("Error sending SMS:", smsError.message);
+
+      //   return res.status(400).json({
+      //     status: "error",
+      //     message: "Error in sending SMS",
+      //   });
+      // }
+
       const mailSend = await sendEmail({
         email: user.email,
         subject: "OTP for forget password",
         text: `Your OTP for forget password is ${otp}`,
-        html: `<!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Document</title>
-        
-            <style>
-    
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
-    
-    /* Default styles outside of media query */
-  
-  
-    /* Media query for screen width up to 768px */
-    @media screen and (max-width: 800px) {
-      .para-makely1{
-        font-size: 0.625rem !important;
-        line-height: 19px !important;
-        
-      }
-      .para-makely{
-        font-size: 0.625rem !important;
-        
-        
-      }
-      .hole-container{
-        padding-left: 0px !important;
-        padding-right: 8px !important;
-      }
-      body{
-        
-        padding-top:10px !important;
-        padding-bottom:10px !important;
-        padding-right:20px !important;
-        padding-left:20px !important;
-      }
-      .card-wdth{
-        max-width: 400px !important;
-    
-      }
-    }
-  </style>
-          </head>
-          <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
-           
-              <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
-                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
-                </div>
-            <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Forget Password  </p></div>
-            <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-            <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
-        
-        <div><p class="para-makely" style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
-        <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
-        <span style="font-size:30px;margin:auto">${otp}</span>
-          <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
-        </div>
-        <div class="para-makely" style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
-        <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
-        
-        <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
-        </div>
-              
-            </div>
-      
-            </body>
-             
-          
-        </html>
-        `,
+        html: `<p>
+        Your Makely Pro OTP ( One Time Passcode ) For Forget Password is : <b>${otp}</b>.
+        <br />
+OTP Is Valid For 05 Mins
+<br />
+Please Don't Share Your OTP With Anyone For Your Account Security
+<br />
+Thank You
+        </p>`,
       });
-
       if (!mailSend) {
-        sendingResult = "Error in sending email";
-      } else {
-        sendingResult = "Email sent successfully";
+        return res.status(400).json({
+          status: "error",
+          message: "Error in sending email",
+        });
       }
+      res.status(201).json({
+        status: "success",
+        message: "OTP sent successfully",
+      });
     }
-
-    res.status(201).json({
-      status: "success",
-      message: `OTP sent successfully. ${sendingResult}`,
-    });
   } catch (error) {
     console.log("Error in forget password", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
+// const forgetPasswordApi = async (req, res, next) => {
+//   try {
+//     const { phone, email } = req.body;
+
+//     if (!phone && !email) {
+//       return res
+//         .status(400)
+//         .json({ status: "error", message: "Phone or email is required" });
+//     }
+
+//     let user;
+
+//     if (phone) {
+//       if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+//         return res
+//           .status(400)
+//           .json({ status: "error", message: "Invalid phone number" });
+//       }
+//       user = await User.findOne({ phone });
+//     } else {
+//       user = await User.findOne({ email });
+//     }
+
+//     if (!user) {
+//       return res
+//         .status(400)
+//         .json({ status: "error", message: "User not found" });
+//     }
+
+//     const otp = await createOTPFun(user.phone);
+
+//     let sendingResult;
+
+//     if (phone) {
+//       try {
+//         await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
+//         console.log("user phone", user.phone);
+//         sendingResult = "SMS sent successfully";
+//       } catch (smsError) {
+//         console.error("Error sending SMS:", smsError.message);
+//         sendingResult = "Error in sending SMS";
+//       }
+//     } else {
+//       const mailSend = await sendEmail({
+//         email: user.email,
+//         subject: "OTP for forget password",
+//         text: `Your OTP for forget password is ${otp}`,
+//         html: `<!DOCTYPE html>
+//         <html lang="en">
+//           <head>
+//             <meta charset="UTF-8" />
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+//             <title>Document</title>
+
+//             <style>
+
+//     @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+
+//     /* Default styles outside of media query */
+
+//     /* Media query for screen width up to 768px */
+//     @media screen and (max-width: 800px) {
+//       .para-makely1{
+//         font-size: 0.625rem !important;
+//         line-height: 19px !important;
+
+//       }
+//       .para-makely{
+//         font-size: 0.625rem !important;
+
+//       }
+//       .hole-container{
+//         padding-left: 0px !important;
+//         padding-right: 8px !important;
+//       }
+//       body{
+
+//         padding-top:10px !important;
+//         padding-bottom:10px !important;
+//         padding-right:20px !important;
+//         padding-left:20px !important;
+//       }
+//       .card-wdth{
+//         max-width: 400px !important;
+
+//       }
+//     }
+//   </style>
+//           </head>
+//           <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
+
+//               <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
+//                 <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
+//                 </div>
+//             <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Forget Password  </p></div>
+//             <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;">
+//             <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
+
+//         <div><p class="para-makely" style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
+//         <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
+//         <span style="font-size:30px;margin:auto">${otp}</span>
+//           <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
+//         </div>
+//         <div class="para-makely" style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
+//         <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
+
+//         <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
+//         </div>
+
+//             </div>
+
+//             </body>
+
+//         </html>
+//         `,
+//       });
+
+//       if (!mailSend) {
+//         sendingResult = "Error in sending email";
+//       } else {
+//         sendingResult = "Email sent successfully";
+//       }
+//     }
+
+//     res.status(201).json({
+//       status: "success",
+//       message: `OTP sent successfully. ${sendingResult}`,
+//     });
+//   } catch (error) {
+//     console.log("Error in forget password", error);
+//     res.status(400).json({ status: "error", message: error.message });
+//   }
+// };
 
 const resetPasswordApi = async (req, res, next) => {
   try {
