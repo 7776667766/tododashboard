@@ -198,6 +198,7 @@ const getTransactionbyUserId = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
+    console.log("id201 ",id)
     const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({
@@ -205,8 +206,9 @@ const getTransactionbyUserId = async (req, res, next) => {
         message: "User not found",
       });
     }
-
+    console.log(user, "user209");
     console.log(user.role, "user.role");
+
     if (user.role !== "admin" && user.role !== "owner") {
       return res.status(400).json({
         status: "error",
@@ -226,6 +228,7 @@ const getTransactionbyUserId = async (req, res, next) => {
       status: "success",
       data: adminTransaction,
     });
+    console.log("adminTracsaction230pro",adminTransaction)
   } catch (error) {
     console.log("Error in get transaction by user id", error);
     res.status(400).json({ status: "error", message: error.message });
