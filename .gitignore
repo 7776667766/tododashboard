@@ -2,3 +2,5 @@
 /uploads
 .env
 .vercel
+
+/util/imgFullPath.js
