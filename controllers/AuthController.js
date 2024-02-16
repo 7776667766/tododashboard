@@ -14,13 +14,13 @@ const path = require("path");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
-  console.log("req.body ",req.body)
+  console.log("req.body",req.body)
   try {
     const {
-      name,
-      email,
-      phone,
-      password,
+      name,                     
+      email,          
+      phone,  
+      password, 
       confirmPassword,
       role,
       bookingService,
@@ -39,15 +39,15 @@ const registerApi = async (req, res, next) => {
         .json({ status: "error", message: "Invalid email" });
     }
 
-    const { countryCode, phoneNumber } = phone;
+    const { code
+      , number } = phone;
 
-    if (!countryCode || !phoneNumber) {
+    if (!code || !number) {
       return res
         .status(400)
         .json({ status: "error", message: "Phone object is incomplete" });
     }
   
-
     // if (!validator.isMobilePhone(`+${countryCode}${phoneNumber}`, "any", { strictMode: true })) {
     //   return res
     //     .status(400)
@@ -92,8 +92,8 @@ const registerApi = async (req, res, next) => {
       email,
       name,
       phone: {
-        countryCode,
-        phoneNumber,
+        code,
+        number,
       },
       image: req.file.path,
       role,
@@ -139,7 +139,6 @@ const registerApi = async (req, res, next) => {
     .para-makely{
       font-size: 0.625rem !important;
       
-      
     }
     .hole-container{
       padding-left: 0px !important;
@@ -153,8 +152,7 @@ const registerApi = async (req, res, next) => {
       padding-left:20px !important;
     }
     .card-wdth{
-      max-width: 400px !important;
-  
+      max-width: 400px !important;  
     }
   }
 </style>
@@ -205,18 +203,6 @@ const registerApi = async (req, res, next) => {
   }
 };
 
-// const getImageBase64 = (imagePath) => {
-//   return new Promise((resolve, reject) => {
-//     fs.readFile(imagePath, (err, data) => {
-//       if (err) {
-//         reject(err);
-//       } else {
-//         const base64Image = Buffer.from(data).toString('base64');
-//         resolve(base64Image);
-//       }
-//     });
-//   });
-// };
 const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
 console.log(imagePath);
 const loginApi = async (req, res, next) => {
@@ -387,7 +373,7 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "error", message: "Phone and otp are required" });
     }
 
-    const phone1=phone.phoneNumber
+    const phone1=phone.number
     console.log("phone1111391",phone1)
     const otpDoc = await Otp.findOne({
       phone1,
@@ -467,7 +453,7 @@ const forgetPasswordApi = async (req, res, next) => {
       //   await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
       //   console.log(user.phone);
       //   console.log("SMS sent successfully");
-      // } catch (smsError) {
+      // } catch (smsError) {      
       //   console.error("Error sending SMS:", smsError.message);
 
       //   return res.status(400).json({

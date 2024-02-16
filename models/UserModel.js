@@ -15,10 +15,10 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
   },
   phone: {
-    countryCode: {
+    code: {
       type: String,
     },
-    phoneNumber: {
+    number: {
       type: String,
       trim: true,
       unique: true,
