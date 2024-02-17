@@ -14,13 +14,13 @@ const path = require("path");
 require("dotenv").config();
 
 const registerApi = async (req, res, next) => {
-  console.log("req.body",req.body)
+  console.log("req.body", req.body)
   try {
     const {
-      name,                     
-      email,          
-      phone,  
-      password, 
+      name,
+      email,
+      phone,
+      password,
       confirmPassword,
       role,
       bookingService,
@@ -47,7 +47,7 @@ const registerApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Phone object is incomplete" });
     }
-  
+
     // if (!validator.isMobilePhone(`+${countryCode}${phoneNumber}`, "any", { strictMode: true })) {
     //   return res
     //     .status(400)
@@ -99,7 +99,7 @@ const registerApi = async (req, res, next) => {
       role,
       password,
     });
-    console.log("user102",user)
+    console.log("user102", user)
 
     if (role === "owner") {
       const OwnerData = await Owner.create({
@@ -206,16 +206,21 @@ const registerApi = async (req, res, next) => {
 const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
 console.log(imagePath);
 const loginApi = async (req, res, next) => {
+  console.log("req of login", req.body)
   try {
-    const { phone, password } = req.body;
-    if (!phone || !password) {
+    const { email, password } = req.body;
+    if (!email || !password) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields is required" });
     }
-    const user = await User.findOne({
-      $or: [{ email: phone }, { phone: phone }],
-    });
+    // const user = await User.findOne({
+    //   $or: [{ email: phone }, { email: phone }],
+    // });
+
+    const user = await User.findOne({ email });
+    console.log("user224", user)
+
 
     if (!user) {
       return res
@@ -232,96 +237,98 @@ const loginApi = async (req, res, next) => {
         }
       }
 
-      const otp = await createOTPFun(user.phone);
+      const otp = await createOTPFun(user.email);
 
-      const mailSend = await sendEmail({
-        email: user.email,
-        subject: "OTP for login",
-        text: `Your OTP for login is ${otp}`,
-        html: `<!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Document</title>
-        
-            <style>
-    
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
-    
-    /* Default styles outside of media query */
- 
+      console.log("otp236", otp)
 
-    /* Media query for screen width up to 768px */
-    @media screen and (max-width: 800px) {
-      .para-makely1{
-        font-size: 0.625rem !important;
-        line-height: 19px !important;
-        
-      }
-      .para-makely{
-        font-size: 0.625rem !important;
-        
-        
-      }
-      .hole-container{
-        padding-left: 0px !important;
-        padding-right: 8px !important;
-      }
-      body{
-        background-color: white !important;
-        padding-top:10px !important;
-        padding-bottom:10px !important;
-        padding-right:20px !important;
-        padding-left:20px !important;
-      }
-      .card-wdth{
-        max-width: 400px !important;
-    
-      }
-    }
-  </style>
-          </head>
-          <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
-           
-              <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
-                <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
-                </div>
-            <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Let’s Sign You In  </p></div>
-            <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
-            <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
-        
-        <div><p class="para-makely" style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
-        <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
-        <span style="font-size:30px;margin:auto">${otp}</span>
-          <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
-        </div>
-        <div class="para-makely" style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
-        <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
-        
-        <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
-        </div>
-              
-            </div>
-      
-            </body>
-             
-          
-        </html>
-        `,
+      //     const mailSend = await sendEmail({
+      //       email: user.email,
+      //       subject: "OTP for login",
+      //       text: `Your OTP for login is ${otp}`,
+      //       html: `<!DOCTYPE html>
+      //       <html lang="en">
+      //         <head>
+      //           <meta charset="UTF-8" />
+      //           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      //           <title>Document</title>
 
-        headers: {
-          "Content-Type": "multipart/mixed",
-          "Content-Disposition": "inline",
-        },
-      });
+      //           <style>
 
-      if (!mailSend) {
-        return res.status(400).json({
-          status: "error",
-          message: "Error in sending email",
-        });
-      }
+      //   @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+
+      //   /* Default styles outside of media query */
+
+
+      //   /* Media query for screen width up to 768px */
+      //   @media screen and (max-width: 800px) {
+      //     .para-makely1{
+      //       font-size: 0.625rem !important;
+      //       line-height: 19px !important;
+
+      //     }
+      //     .para-makely{
+      //       font-size: 0.625rem !important;
+
+
+      //     }
+      //     .hole-container{
+      //       padding-left: 0px !important;
+      //       padding-right: 8px !important;
+      //     }
+      //     body{
+      //       background-color: white !important;
+      //       padding-top:10px !important;
+      //       padding-bottom:10px !important;
+      //       padding-right:20px !important;
+      //       padding-left:20px !important;
+      //     }
+      //     .card-wdth{
+      //       max-width: 400px !important;
+
+      //     }
+      //   }
+      // </style>
+      //         </head>
+      //         <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
+
+      //             <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
+      //               <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
+      //               </div>
+      //           <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Let’s Sign You In  </p></div>
+      //           <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
+      //           <div style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;"><p>Dear User,</p></div>
+
+      //       <div><p class="para-makely" style="color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif;padding-top:13px;">Thank you for choosing MAKELY PRO. Use This One Time Passcode (OTP) to complete your Sign Up Procedure & Verify Your Accont on MAKELY PRO.</p></div>
+      //       <div style="height: 70px;background-color: rgb(206, 246, 232);border: none;outline: none;width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;display:flex;justify-content:center;align-items: center;padding:5px;margin-top:15px">
+      //       <span style="font-size:30px;margin:auto">${otp}</span>
+      //         <!-- <input type="tel" id="otp" name="otp" maxlength="6" style="border: none;outline: none;text-align: center;height: 70px;background-color: rgb(206, 246, 232);width: 100%;letter-spacing: 10px;font-size: 40px;font-weight: 600;" > -->
+      //       </div>
+      //       <div class="para-makely" style="padding-top: 13px; color: #303030;font-size: 14px;font-family: 'Poppins', sans-serif"><p>This OTP is Valid For 05 Mins</p></div>
+      //       <div ><p class="para-makely" style="color: #FF5151;font-size: 14px;font-family: 'Poppins', sans-serif;">“Please Don't Share Your OTP With Anyone For Your Account <br> Security.”</p></div>
+
+      //       <p class="para-makely" style="color: #303030 ;font-size: 14px;font-weight: 600;font-size: 18px;font-family: 'Poppins', sans-serif;padding-top:12px">Thank You</p>
+      //       </div>
+
+      //           </div>
+
+      //           </body>
+
+
+      //       </html>
+      //       `,
+
+      //       headers: {
+      //         "Content-Type": "multipart/mixed",
+      //         "Content-Disposition": "inline",
+      //       },
+      //     });
+
+      //     if (!mailSend) {
+      //       return res.status(400).json({
+      //         status: "error",
+      //         message: "Error in sending email",
+      //       });
+      //     }
       const token = createSecretToken({ id: user._id });
       const userData = await getUserData(user);
 
@@ -364,21 +371,23 @@ const checkTokenIsValidApi = async (req, res, next) => {
 };
 
 const verifyOtpApi = async (req, res, next) => {
-  console.log("381req....body....",req.body)
+  console.log("381req....body....", req.body)
   try {
-    const { phone , otp, type } = req.body;
-    if (!phone || !otp) { 
+    let { email, otp, type } = req.body;
+    if (!email || !otp) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone and otp are required" });
+        .json({ status: "error", message: "Email and otp are required" });
     }
-
-    const phone1=phone.number
-    console.log("phone1111391",phone1)
+    email = email.replace(/"/g, '');
+    console.log("Email", email)
     const otpDoc = await Otp.findOne({
-      phone1,
+      email,
       otp,
     }).sort({ $natural: 1 });
+
+    console.log("otpDoc381", otpDoc)
+
     if (!otpDoc) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
@@ -398,17 +407,20 @@ const verifyOtpApi = async (req, res, next) => {
         .json({ status: "success", message: "OTP verified successfully" });
     }
 
-    let user = await User.findOne({ phone });
-    if (!user) {
+    let user = await User.findOne({ email });
+    console.log("411 user", user)
+    if (!email) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
     if (user.verified === false) {
-      await User.updateOne({ phone }, { verified: true, verifyAt: new Date() });
+      await User.updateOne({ email }, { verified: true, verifyAt: new Date() });
+
       user.verified = true;
       user.verifyAt = new Date();
     }
     const token = createSecretToken({ id: user._id });
     const userData = await getUserData(user);
+    console.log("userData423",userData)
 
     res.status(200).json({
       status: "success",
