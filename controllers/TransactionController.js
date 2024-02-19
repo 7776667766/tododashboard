@@ -12,28 +12,6 @@ const createSubscription = async (customerId, priceId) => {
   return subscription;
 };
 
-// const checkSubscriptions = async () => {
-//   try {
-//     const transactions = await Transaction.find();
-//     console.log("transactions19", transactions);
-//     const currentDate = new Date();
-
-//     for (const transaction of transactions) {
-//       const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
-//       const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
-//       console.log("end date of subscription", subscriptionEndDate);
-//       console.log("seven days before 28", sevenDaysBefore);
-       
-//       if (currentDate.getTime() >= sevenDaysBefore.getTime()) {
-//         console.log(`Show popup notification to user ${transaction.userId} about the subscription ending soon.`);
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error in checking subscriptions:", error);
-//   }
-// };
-
 const addTransactionApi = async (req, res, next) => {
   try {
     const { id } = req.user;

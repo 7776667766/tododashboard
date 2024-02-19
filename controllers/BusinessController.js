@@ -1206,7 +1206,7 @@ const handleCustomBusinessApi = async (req, res) => {
 
     const myCustomBusiness = await businessData(myCustomBusinessData);
 
-    console.log("Checking MYBuisness Payload ", myCustomBusiness);
+    console.log("Checking My Buisness Payload ", myCustomBusiness);
     res.status(200).json({
       status: "success",
       data: myCustomBusiness,
@@ -1265,14 +1265,14 @@ const handleCancelBusinessApi = async (req, res) => {
 
     const myCustomBusiness = await businessData(myCustomBusinessData);
 
-    console.log("Checking MYBuisness Payload ", myCustomBusiness);
+    console.log("Checking My Buisness Payload ", myCustomBusiness);
     res.status(200).json({
       status: "success",
       data: myCustomBusiness,
-      message: "Reason Send and Status Updated successfully",
+      message: "Reason Send and Status Updated Successfully",
     });
   } catch (error) {
-    console.log("Error in Sending and Updating business", error);
+    console.log("Error in Sending and Updating Business", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
@@ -1332,12 +1332,12 @@ const customizeThemeApi = async (req, res, next) => {
     );
 
     const myCustomBusinessData = await Business.findOne({ _id: businessId });
-
+    
     const myCustomBusiness = await businessData(myCustomBusinessData);
     res.status(200).json({
       status: "success",
       data: myCustomBusiness,
-      message: "Theme Updated successfully",
+      message: "Theme Updated Successfully",
     });
   } catch (error) {
     console.log("Error in Updating Theme", error);
@@ -1484,6 +1484,7 @@ const getSpecialistData = async (data) => {
     email: data.email,
   };
   return mySpecialistData;
+  con
 };
 
 // const checkSubscriptions = async () => {

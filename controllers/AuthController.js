@@ -420,7 +420,7 @@ const verifyOtpApi = async (req, res, next) => {
     }
     const token = createSecretToken({ id: user._id });
     const userData = await getUserData(user);
-    console.log("userData423",userData)
+    console.log("userData423", userData)
 
     res.status(200).json({
       status: "success",
@@ -451,15 +451,16 @@ const forgetPasswordApi = async (req, res, next) => {
     //     .json({ status: "error", message: "Invalid phone number" });
     // }
     const user = await User.findOne({
-      $or: [{ email: phone }, { phone: phone }],
+      $or: [{ email: phone }],
     });
     console.log("phone 442", user);
+    
     if (!user) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid Credientials" });
     } else {
-      const otp = await createOTPFun(user.phone);
+      const otp = await createOTPFun(user.email);
 
       // try {
       //   await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
@@ -640,18 +641,20 @@ Thank You
 // };
 
 const resetPasswordApi = async (req, res, next) => {
+  console.log("req.body of reset password" , req.body)
   try {
-    const { password, confirmPassword, phone } = req.body;
-    if (!phone || !password || !confirmPassword) {
+    const { password, confirmPassword, email } = req.body;
+
+    if (!email || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
     }
-    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid phone number" });
-    }
+    // if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+    //   return res
+    //     .status(400)
+    //     .json({ status: "error", message: "Invalid phone number" });
+    // }
     if (password.length < 8) {
       return res
         .status(400)
@@ -664,7 +667,7 @@ const resetPasswordApi = async (req, res, next) => {
       });
     }
     await User.updateOne(
-      { phone },
+      { email },
       { password: bcrypt.hashSync(password, 10) }
     );
     res.status(200).json({
