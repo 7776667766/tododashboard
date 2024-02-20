@@ -1,6 +1,5 @@
 const User = require("../models/UserModel");
 const Owner = require("../models/OwnerModel");
-const Business = require("../models/BusinessModal");
 const Otp = require("../models/OtpModel");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
@@ -9,9 +8,9 @@ const { sendEmail } = require("../util/sendEmail");
 const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
 const { sendSMS } = require("../util/twilo");
-const fs = require("fs");
-const path = require("path");
 require("dotenv").config();
+const path = require("path")
+const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
 
 const registerApi = async (req, res, next) => {
   console.log("req.body", req.body)
@@ -203,8 +202,6 @@ const registerApi = async (req, res, next) => {
   }
 };
 
-const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
-console.log(imagePath);
 const loginApi = async (req, res, next) => {
   console.log("req of login", req.body)
   try {
@@ -505,8 +502,6 @@ Thank You
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-
-// const forgetPasswordApi = async (req, res, next) => {
 //   try {
 //     const { phone, email } = req.body;
 

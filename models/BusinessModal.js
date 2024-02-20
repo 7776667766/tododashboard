@@ -1,19 +1,23 @@
 const mongoose = require("mongoose");
 
 const businessSchema = new mongoose.Schema({
+  
   businessId: {
     type: String,
   },
+
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     trim: true,
   },
+
   name: {
     type: String,
     trim: true,
     required: [true, "Name is required"],
   },
+
   email: {
     type: String,
     trim: true,
@@ -61,9 +65,11 @@ const businessSchema = new mongoose.Schema({
   color: {
     type: String,
   },
+
   fontFamily: {
     type: String,
   },
+
   fontSize: {
     type: Number
   },
@@ -71,38 +77,51 @@ const businessSchema = new mongoose.Schema({
   logo: {
     type: String,
   },
+
   phone: {
-    type: String,
-    trim: true,
-    required: [true, "Phone is required"],
+    code: {
+      type: String,
+    },
+    number: {
+      type: String,
+      trim: true,
+      unique: true,
+    },
   },
+
   description: {
     type: String,
     trim: true,
     required: [true, "Description is required"],
   },
+
   address: {
     type: String,
     trim: true,
     required: [true, "Address is required"],
   },
+
   socialLinks: {
     type: Array,
     trim: true,
   },
+
   images: {
     type: Array,
     trim: true,
   },
+
   googleId: {
     type: String,
     trim: true,
   },
+
   requestStatus: {
     type: String,
     enum: ["approved", "rejected", "pending"],
     default: "pending",
   },
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -135,6 +154,7 @@ const businessSchema = new mongoose.Schema({
     enum: ["true", "rejected", "pending"],
     default: "pending",
   },
+
   payment: {
     type: String,
   }

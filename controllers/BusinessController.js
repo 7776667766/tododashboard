@@ -303,13 +303,7 @@ const deleteSpecialistApi = async (req, res, next) => {
 
 const updateSpecialsitApi = async (req, res, next) => {
   try {
-    console.log("req.body", req.body);
-    console.log("req.params", req.params);
-
     const { specialistId } = req.params;
-
-    console.log("specialistId", specialistId);
-
     await Specialist.findOneAndUpdate(
       { _id: specialistId },
       {
@@ -423,6 +417,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
+  console.log("",req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -462,11 +457,11 @@ const registerBusinessApi = async (req, res, next) => {
         message: "User Id is invalid",
       });
     }
-    if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Invalid phone number" });
-    }
+    // if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
+    //   return res
+    //     .status(400)
+    //     .json({ status: "error", message: "Invalid phone number" });
+    // }
     images?.map((image) => {
       if (!validator.isURL(image)) {
         return res.status(400).json({
@@ -544,7 +539,6 @@ const registerBusinessApi = async (req, res, next) => {
     console.log(myBusiness, "myBusinessData111111");
     console.log("user email5511", user.email);
 
-    // Get the absolute path of the image file
     const imagePath = path.resolve(
       __dirname,
       "../uploads/emails/check-icon.png"
@@ -673,7 +667,6 @@ const getAllBusinessApi = async (req, res, next) => {
         businessDataList.push(await businessData(business));
       })
     );
-    console.log("businessDataList", businessDataList);
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -692,7 +685,6 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-    console.log("businessbyowneridusers", id);
 
     if (!user) {
       return res.status(400).json({
@@ -763,8 +755,6 @@ const MultiplebusinessData = async (businessData) => {
   }));
 };
 
-// const getBusinessByUserIdApi = async (req, res, next) => {
-//   try {
 //     if (req.user === undefined) {
 //       return res.status(400).json({ status: "error", message: "Invalid user" });
 //     }
@@ -1487,7 +1477,6 @@ const getSpecialistData = async (data) => {
   con
 };
 
-// const checkSubscriptions = async () => {
 //   try {
 //     const transactions = await Transaction.find();
 //     console.log("transactions19", transactions);
