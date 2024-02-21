@@ -417,7 +417,6 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
-  console.log("",req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -432,9 +431,6 @@ const registerBusinessApi = async (req, res, next) => {
       images,
       socialLinks,
       googleId,
-      // fontFamily,
-      // fontSize,
-      // rejectreason,
       address,
       slug,
     } = req.body;
@@ -457,11 +453,6 @@ const registerBusinessApi = async (req, res, next) => {
         message: "User Id is invalid",
       });
     }
-    // if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-    //   return res
-    //     .status(400)
-    //     .json({ status: "error", message: "Invalid phone number" });
-    // }
     images?.map((image) => {
       if (!validator.isURL(image)) {
         return res.status(400).json({
@@ -535,16 +526,12 @@ const registerBusinessApi = async (req, res, next) => {
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
     });
-
-    console.log(myBusiness, "myBusinessData111111");
     console.log("user email5511", user.email);
-
     const imagePath = path.resolve(
       __dirname,
       "../uploads/emails/check-icon.png"
     );
     console.log(imagePath);
-    console.log("Image path:", imagePath);
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "New Business Created Successfully",
@@ -1436,7 +1423,6 @@ module.exports = {
   addManagerApi,
   // updateManagerApi,
   deleteManagerApi,
-  // getBusinessBybusinessIdApi,
   getBusinessByOwnerIdApi,
   getManagersByBusinessIdApi,
   getAllBusinessApi,
@@ -1474,7 +1460,7 @@ const getSpecialistData = async (data) => {
     email: data.email,
   };
   return mySpecialistData;
-  con
+
 };
 
 //   try {

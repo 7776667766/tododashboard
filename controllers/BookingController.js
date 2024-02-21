@@ -309,7 +309,6 @@ const updateBookingApi = async (req, res) => {
 };
 
 const getBookedTimeSlots = async (req, res, next) => {
-  console.log(req.body, "for booked slots")
   try {
     const { serviceId, date } = req.body;
     if (!serviceId) {
@@ -607,13 +606,9 @@ const completeBookingApi = async (req, res, next) => {
 };
 
 const resehduledBookingApi = async (req, res, next) => {
-  console.log("req.body reseheduled", req.body)
   try {
     const { date, timeSlot } = req.body;
     const { bookingId } = req.params;
-
-    console.log("bookingId for rescheduled booking", bookingId)
-
     const reseheduleBooking = await Booking.findOneAndUpdate(
       { _id: bookingId },
       {

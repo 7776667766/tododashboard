@@ -110,7 +110,7 @@ const registerApi = async (req, res, next) => {
       console.log("FATA OWNER", OwnerData);
     }
 
-    const otp = await createOTPFun(user.phone);
+    const otp = await createOTPFun(user.email);
     const mailSend = await sendEmail({
       email: user.email,
       subject: "OTP for signup",
@@ -127,17 +127,14 @@ const registerApi = async (req, res, next) => {
   
   /* Default styles outside of media query */
 
-
   /* Media query for screen width up to 768px */
   @media screen and (max-width: 800px) {
     .para-makely1{
       font-size: 0.625rem !important;
-      line-height: 19px !important;
-      
+      line-height: 19px !important;  
     }
     .para-makely{
-      font-size: 0.625rem !important;
-      
+      font-size: 0.625rem !important;   
     }
     .hole-container{
       padding-left: 0px !important;
@@ -442,35 +439,17 @@ const forgetPasswordApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Phone is required" });
     }
-    // if (!validator.isMobilePhone(phone, "any", { strictMode: true })) {
-    //   return res
-    //     .status(400)
-    //     .json({ status: "error", message: "Invalid phone number" });
-    // }
     const user = await User.findOne({
       $or: [{ email: phone }],
     });
     console.log("phone 442", user);
-    
+
     if (!user) {
       return res
         .status(400)
         .json({ status: "error", message: "Invalid Credientials" });
     } else {
       const otp = await createOTPFun(user.email);
-
-      // try {
-      //   await sendSMS(user.phone, `Your OTP for forget password is ${otp}`);
-      //   console.log(user.phone);
-      //   console.log("SMS sent successfully");
-      // } catch (smsError) {      
-      //   console.error("Error sending SMS:", smsError.message);
-
-      //   return res.status(400).json({
-      //     status: "error",
-      //     message: "Error in sending SMS",
-      //   });
-      // }
 
       const mailSend = await sendEmail({
         email: user.email,
@@ -636,7 +615,7 @@ Thank You
 // };
 
 const resetPasswordApi = async (req, res, next) => {
-  console.log("req.body of reset password" , req.body)
+  console.log("req.body of reset password", req.body)
   try {
     const { password, confirmPassword, email } = req.body;
 
