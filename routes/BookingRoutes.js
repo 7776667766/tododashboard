@@ -14,7 +14,7 @@ const {
 } = require("../controllers/BookingController");
 
 router.post("/booking/add", auth, addBookingApi);
-// router.update('/booking/update',updateBookingApi)
+
 router.post("/get-my-business-booking", auth, getBookingByBusinessApi);
 
 router.post("/get-booking-Slots", getBookedTimeSlots);
@@ -25,7 +25,5 @@ router.get("/booking/delete/:bookingId", deleteBookingApi);
 router.get("/booking/completed/:bookingId", completeBookingApi);
 router.get("/booking/cancel/:bookingId", auth, cancelBookingApi);
 router.post("/booking/rescheduled/:bookingId", resehduledBookingApi);
-
-// router.get("/get-available-Slots", getRemainingTimeSlots)
 
 module.exports = router;
