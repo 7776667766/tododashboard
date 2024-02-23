@@ -10,7 +10,6 @@ const { businessData } = require("./BusinessController");
 require("dotenv").config();
 
 const addServiceTypeApi = async (req, res, next) => {
-  console.log("req.body", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -113,7 +112,6 @@ const getAllServicesTypeApi = async (req, res, next) => {
 };
 
 const addServiceApi = async (req, res, next) => {
-  // console.log(req.body, "request of services");
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -236,7 +234,6 @@ const addServiceApi = async (req, res, next) => {
 
     const myService = await Service.findOne({ _id: data._id });
     const myServiceData = await getServiceData(myService);
-    // console.log("myServicesData", myServiceData);
     res.status(200).json({
       status: "success",
       data: myServiceData,
@@ -253,14 +250,11 @@ const addServiceApi = async (req, res, next) => {
 };
 
 const updateServiceApi = async (req, res, next) => {
-  console.log(req.file, "----258");
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { serviceId } = req.params;
-    console.log("serviceId264", serviceId)
-
     const { id } = req.user;
     const { businessId, typeId, specialistId } = req.body;
     console.log("req.body 68",typeId)
