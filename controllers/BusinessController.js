@@ -825,7 +825,7 @@ const MultiplebusinessData = async (businessData) => {
 //     res.status(400).json({ status: "error", message: error.message });
 //   }
 // };
-const getBusinessByUserIdApi = async (req, res, next) => {
+const getBusinessByUserIdApi = async (req, res) => {
   console.log("789", req.body);
   try {
     if (req.user === undefined) {
@@ -946,7 +946,7 @@ const getBusinessByUserIdApi = async (req, res, next) => {
   }
 };
 
-const getBusinessDetailBySlugApi = async (req, res, next) => {
+const getBusinessDetailBySlugApi = async (req, res) => {
   try {
     const { slug } = req.params;
     console.log("slug", slug);
@@ -975,7 +975,7 @@ const getBusinessDetailBySlugApi = async (req, res, next) => {
   }
 };
 
-const selectedTheme = async (req, res, next) => {
+const selectedTheme = async (req, res) => {
   console.log("req.body", req.body);
   try {
     if (req.user === undefined) {
@@ -1254,7 +1254,7 @@ const handleCancelBusinessApi = async (req, res) => {
   }
 };
 
-const customizeThemeApi = async (req, res, next) => {
+const customizeThemeApi = async (req, res) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1354,7 +1354,7 @@ const businessData = async (businessData) => {
   };
 };
 
-const getBusinessByServiceType = async (req, res, next) => {
+const getBusinessByServiceType = async (req, res) => {
   console.log("1305", req.body);
   try {
     const { serviceTypeSlug, minPrice, maxPrice } = req.body;
@@ -1412,7 +1412,7 @@ const getBusinessByServiceType = async (req, res, next) => {
   }
 };
 
-const showAllBusinessApi = async (req, res, next) => {};
+const showAllBusinessApi = async (req, res) => {};
 
 module.exports = {
   addSpecialistApi,
@@ -1421,7 +1421,6 @@ module.exports = {
   handleCustomBusinessApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,
-  // updateManagerApi,
   deleteManagerApi,
   getBusinessByOwnerIdApi,
   getManagersByBusinessIdApi,
