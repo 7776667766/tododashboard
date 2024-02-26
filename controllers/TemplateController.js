@@ -1,5 +1,5 @@
 const User = require("../models/UserModel");
-const Template = require("../models/TemplateModal");
+const Template = require("../models/TemplateModal");     
 const slugify = require("slugify");
 const imgFullPath = require("../util/imgFullPath");
 const validator = require("validator");
@@ -24,7 +24,7 @@ const addTemplateApi = async (req, res, next) => {
 
     if (user.role !== "admin") {
       return res.status(400).json({
-        status: "eerror",
+        status: "error",
         message: "You are not authorized to add plan",
       });
     }

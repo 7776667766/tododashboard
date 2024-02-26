@@ -120,44 +120,6 @@ const getSpecialistByBusinessIdApi = async (req, res, next) => {
   }
 };
 
-// const getBusinessBybusinessIdApi = async (req, res, next) => {
-//   try {
-//     const { businessId } = req.params;
-//     if (!businessId) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Business Id is required",
-//       });
-//     }
-//     if (!validator.isMongoId(businessId)) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Business Id is invalid",
-//       });
-//     }
-//     console.log("businessId", businessId)
-
-//     const business = await Business.findById(businessId)
-//     console.log("business", business)
-//     // const businessDataList = [];
-
-//     // await Promise.all(
-//     //   business.map(async (business) => {
-//     //     businessDataList.push(await businessData(business));
-//     //   })
-//     // );
-//     // console.log("businessDataList",businessDataList)
-
-//     res.status(200).json({
-//       status: "success",
-//       data: business,
-//     });
-//   } catch (error) {
-//     console.log("Error in getting all business", error);
-//     res.status(400).json({ status: "error", message: error.message });
-//   }
-// }
-
 const addManagerApi = async (req, res) => {
   try {
     if (req.user === undefined) {
@@ -1000,7 +962,7 @@ const selectedTheme = async (req, res) => {
       });
     }
 
-    const { theme, color, bannerText } = req.body;
+    const { theme, color, bannerText,bannerImg } = req.body;
     if (!theme) {
       return res.status(400).json({
         status: "error",
@@ -1028,7 +990,8 @@ const selectedTheme = async (req, res) => {
           theme: theme,
           color: color,
           bannerText: bannerText,
-          bannerImge: req.file.path,
+          // bannerImge: req.file.path,
+          bannerImg:bannerImg,
         },
       }
     );
@@ -1266,7 +1229,7 @@ const customizeThemeApi = async (req, res) => {
     if (!businessId) {
       return res.status(400).json({
         status: "error",
-        message: "Businsess customize thes ID is required",
+        message: "Businsess customize ID is required",
       });
     }
 
@@ -1276,6 +1239,7 @@ const customizeThemeApi = async (req, res) => {
     console.log("updated Image", themeImg);
 
     const { color, bannerText, fontSize, fontFamily, theme } = req.body;
+
 
     const user = await User.findById(id);
 
