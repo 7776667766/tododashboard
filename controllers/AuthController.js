@@ -94,7 +94,7 @@ const registerApi = async (req, res, next) => {
         code,
         number,
       },
-      image: req.file.path,
+      image: req?.file?.path,
       role,
       password,
     });

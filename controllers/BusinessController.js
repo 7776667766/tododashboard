@@ -874,7 +874,6 @@ const getBusinessByUserIdApi = async (req, res) => {
       businessId = businessId.replace(/^"(.*)"$/, "$1");
       business = await Business.findById(businessId);
 
-      // OWNER TRANSACTION HANDLING
       const transactions = await Transaction.find({ userId: owner.ownerId });
       console.log("transactions919", transactions);
 
@@ -1309,7 +1308,7 @@ const businessData = async (businessData) => {
     slug: businessData.slug,
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
-    bannerImg: imgFullPath(businessData.bannerImg),
+    bannerImg: businessData.bannerImg,
     color: businessData.color,
     amount: businessData.amount,
     rejectreason: businessData.rejectreason,
