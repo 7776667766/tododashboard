@@ -1240,7 +1240,6 @@ const customizeThemeApi = async (req, res) => {
 
     const { color, bannerText, fontSize, fontFamily, theme } = req.body;
 
-
     const user = await User.findById(id);
 
     if (!user) {
