@@ -83,9 +83,6 @@ const addTransactionApi = async (req, res, next) => {
       confirmation_method: 'automatic',
     });
 
-    // const subscriptionEndDate = new Date(subscription.current_period_end * 1000);
-    // const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
     console.log(
       exp_month,
@@ -129,11 +126,6 @@ const addTransactionApi = async (req, res, next) => {
         data: newTransaction,
         newcard,
       });
-
-      // const subscriptionEndDate = new Date(subscription.current_period_end * 1000);
-      // console.log("subscriptionEndDate133", subscriptionEndDate)
-      // const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-      // console.log("sevenDaysBefore123", sevenDaysBefore)
     }
 
   } catch (error) {
@@ -217,116 +209,3 @@ module.exports = {
   addTransactionApi,
   getTransactionbyUserId,
 };
-
-// const addTransactionApi = async (req, res, next) => {
-//   try {
-//     const { id } = req.user;
-//     const { name, token, subscriptionPlan, check, price, phoneNumber } = req.body;
-//     // Validate request payload
-//     if (!id || !name || !token || !subscriptionPlan || !phoneNumber) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Invalid request payload",
-//       });
-//     }
-
-//     // Validate user
-//     const user = await User.findById(id);
-//     if (!user) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "User not found",
-//       });
-//     }
-
-//     // Create a PaymentMethod using the provided token
-//     const paymentMethod = await stripe.paymentMethods.create({
-//       type: "card",
-//       card: {
-//         token: token,
-//       },
-//     });
-
-//     // Create a customer with the PaymentMethod
-//     const customer = await stripe.customers.create({
-//       payment_method: paymentMethod.id,
-//       invoice_settings: {
-//         default_payment_method: paymentMethod.id,
-//       },
-//       name: name,
-//     });
-
-//     // Attach PaymentMethod to the customer
-//     try {
-//       await stripe.paymentMethods.attach(paymentMethod.id, {
-//         customer: customer.id,
-//       });
-//     } catch (err) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Something went wrong attaching the payment method.",
-//       });
-//     }
-
-//     // Initiate phone number verification
-//     const verificationSession = await stripe.identity.verifySessions.create({
-//       type: 'phone_number',
-//       phone_number: phoneNumber,
-//     });
-
-//     if (verificationSession.status === 'requires_input') {
-//       // Verification initiated successfully, handle the user interaction (e.g., send OTP)
-//       return res.status(200).json({
-//         status: "requires_input",
-//         message: "Phone number verification initiated",
-//         verificationSessionId: verificationSession.id,
-//       });
-//     } else {
-//       // Unable to initiate phone number verification, handle accordingly
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Unable to initiate phone number verification",
-//       });
-//     }
-
-//   } catch (error) {
-//     console.error("Error in Adding Transaction Details", error);
-//     res.status(500).json({ status: "error", message: "Internal Server Error" });
-//   }
-// };
-
-// // Add a new endpoint to handle phone number verification confirmation
-// // This endpoint should be called after the user enters the verification code
-// app.post('/api/confirm-phone-verification', async (req, res) => {
-//   try {
-//     const { name, phoneNumber, verificationCode, verificationSessionId } = req.body;
-
-//     // Confirm phone number verification
-//     const verificationCheck = await stripe.identity.verifySessions.create({
-//       type: 'phone_number',
-//       phone_number: phoneNumber,
-//       verification_code: verificationCode,
-//       id: verificationSessionId, // Use the verification session ID obtained during initiation
-//     });
-
-//     if (verificationCheck.status === 'verified') {
-//       // Continue with the rest of the transaction logic
-//       // ...
-//       res.status(200).json({
-//         status: 'success',
-//         message: 'Phone number verified successfully.',
-//       });
-//     } else {
-//       res.status(400).json({
-//         status: 'error',
-//         message: 'Invalid verification code. Please try again.',
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error confirming phone number verification:', error);
-//     res.status(500).json({
-//       status: 'error',
-//       message: 'Internal Server Error',
-//     });
-//   }
-// };
