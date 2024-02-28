@@ -777,7 +777,6 @@ const MultiplebusinessData = async (businessData) => {
 //         });
 //       }
 //     }
-
 //     res.status(200).json({
 //       status: "success",
 //       data: await businessData(business),
@@ -843,6 +842,7 @@ const getBusinessByUserIdApi = async (req, res) => {
     } else if (user.role === "admin") {
       const targetSlug = "dummy-business";
       business = await Business.findOne({ slug: targetSlug });
+      console.log("846",business)
 
       if (!business) {
         return res.status(400).json({
@@ -910,7 +910,7 @@ const getBusinessByUserIdApi = async (req, res) => {
 const getBusinessDetailBySlugApi = async (req, res) => {
   try {
     const { slug } = req.params;
-    console.log("slug", slug);
+    console.log("slug --->914", slug);
     if (!slug) {
       return res.status(400).json({
         status: "error",
@@ -938,6 +938,7 @@ const getBusinessDetailBySlugApi = async (req, res) => {
 
 const selectedTheme = async (req, res) => {
   console.log("req.body", req.body);
+  console.log("req.body.path", req.file.path)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -961,7 +962,7 @@ const selectedTheme = async (req, res) => {
       });
     }
 
-    const { theme, color, bannerText,bannerImg } = req.body;
+    const { theme, color, bannerText } = req.body;
     if (!theme) {
       return res.status(400).json({
         status: "error",
@@ -989,8 +990,7 @@ const selectedTheme = async (req, res) => {
           theme: theme,
           color: color,
           bannerText: bannerText,
-          // bannerImge: req.file.path,
-          bannerImg:bannerImg,
+          bannerImge: req.file.path,
         },
       }
     );
@@ -1308,7 +1308,7 @@ const businessData = async (businessData) => {
     slug: businessData.slug,
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
-    bannerImg: businessData.bannerImg,
+    bannerImg: imgFullPath(businessData.bannerImg),
     color: businessData.color,
     amount: businessData.amount,
     rejectreason: businessData.rejectreason,
