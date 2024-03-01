@@ -47,12 +47,26 @@ router.post(
   getBusinessByServiceType
 );
 
+// router.post(
+//   "/register-business",
+//   auth,
+//   upload("business").single("logo"),
+//   registerBusinessApi
+// );
+
 router.post(
   "/register-business",
   auth,
-  upload("business").single("logo"),
+  upload("business/gallery").fields([
+    { name: 'logo', maxCount: 1 },
+    { name: 'galleryImages', maxCount: 12 } 
+  ]),
   registerBusinessApi
 );
+
+// router.post("/template/add", upload("template").fields([
+//   { name: "websiteImage", maxCount: 1 },
+//   { name: "bookingImage", maxCount: 1 }]), auth, addTemplateApi);
 
 router.get("/business/get-all-business", getAllBusinessApi);
 router.post("/business/get-my-business-list/", auth, getBusinessByUserIdApi);
@@ -69,13 +83,11 @@ router.post(
   auth,
   handleCustomBusinessApi
 );
-
 router.post(
   "/business/custom-business-cancelled",
   auth,
   handleCancelBusinessApi
 );
-
 
 router.post(
   "/theme/customize-theme",

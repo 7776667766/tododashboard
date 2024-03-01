@@ -41,6 +41,8 @@ const addSpecialistApi = async (req, res) => {
     }
 
     const user = await User.findById(id);
+    console.log("user 44 line",user)
+
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -48,7 +50,7 @@ const addSpecialistApi = async (req, res) => {
       });
     }
 
-    if (user.role === "user") {
+    if (user.role === "user") { 
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to add specialist",
@@ -76,7 +78,7 @@ const addSpecialistApi = async (req, res) => {
         name: newSpecialist.name,
         email: newSpecialist.email,
       },
-      message: "Specialist added successfully",
+      message: "Specialist Added Successfully",
     });
   } catch (error) {
     console.log("Error in add specialist", error);
@@ -379,10 +381,20 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
+  console.log("req body 384",req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
+
+    let galleryImg = [];
+    if (req.files['galleryImages']) {
+      req.files['galleryImages'].forEach(file => {
+        galleryImg.push(file.path);
+      });
+    }
+
+    console.log("galleryImg", galleryImg)
 
     const { id } = req.user;
     const {
@@ -476,6 +488,7 @@ const registerBusinessApi = async (req, res, next) => {
       slug: slug,
       logo: req?.file?.path,
       images,
+      galleryImg,
       googleId,
       bookingService: Ownerdata.bookingService,
       fontService: Ownerdata.fontFamily,
@@ -582,6 +595,7 @@ const registerBusinessApi = async (req, res, next) => {
         address: myBusiness.address,
         socialLinks: myBusiness.socialLinks,
         images: myBusiness.images,
+        galleryImg:myBusiness.galleryImg,
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
         fontFamily: myBusiness.fontFamily,
@@ -937,8 +951,6 @@ const getBusinessDetailBySlugApi = async (req, res) => {
 };
 
 const selectedTheme = async (req, res) => {
-  console.log("req.body", req.body);
-  console.log("req.body.path", req.file.path)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -946,15 +958,13 @@ const selectedTheme = async (req, res) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-    console.log(id, "ownerId");
-
     if (!user) {
       return res.status(400).json({
         status: "error",
         message: "User not found",
       });
     }
-
+     
     if (user.role !== "owner") {
       return res.status(400).json({
         status: "error",
@@ -995,8 +1005,7 @@ const selectedTheme = async (req, res) => {
       }
     );
 
-    console.log("updated theme", updateTheme);
-
+    
     res.status(200).json({
       status: "success",
       updateTheme,
@@ -1225,7 +1234,7 @@ const customizeThemeApi = async (req, res) => {
     const { id } = req.user;
     const businessId = req.body.businessId;
 
-    if (!businessId) {
+     if (!businessId) {
       return res.status(400).json({
         status: "error",
         message: "Businsess customize ID is required",
@@ -1271,13 +1280,14 @@ const customizeThemeApi = async (req, res) => {
     );
 
     const myCustomBusinessData = await Business.findOne({ _id: businessId });
-    
+
     const myCustomBusiness = await businessData(myCustomBusinessData);
     res.status(200).json({
       status: "success",
       data: myCustomBusiness,
       message: "Theme Updated Successfully",
     });
+    
   } catch (error) {
     console.log("Error in Updating Theme", error);
     res.status(400).json({ status: "error", message: error.message });
@@ -1295,7 +1305,7 @@ const businessData = async (businessData) => {
     phone: businessData.phone,
     description: businessData.description,
     address: businessData.address,
-    socialLinks: businessData.socialLinks,
+    socialLinks: businessData.socialLinks,  
     bookingService: businessData.bookingService,
     websiteService: businessData.websiteService,
     requestStatus: businessData.requestStatus,

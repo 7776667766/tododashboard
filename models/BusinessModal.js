@@ -53,6 +53,13 @@ const businessSchema = new mongoose.Schema({
     required: [true, "Slug is required"],
     unique: true,
   },
+  
+
+  galleryImg: [
+    {
+      type : String
+    }
+  ],
 
   bannerText: {
     type: String,
