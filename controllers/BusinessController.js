@@ -381,6 +381,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
+  console.log(`files ${req.files}...`);
   console.log("req body 384",req.body)
   try {
     if (req.user === undefined) {
@@ -388,13 +389,10 @@ const registerBusinessApi = async (req, res, next) => {
     }
 
     let galleryImg = [];
-    if (req.files['galleryImages']) {
-      req.files['galleryImages'].forEach(file => {
-        galleryImg.push(file.path);
-      });
-    }
-
-    console.log("galleryImg", galleryImg)
+    req.files.forEach(file => {
+      galleryImg.push(file.path);
+    });
+    console.log("galleryImg",galleryImg)
 
     const { id } = req.user;
     const {
@@ -595,7 +593,7 @@ const registerBusinessApi = async (req, res, next) => {
         address: myBusiness.address,
         socialLinks: myBusiness.socialLinks,
         images: myBusiness.images,
-        galleryImg:myBusiness.galleryImg,
+        galleryImg,
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
         fontFamily: myBusiness.fontFamily,
@@ -801,7 +799,7 @@ const MultiplebusinessData = async (businessData) => {
 //   }
 // };
 const getBusinessByUserIdApi = async (req, res) => {
-  console.log("789", req.body);
+      console.log("789", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1316,6 +1314,7 @@ const businessData = async (businessData) => {
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
     slug: businessData.slug,
+    galleryImg: imgFullPath(businessData.galleryImg),
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
