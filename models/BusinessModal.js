@@ -92,7 +92,6 @@ const businessSchema = new mongoose.Schema({
     number: {
       type: String,
       trim: true,
-      unique: true,
     },
   },
 
@@ -107,6 +106,7 @@ const businessSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Address is required"],
   },
+  
 
   socialLinks: {
     type: Array,
@@ -128,7 +128,7 @@ const businessSchema = new mongoose.Schema({
     enum: ["approved", "rejected", "pending"],
     default: "pending",
   },
-
+  
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -156,7 +156,7 @@ const businessSchema = new mongoose.Schema({
     type: Date,
   },
 
-  status: {
+  status: { 
     type: String,
     enum: ["true", "rejected", "pending"],
     default: "pending",

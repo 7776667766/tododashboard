@@ -413,12 +413,30 @@ const registerBusinessApi = async (req, res, next) => {
         message: "All fields are required",
       });
     }
+
+    const existingSlug = await Business.findOne({ slug: slug });
+    if (existingSlug) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
+    const existingPhone = await Business.findOne({ phone: phone });
+    if (existingPhone) {
+      return res.status(400).json({
+        status: "error",
+        message: "Phone number already exists",
+      });
+    }
+
     if (!validator.isEmail(email)) {
       return res.status(400).json({
         status: "error",
         message: "Email is invalid",
       });
     }
+
     if (!validator.isMongoId(id)) {
       return res.status(400).json({
         status: "error",
@@ -432,7 +450,7 @@ const registerBusinessApi = async (req, res, next) => {
           message: "Image url is invalid",
         });
       }
-    });
+    });    
     socialLinks?.map((link) => {
       if (!validator.isURL(link.link)) {
         return res.status(400).json({
@@ -460,6 +478,7 @@ const registerBusinessApi = async (req, res, next) => {
     }
 
     const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
+         console.log("Ownerdata 481", Ownerdata)
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -658,7 +677,6 @@ const getBusinessByOwnerIdApi = async (req, res, next) => {
 
     if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
-      console.log("ownerId ", owner);
       if (!owner) {
         return res.status(400).json({
           status: "error",
@@ -707,6 +725,7 @@ const MultiplebusinessData = async (businessData) => {
     fontFamily: business.fontFamily,
     fontSize: business.fontSize,
     slug: business.slug,
+    galleryImg:business.galleryImg.map(imgFullPath),
     logo: imgFullPath(business.logo),
     bannerText: business.bannerText,
     bannerImg: imgFullPath(business.bannerImg),
@@ -799,7 +818,6 @@ const MultiplebusinessData = async (businessData) => {
 //   }
 // };
 const getBusinessByUserIdApi = async (req, res) => {
-      console.log("789", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -807,7 +825,6 @@ const getBusinessByUserIdApi = async (req, res) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-    console.log("user860",user)
 
     if (!user) {
       return res.status(400).json({
@@ -836,9 +853,6 @@ const getBusinessByUserIdApi = async (req, res) => {
       for (const transaction of transactions) {
         const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
         const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-        
-        console.log("end date of subscription", subscriptionEndDate);
-        console.log("seven days before 28", sevenDaysBefore);
 
         transactionDates.push(sevenDaysBefore); 
       }
@@ -887,17 +901,12 @@ const getBusinessByUserIdApi = async (req, res) => {
       business = await Business.findById(businessId);
 
       const transactions = await Transaction.find({ userId: owner.ownerId });
-      console.log("transactions919", transactions);
 
       const transactionDates = []; 
  
       for (const transaction of transactions) {
         const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
         const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-        
-        console.log("end date of subscription", subscriptionEndDate);
-        console.log("seven days before 28", sevenDaysBefore);
-
         transactionDates.push(sevenDaysBefore); 
       }
       business.TransactionDate = transactionDates
@@ -1314,7 +1323,7 @@ const businessData = async (businessData) => {
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
     slug: businessData.slug,
-    galleryImg: imgFullPath(businessData.galleryImg),
+    galleryImg:businessData.galleryImg.map(imgFullPath),
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
