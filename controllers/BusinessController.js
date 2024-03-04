@@ -19,6 +19,7 @@ const addSpecialistApi = async (req, res) => {
     } 
     const { id } = req.user;
     const { name, email, businessId } = req.body;
+
     if (!name || !email || !businessId) {
       return res.status(400).json({
         status: "error",
@@ -141,18 +142,19 @@ const addManagerApi = async (req, res) => {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
+      
       });
     }
     if (!validator.isEmail(email)) {
-      return res.status(400).json({
+      return res.status(400).json({ 
         status: "error",
         message: "Email is invalid",
       });
     }
-    if (!validator.isLength(password, { min: 8 })) {
+    if (!validator.isLength(password, { min: 8 })) { 
       return res.status(400).json({
         status: "error",
-        message: "Password must be atleast 8 characters long",
+        message: "Password must be atleast 8 characters long"
       });
     }
     if (password !== confirmPassword) {
@@ -210,12 +212,13 @@ const addManagerApi = async (req, res) => {
       createdBy: id,
       managerId: newUser._id,
     });
+    console.log("NEW MANAGER 214",newManager)
 
     res.status(200).json({
       status: "success",
       data: {
         id: newUser._id,
-        name: newUser.name,
+        name: newUser.name,  
         email: newUser.email,
         phone: newUser.phone,
       },
@@ -244,7 +247,7 @@ const deleteSpecialistApi = async (req, res, next) => {
     if (!specilaist) {
       return res.status(400).json({
         status: "error",
-        message: "Specilaist Not Found",
+        message: "Specilaist not found",
       });
     }
     await Specialist.findByIdAndUpdate(
@@ -254,7 +257,7 @@ const deleteSpecialistApi = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: "Specilaist Deleted Successfully",
+      message: "Specilaist deleted successfully",
     });
   } catch (error) {
     console.log("Error in Deleting Specilaist", error);
@@ -291,7 +294,7 @@ const updateSpecialsitApi = async (req, res, next) => {
   }
 };
 
-const deleteManagerApi = async (req, res, next) => {
+const deleteManagerApi = async (req, res,) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -523,6 +526,7 @@ const registerBusinessApi = async (req, res, next) => {
       __dirname,
       "../uploads/emails/check-icon.png"
     );
+
     console.log(imagePath);
     const userMailSend = await sendEmail({
       email: user.email,
@@ -931,7 +935,7 @@ const getBusinessByUserIdApi = async (req, res) => {
 const getBusinessDetailBySlugApi = async (req, res) => {
   try {
     const { slug } = req.params;
-    console.log("slug --->914", slug);
+    console.log("slug --->934", slug);
     if (!slug) {
       return res.status(400).json({
         status: "error",
@@ -964,7 +968,8 @@ const selectedTheme = async (req, res) => {
     }
 
     const { id } = req.user;
-    const user = await User.findById(id);
+    const user = await User.findById(id); 
+    console.log("user 970",user)
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -1007,11 +1012,10 @@ const selectedTheme = async (req, res) => {
           theme: theme,
           color: color,
           bannerText: bannerText,
-          bannerImge: req.file.path,
+          bannerImge: req?.file?.path,
         },
       }
     );
-
     
     res.status(200).json({
       status: "success",
@@ -1397,7 +1401,7 @@ const showAllBusinessApi = async (req, res) => {};
 module.exports = {
   addSpecialistApi,
   updateSpecialsitApi,
-  deleteSpecialistApi,
+  deleteSpecialistApi, 
   handleCustomBusinessApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,

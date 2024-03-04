@@ -704,7 +704,7 @@ module.exports = {
   updateServiceTypeApi,
   getServicesApi,
   getAllServicesApi,
-  getServiceDetailBySlugApi,
+  getServiceDetailBySlugApi, 
   getDummyServicesApi,
   deleteServicTypeApi,
   deleteServiceApi,
