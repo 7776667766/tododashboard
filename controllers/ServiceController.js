@@ -31,7 +31,8 @@ const addServiceTypeApi = async (req, res, next) => {
       });
     }
 
-    const user = await User.findById(id);
+    const user = await User.findById(id); 
+    console.log()
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -68,8 +69,9 @@ const addServiceTypeApi = async (req, res, next) => {
       image: req.file.path,
       createdBy: id,
     });
-
+    
     const myServiceType = await getServiceTypeData(newServiceType);
+    console.log("myServiceType",myServiceType)
     res.status(200).json({
       status: "success",
       data: myServiceType,
@@ -563,7 +565,7 @@ const addDummyServiceApi = async (req, res, next) => {
     const { name, description, price, typeId, timeInterval, timeSlots } =
       req.body;
 
-    console.log(timeInterval);
+    console.log(timeSlots,price,description,name,timeInterval);
 
     if (
       !name ||
