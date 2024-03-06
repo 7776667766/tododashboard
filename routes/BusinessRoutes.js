@@ -54,16 +54,16 @@ router.post(
 //   registerBusinessApi
 // );
 
-router.post(
-  "/register-business",
-  auth,
-  upload("business/gallery").array("files", 12),
-  registerBusinessApi
-);
+// router.post(
+//   "/register-business",
+//   auth,
+//   upload("business/gallery").array("files", 12),
+//   registerBusinessApi
+// );
 
-// router.post("/register-business", upload("business/gallery").fields([
-//   { name: "logo", maxCount: 1 },
-//   { name: "file", maxCount: 1 }]), auth, registerBusinessApi);
+router.post("/register-business", upload("business/gallery").fields([
+  { name: "logo", maxCount: 1 },
+  { name: "files", maxCount: 12 }]), auth, registerBusinessApi);
 
 // router.post("/template/add", upload("template").fields([
 //   { name: "websiteImage", maxCount: 1 },

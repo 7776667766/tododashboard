@@ -384,18 +384,25 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res, next) => {
-  console.log(`files ${req.files}...`);
+  console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
+  console.log("Other Files:", req.files['files']);
   console.log("req body 384",req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
 
+//for logo Image
+const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
+
+//for gallery Images Array
     let galleryImg = [];
-    req.files.forEach(file => {
-      galleryImg.push(file.path);
-    });
-    console.log("galleryImg",galleryImg)
+    if (req.files['files']) {
+      req.files['files'].forEach(file => {
+        galleryImg.push(file.path);
+      });
+    }
+    console.log("Gallery Images:", galleryImg);
 
     const { id } = req.user;
     const {
@@ -506,7 +513,7 @@ const registerBusinessApi = async (req, res, next) => {
       address,
       socialLinks,
       slug: slug,
-      logo: req?.file?.path,
+      logo: logoImg,
       images,
       galleryImg,
       googleId,
@@ -622,7 +629,7 @@ const registerBusinessApi = async (req, res, next) => {
         fontFamily: myBusiness.fontFamily,
         fontSize: myBusiness.fontSize,
         ...myBusiness,
-        logo: req?.file?.path,
+        logo: logoImg,
         ...Ownerdata,
         theme: Ownerdata.theme,
         bannerText: Ownerdata.bannerText,
@@ -1034,7 +1041,7 @@ const addDummyBusinessApi = async (req, res) => {
   let bannerImg = req.files["bannerImg"][0].path;
 
   console.log("logo", logo);
-  console.log("bannerImg", bannerImg);
+  console.log("bannerImg", bannerImg); 
 
   try {
     if (req.user === undefined) {
