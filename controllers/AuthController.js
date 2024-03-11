@@ -432,15 +432,19 @@ const verifyOtpApi = async (req, res, next) => {
 
 const forgetPasswordApi = async (req, res, next) => {
   try {
-    const { phone } = req.body;
-    console.log("phone 432", phone);
-    if (!phone) {
+    const { email } = req.body;
+    console.log("phone 432", email);
+    const emailWithoutQuotes = email.replace(/"/g, '').replace(/\s+/g, '');
+    console.log("Formatted email:", emailWithoutQuotes);
+
+
+    if (!email) {
       return res
         .status(400)
-        .json({ status: "error", message: "Phone is required" });
+        .json({ status: "error", message: "Email is required" });
     }
     const user = await User.findOne({
-      $or: [{ email: phone }],
+      $or: [{ email: emailWithoutQuotes }],
     });
     console.log("phone 442", user);
 
