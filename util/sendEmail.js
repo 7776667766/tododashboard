@@ -20,8 +20,7 @@ module.exports.sendEmail = async ({ email, subject, text, html }) => {
         to: email,
         subject: subject,
         text: text,
-        html: html,
-       
+        html: html,     
       
       },
       function error(err, info) {

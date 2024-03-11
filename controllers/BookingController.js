@@ -214,7 +214,7 @@ const updateBookingApi = async (req, res) => {
         message: "Booking Id is required",
       });
     }
-
+ 
     if (!validator.isMongoId(bookingId)) {
       return res.status(400).json({
         status: "error",

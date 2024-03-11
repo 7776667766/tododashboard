@@ -385,17 +385,16 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 
 const registerBusinessApi = async (req, res, next) => {
   console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
-  console.log("Other Files:", req.files['files']);
+  console.log("other Files:", req.files['files']);
   console.log("req body 384",req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-
-//for logo Image
-const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
-
-//for gallery Images Array
+           //for logo Image
+    const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
+           //for gallery Images Array
+           
     let galleryImg = [];
     if (req.files['files']) {
       req.files['files'].forEach(file => {
@@ -611,7 +610,7 @@ const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
         message: "Error sending confirmation emails",
       });
     }
-
+ 
     res.status(200).json({
       status: "success",
       data: await businessData({
@@ -729,7 +728,7 @@ const MultiplebusinessData = async (businessData) => {
     socialLinks: business.socialLinks,
     bookingService: business.bookingService,
     websiteService: business.websiteService,
-    requestStatus: business.requestStatus,
+    requestStatus: business.requestStatus,                
     theme: business.theme || "",
     images: business.images,
     googleId: business.googleId,
