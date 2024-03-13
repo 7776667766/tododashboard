@@ -7,7 +7,3 @@ const imgFullPath = (imgPath) => {
 };
 module.exports = imgFullPath;
 
-
-
-
-
