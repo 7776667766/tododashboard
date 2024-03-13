@@ -6,3 +6,8 @@ const imgFullPath = (imgPath) => {
   return process.env.SERVER_URL + imgPath;
 };
 module.exports = imgFullPath;
+
+
+
+
+

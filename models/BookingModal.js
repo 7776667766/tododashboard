@@ -7,7 +7,7 @@ const bookingSchema = new mongoose.Schema({
     required: [true, "Service is required"],
   },
 
-  userId:{
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: [true, "User is required"],
@@ -31,9 +31,14 @@ const bookingSchema = new mongoose.Schema({
     trim: true,
   },
   phone: {
-    type: String,
-    required: [true, "Customer phone is required"],
-    trim: true,
+    code: {
+      type: String,
+    },
+    number: {
+      type: String,
+      trim: true,
+      unique: true,
+    },
   },
   date: {
     type: Date,
@@ -69,7 +74,7 @@ const bookingSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["completed", "pending", "cancelled","rescheduled"],
+    enum: ["completed", "pending", "cancelled", "rescheduled"],
     default: "pending",
   },
 });
