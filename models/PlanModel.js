@@ -5,10 +5,12 @@ const planSchema = new mongoose.Schema({
     type: String,
     required: [true, "Plan name is required"],
   },
+  
   duration: {
     type: String,
     required: [true, "Plan duration is required"],
   },
+
   price: {
     type: Number,
     required: [true, "Plan price is required"],

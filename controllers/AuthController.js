@@ -10,7 +10,6 @@ const imgFullPath = require("../util/imgFullPath");
 const { sendSMS } = require("../util/twilo");
 require("dotenv").config();
 const path = require("path")
-
 const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
 console.log("imagepath logo",imagePath)
 
@@ -650,6 +649,7 @@ const resetPasswordApi  = async (req, res, next) => {
 };
 
 const changePasswordApi = async (req, res, next) => {
+
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });

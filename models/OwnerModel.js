@@ -11,9 +11,11 @@ const ownerSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+
   fontFamily: {
     type: String,
   },
+
   fontSize: {
     type: Number
   },
@@ -26,6 +28,7 @@ const ownerSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
   websiteService: {
     type: Boolean,
     default: false,
@@ -40,7 +43,6 @@ const ownerSchema = new mongoose.Schema({
         active: Boolean,
       },
     ],
-    // required: [true, "TimeSlots is required"],
     trim: true,
   },
 
@@ -51,8 +53,8 @@ const ownerSchema = new mongoose.Schema({
 
   bannerImge: {
     type: String,
-
   },
+
   color: {
     type: String,
     trim: true,
@@ -62,6 +64,7 @@ const ownerSchema = new mongoose.Schema({
     type: Date,
     default: new Date(),
   },
+
   deletedAt: {
     type: Date,
   },

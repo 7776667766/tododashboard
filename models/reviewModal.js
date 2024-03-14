@@ -12,7 +12,6 @@ const reviewSchema = new mongoose.Schema({
     title: {
         type: String
     },
-    
 
     description: {
         type: String
@@ -33,7 +32,7 @@ const reviewSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-    deletedAt: {
+    deletedAt: {  
         type: Date,
     },
 
@@ -45,6 +44,3 @@ const reviewSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Review", reviewSchema);
-
-
-
