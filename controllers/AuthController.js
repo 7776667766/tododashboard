@@ -27,7 +27,7 @@ const registerApi = async (req, res) => {
       websiteService,
     } = req.body;
 
-    if (!email || !name || !phone || !password || !confirmPassword) {
+    if (!email || !name || !phone || !password || !confirmPassword){
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
@@ -38,7 +38,7 @@ const registerApi = async (req, res) => {
         .status(400)
         .json({ status: "error", message: "Invalid email" });
     }
-
+  
     const { code
       , number } = phone;
 
@@ -46,7 +46,7 @@ const registerApi = async (req, res) => {
       return res
         .status(400)
         .json({ status: "error", message: "Phone object is incomplete" });
-    }
+    } 
 
     if (password.length < 8) {
       return res
@@ -149,7 +149,7 @@ const registerApi = async (req, res) => {
 </style>
         </head>
         <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
-         
+            
             <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
               <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
               </div>
@@ -180,7 +180,7 @@ const registerApi = async (req, res) => {
       });
     }
 
-    const userData = await getUserData(user);
+    const userData = await getUserData(user); 
     res.status(201).json({
       status: "success",
       data: {
@@ -357,7 +357,7 @@ const checkTokenIsValidApi = async (req, res, next) => {
     },
     message: "Login successfull",
   });
-};
+}; 
 
 const verifyOtpApi = async (req, res, next) => {
   console.log("381req....body....", req.body)
@@ -747,7 +747,8 @@ const getUserProfileApi = async (req, res, next) => {
 };
 
 const updataUserProfileApi = async (req, res, next) => {
-  console.log(req);
+  console.log("body of updae users profile 750",req.body);
+  console.log(req.file.path)
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -757,13 +758,18 @@ const updataUserProfileApi = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
+    console.log("id 760",id)
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });
     }
-    const { name, image } = req.body;
+    const { name } = req.body;
+    const image = req.file.path
+    console.log("image",image)
+  
 
     await User.updateOne({ _id: id }, { name, image });
     const user = await User.findById(id);
+    console.log("user 768", user)
     const userData = await getUserData(user);
     res.status(200).json({
       status: "success",
