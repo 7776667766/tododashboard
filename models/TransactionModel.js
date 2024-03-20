@@ -14,7 +14,7 @@ const transactionSchema = new mongoose.Schema({
   },
   verificationCode: {
     type: Number,
-  },
+  }, 
   stripeSubscriptionEndDate: {
     type: Number,
     required: true
@@ -49,7 +49,7 @@ const transactionSchema = new mongoose.Schema({
     type: Number,
   },
   clientSecret:{
-    type: String
+    type: String 
   },
   cardType: {
     type: String,
