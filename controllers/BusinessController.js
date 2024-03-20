@@ -941,7 +941,7 @@ const getBusinessByUserIdApi = async (req, res) => {
 const getBusinessDetailBySlugApi = async (req, res) => {
   try {
     const { slug } = req.params;
-    console.log("slug --->934", slug);
+    console.log("slug --->9344", slug);
     if (!slug) {
       return res.status(400).json({
         status: "error",
@@ -951,6 +951,7 @@ const getBusinessDetailBySlugApi = async (req, res) => {
     const business = await Business.findOne({
       slug: slug,
     });
+    console.log("business 9544",business)
     if (!business) {
       return res.status(400).json({
         status: "error",
