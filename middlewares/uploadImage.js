@@ -3,7 +3,7 @@
 // const storage = (path) => {
 //   console.log("path4",path)
 //   return multer.diskStorage({
-    
+
 //     destination: (req, file, cb) => {
 //       console.log(file , "file----")
 //       cb(null, `uploads/${path}`);
@@ -20,14 +20,11 @@
 //   return multer({ storage: storage(path) });
 // };
 
-
 // module.exports = upload;
-
 
 const multer = require("multer");
 
 const storage = (path) => {
-  console.log("path4", path);
   return multer.diskStorage({
     destination: (req, file, cb) => {
       console.log("Destination path:", path);
