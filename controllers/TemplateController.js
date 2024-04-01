@@ -1,14 +1,14 @@
 const User = require("../models/UserModel");
-const Template = require("../models/TemplateModal");     
+const Template = require("../models/TemplateModal");
 const slugify = require("slugify");
 const imgFullPath = require("../util/imgFullPath");
 const validator = require("validator");
- 
+
 const addTemplateApi = async (req, res, next) => {
   let bookingImg = req.files?.["bookingImage"]?.[0]?.path;
   let websiteImg = req.files?.["websiteImage"]?.[0]?.path;
-  console.log("bookingImg", bookingImg)
-  console.log("websiteImg", websiteImg)
+  console.log("bookingImg", bookingImg);
+  console.log("websiteImg", websiteImg);
 
   try {
     const { id } = req.user;
@@ -29,10 +29,10 @@ const addTemplateApi = async (req, res, next) => {
       });
     }
 
-    const { name, status, fontFamily, fontSize , description} = req.body;
-    const slug = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
+    const { name, slug, status, fontFamily, fontSize, description } = req.body;
+    const slug2 = slugify(slug, { lower: true, remove: /[*+~.()'"!:@]/g });
 
-    if (!name || !slug ) {
+    if (!name || !slug) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -41,7 +41,7 @@ const addTemplateApi = async (req, res, next) => {
 
     const newTemplate = await Template.create({
       name,
-      slug,
+      slug: slug2,
       fontFamily,
       fontSize,
       description,
@@ -90,7 +90,6 @@ const getTepmlateApi = async (req, res, next) => {
 
 const updateTemplateApi = async (req, res, next) => {
   try {
-
     const { templateId } = req.params;
 
     if (!templateId) {
@@ -109,8 +108,10 @@ const updateTemplateApi = async (req, res, next) => {
 
     const template = await Template.findById(templateId);
 
-    let bookingImg = req.files?.["bookingImage"]?.[0]?.path ?? template.bookingImage;
-    let websiteImg = req.files?.["websiteImage"]?.[0]?.path ?? template.websiteImage;
+    let bookingImg =
+      req.files?.["bookingImage"]?.[0]?.path ?? template.bookingImage;
+    let websiteImg =
+      req.files?.["websiteImage"]?.[0]?.path ?? template.websiteImage;
 
     await Template.findOneAndUpdate(
       { _id: templateId },
@@ -120,8 +121,7 @@ const updateTemplateApi = async (req, res, next) => {
 
           bookingImage: bookingImg,
           websiteImage: websiteImg,
-
-        }
+        },
       },
       { new: true }
     );
@@ -195,11 +195,7 @@ const getTemplateData = async (data) => {
     slug: data.slug,
     status: data.status,
     fontFamily: data.fontFamily,
-    fontSize: data.fontSize
+    fontSize: data.fontSize,
   };
   return myTemplateData;
 };
-
-
-
-
