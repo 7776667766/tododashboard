@@ -39,7 +39,7 @@ router.get("/business-by-ownerId", auth,  getBusinessByOwnerIdApi);
 
 router.get("/specialist/:businessId", auth, getSpecialistByBusinessIdApi);
 router.post("/manager/add", auth, addManagerApi);
-// router.post("/manager/update/:managerId", auth, updateManagerApi);
+router.post("/manager/update/:managerId", auth, updateManagerApi);
 router.get("/manager/delete/:managerId", auth, deleteManagerApi);
 router.get("/manager/:businessId", auth, getManagersByBusinessIdApi);
 router.post(
