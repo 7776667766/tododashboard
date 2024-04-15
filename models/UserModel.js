@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema({
     },
     number: {
       type: String,
-      trim: true,
-      unique: true,
+       trim: true,
+       unique: true,
     },
   },
 
