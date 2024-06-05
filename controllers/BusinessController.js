@@ -16,7 +16,7 @@ const addSpecialistApi = async (req, res) => {
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
-    } 
+    }
     const { id } = req.user;
     const { name, email, businessId } = req.body;
 
@@ -42,7 +42,7 @@ const addSpecialistApi = async (req, res) => {
     }
 
     const user = await User.findById(id);
-    console.log("user 44 line",user)
+    console.log("user 44 line", user)
 
     if (!user) {
       return res.status(400).json({
@@ -51,7 +51,7 @@ const addSpecialistApi = async (req, res) => {
       });
     }
 
-    if (user.role === "user") { 
+    if (user.role === "user") {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to add specialist",
@@ -142,16 +142,16 @@ const addManagerApi = async (req, res) => {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
-      
+
       });
     }
     if (!validator.isEmail(email)) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         status: "error",
         message: "Email is invalid",
       });
     }
-    if (!validator.isLength(password, { min: 8 })) { 
+    if (!validator.isLength(password, { min: 8 })) {
       return res.status(400).json({
         status: "error",
         message: "Password must be atleast 8 characters long"
@@ -212,13 +212,13 @@ const addManagerApi = async (req, res) => {
       createdBy: id,
       managerId: newUser._id,
     });
-    console.log("NEW MANAGER 214",newManager)
+    console.log("NEW MANAGER 214", newManager)
 
     res.status(200).json({
       status: "success",
       data: {
         id: newUser._id,
-        name: newUser.name,  
+        name: newUser.name,
         email: newUser.email,
         phone: newUser.phone,
       },
@@ -386,15 +386,14 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 const registerBusinessApi = async (req, res, next) => {
   console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
   console.log("other Files:", req.files['files']);
-  console.log("req body 384",req.body)
+  console.log("req body 384", req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-           //for logo Image
+    //for logo Image
     const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
-           //for gallery Images Array
-           
+    //for gallery Images Array
     let galleryImg = [];
     if (req.files['files']) {
       req.files['files'].forEach(file => {
@@ -413,6 +412,7 @@ const registerBusinessApi = async (req, res, next) => {
       socialLinks,
       googleId,
       address,
+      businessTiming,
       slug,
     } = req.body;
 
@@ -459,7 +459,7 @@ const registerBusinessApi = async (req, res, next) => {
           message: "Image url is invalid",
         });
       }
-    });    
+    });
     socialLinks?.map((link) => {
       if (!validator.isURL(link.link)) {
         return res.status(400).json({
@@ -487,7 +487,7 @@ const registerBusinessApi = async (req, res, next) => {
     }
 
     const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
-         console.log("Ownerdata 481", Ownerdata)
+    console.log("Ownerdata 481", Ownerdata)
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -515,6 +515,7 @@ const registerBusinessApi = async (req, res, next) => {
       logo: logoImg,
       images,
       galleryImg,
+      businessTiming,
       googleId,
       bookingService: Ownerdata.bookingService,
       fontService: Ownerdata.fontFamily,
@@ -527,7 +528,9 @@ const registerBusinessApi = async (req, res, next) => {
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
     });
-    console.log("user email5511", user.email);
+    conso
+    le.log("user email5511", user.email);
+
     const imagePath = path.resolve(
       __dirname,
       "../uploads/emails/check-icon.png"
@@ -610,7 +613,7 @@ const registerBusinessApi = async (req, res, next) => {
         message: "Error sending confirmation emails",
       });
     }
- 
+
     res.status(200).json({
       status: "success",
       data: await businessData({
@@ -621,6 +624,7 @@ const registerBusinessApi = async (req, res, next) => {
         description: myBusiness.description,
         address: myBusiness.address,
         socialLinks: myBusiness.socialLinks,
+        businessTiming: myBusiness.businessTiming,
         images: myBusiness.images,
         galleryImg,
         googleId: myBusiness.googleId,
@@ -728,14 +732,14 @@ const MultiplebusinessData = async (businessData) => {
     socialLinks: business.socialLinks,
     bookingService: business.bookingService,
     websiteService: business.websiteService,
-    requestStatus: business.requestStatus,                
+    requestStatus: business.requestStatus,
     theme: business.theme || "",
     images: business.images,
     googleId: business.googleId,
     fontFamily: business.fontFamily,
     fontSize: business.fontSize,
     slug: business.slug,
-    galleryImg:business.galleryImg.map(imgFullPath),
+    galleryImg: business.galleryImg.map(imgFullPath),
     logo: imgFullPath(business.logo),
     bannerText: business.bannerText,
     bannerImg: imgFullPath(business.bannerImg),
@@ -827,6 +831,7 @@ const MultiplebusinessData = async (businessData) => {
 //     res.status(400).json({ status: "error", message: error.message });
 //   }
 // };
+
 const getBusinessByUserIdApi = async (req, res) => {
   try {
     if (req.user === undefined) {
@@ -844,10 +849,10 @@ const getBusinessByUserIdApi = async (req, res) => {
     }
 
     let business;
-
+    // ROLE OF MANAGER
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
-      console.log("manger873",manager)
+      console.log("manger873", manager)
       if (!manager) {
         return res.status(400).json({
           status: "error",
@@ -858,13 +863,12 @@ const getBusinessByUserIdApi = async (req, res) => {
       business = await Business.findById(manager.businessId);
 
       const transactions = await Transaction.find({ businessId: manager.businessId });
-      const transactionDates = []; 
-      
+      const transactionDates = [];
+
       for (const transaction of transactions) {
         const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
         const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-        transactionDates.push(sevenDaysBefore); 
+        transactionDates.push(sevenDaysBefore);
       }
 
       if (!business) {
@@ -874,11 +878,10 @@ const getBusinessByUserIdApi = async (req, res) => {
         });
       }
       business.TransactionDate = transactionDates
-
+      // ROLE OF ADMIN
     } else if (user.role === "admin") {
       const targetSlug = "dummy-business";
       business = await Business.findOne({ slug: targetSlug });
-      console.log("846",business)
 
       if (!business) {
         return res.status(400).json({
@@ -889,8 +892,7 @@ const getBusinessByUserIdApi = async (req, res) => {
       // ROLE OF OWNER
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
-      console.log("owner900",owner.ownerId)
-      
+
       if (!owner) {
         return res.status(400).json({
           status: "error",
@@ -912,12 +914,12 @@ const getBusinessByUserIdApi = async (req, res) => {
 
       const transactions = await Transaction.find({ userId: owner.ownerId });
 
-      const transactionDates = []; 
- 
+      const transactionDates = [];
+
       for (const transaction of transactions) {
         const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
         const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-        transactionDates.push(sevenDaysBefore); 
+        transactionDates.push(sevenDaysBefore);
       }
       business.TransactionDate = transactionDates
       if (!business) {
@@ -941,7 +943,6 @@ const getBusinessByUserIdApi = async (req, res) => {
 const getBusinessDetailBySlugApi = async (req, res) => {
   try {
     const { slug } = req.params;
-    console.log("slug --->9344", slug);
     if (!slug) {
       return res.status(400).json({
         status: "error",
@@ -951,7 +952,7 @@ const getBusinessDetailBySlugApi = async (req, res) => {
     const business = await Business.findOne({
       slug: slug,
     });
-    console.log("business 9544",business)
+    console.log("business 9544", business)
     if (!business) {
       return res.status(400).json({
         status: "error",
@@ -975,15 +976,15 @@ const selectedTheme = async (req, res) => {
     }
 
     const { id } = req.user;
-    const user = await User.findById(id); 
-    console.log("user 970",user)
+    const user = await User.findById(id);
+    console.log("user 970", user)
     if (!user) {
       return res.status(400).json({
         status: "error",
         message: "User not found",
       });
     }
-     
+
     if (user.role !== "owner") {
       return res.status(400).json({
         status: "error",
@@ -1023,7 +1024,7 @@ const selectedTheme = async (req, res) => {
         },
       }
     );
-    
+
     res.status(200).json({
       status: "success",
       updateTheme,
@@ -1041,7 +1042,7 @@ const addDummyBusinessApi = async (req, res) => {
   let bannerImg = req.files["bannerImg"][0].path;
 
   console.log("logo", logo);
-  console.log("bannerImg", bannerImg); 
+  console.log("bannerImg", bannerImg);
 
   try {
     if (req.user === undefined) {
@@ -1252,7 +1253,7 @@ const customizeThemeApi = async (req, res) => {
     const { id } = req.user;
     const businessId = req.body.businessId;
 
-     if (!businessId) {
+    if (!businessId) {
       return res.status(400).json({
         status: "error",
         message: "Businsess customize ID is required",
@@ -1305,7 +1306,7 @@ const customizeThemeApi = async (req, res) => {
       data: myCustomBusiness,
       message: "Theme Updated Successfully",
     });
-    
+
   } catch (error) {
     console.log("Error in Updating Theme", error);
     res.status(400).json({ status: "error", message: error.message });
@@ -1323,7 +1324,8 @@ const businessData = async (businessData) => {
     phone: businessData.phone,
     description: businessData.description,
     address: businessData.address,
-    socialLinks: businessData.socialLinks,  
+    businessTiming: businessData.businessTiming,
+    socialLinks: businessData.socialLinks,
     bookingService: businessData.bookingService,
     websiteService: businessData.websiteService,
     requestStatus: businessData.requestStatus,
@@ -1334,23 +1336,22 @@ const businessData = async (businessData) => {
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
     slug: businessData.slug,
-    galleryImg:businessData.galleryImg.map(imgFullPath),
+    galleryImg: businessData.galleryImg.map(imgFullPath),
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
     color: businessData.color,
     amount: businessData.amount,
     rejectreason: businessData.rejectreason,
-    TransactionDate:businessData.TransactionDate,
+    TransactionDate: businessData.TransactionDate,
   };
 };
 
 const getBusinessByServiceType = async (req, res) => {
-  console.log("1305", req.body);
   try {
     const { serviceTypeSlug, minPrice, maxPrice } = req.body;
     let myServiceTypeId = null;
-   
+
     if (serviceTypeSlug) {
       const mySelectedServiceType = await ServiceType.findOne({
         slug: serviceTypeSlug,
@@ -1403,12 +1404,12 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => {};
+const showAllBusinessApi = async (req, res) => { };
 
 module.exports = {
   addSpecialistApi,
   updateSpecialsitApi,
-  deleteSpecialistApi, 
+  deleteSpecialistApi,
   handleCustomBusinessApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,
@@ -1452,24 +1453,3 @@ const getSpecialistData = async (data) => {
   return mySpecialistData;
 
 };
-
-//   try {
-//     const transactions = await Transaction.find();
-//     console.log("transactions19", transactions);
-//     const currentDate = new Date();
-
-//     for (const transaction of transactions) {
-//       const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
-//       const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
-//       console.log("end date of subscription", subscriptionEndDate);
-//       console.log("seven days before 28", sevenDaysBefore);
-       
-//       if (currentDate.getTime() >= sevenDaysBefore.getTime()) {
-//         console.log(`Show popup notification to user ${transaction.userId} about the subscription ending soon.`);
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error in checking subscriptions:", error);
-//   }
-// };
