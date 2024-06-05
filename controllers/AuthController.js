@@ -9,12 +9,9 @@ const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
 const { sendSMS } = require("../util/twilo");
 require("dotenv").config();
-const path = require("path")
-const imagePath = path.join(__dirname, "uplaods/images/check-icon.png");
-console.log("imagepath logo",imagePath)
 
 const registerApi = async (req, res) => {
-  console.log("req.body", req.body)
+  console.log("req.body", req.body);
   try {
     const {
       name,
@@ -27,7 +24,7 @@ const registerApi = async (req, res) => {
       websiteService,
     } = req.body;
 
-    if (!email || !name || !phone || !password || !confirmPassword){
+    if (!email || !name || !phone || !password || !confirmPassword) {
       return res
         .status(400)
         .json({ status: "error", message: "All fields are required" });
@@ -38,15 +35,14 @@ const registerApi = async (req, res) => {
         .status(400)
         .json({ status: "error", message: "Invalid email" });
     }
-  
-    const { code
-      , number } = phone;
+
+    const { code, number } = phone;
 
     if (!code || !number) {
       return res
         .status(400)
         .json({ status: "error", message: "Phone object is incomplete" });
-    } 
+    }
 
     if (password.length < 8) {
       return res
@@ -93,7 +89,7 @@ const registerApi = async (req, res) => {
       role,
       password,
     });
-    console.log("user102", user)
+    console.log("user102", user);
 
     if (role === "owner") {
       const OwnerData = await Owner.create({
@@ -180,7 +176,7 @@ const registerApi = async (req, res) => {
       });
     }
 
-    const userData = await getUserData(user); 
+    const userData = await getUserData(user);
     res.status(201).json({
       status: "success",
       data: {
@@ -195,7 +191,7 @@ const registerApi = async (req, res) => {
 };
 
 const loginApi = async (req, res, next) => {
-  console.log("req of login", req.body)
+  console.log("req of login", req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -208,8 +204,7 @@ const loginApi = async (req, res, next) => {
     // });
 
     const user = await User.findOne({ email });
-    console.log("user224", user)
-
+    console.log("user224", user);
 
     if (!user) {
       return res
@@ -228,13 +223,13 @@ const loginApi = async (req, res, next) => {
 
       const otp = await createOTPFun(user.email);
 
-      console.log("otp236", otp)
+      console.log("otp236", otp);
 
-          const mailSend = await sendEmail({
-            email: user.email,
-            subject: "OTP for login",
-            text: `Your OTP for login is ${otp}`,
-            html: `<!DOCTYPE html>
+      const mailSend = await sendEmail({
+        email: user.email,
+        subject: "OTP for login",
+        text: `Your OTP for login is ${otp}`,
+        html: `<!DOCTYPE html>
             <html lang="en">
               <head>
                 <meta charset="UTF-8" />
@@ -306,18 +301,18 @@ const loginApi = async (req, res, next) => {
             </html>
             `,
 
-            headers: {
-              "Content-Type": "multipart/mixed",
-              "Content-Disposition": "inline",
-            },
-          });
+        headers: {
+          "Content-Type": "multipart/mixed",
+          "Content-Disposition": "inline",
+        },
+      });
 
-          if (!mailSend) {
-            return res.status(400).json({
-              status: "error",
-              message: "Error in sending email",
-            });
-          }
+      if (!mailSend) {
+        return res.status(400).json({
+          status: "error",
+          message: "Error in sending email",
+        });
+      }
       const token = createSecretToken({ id: user._id });
       const userData = await getUserData(user);
 
@@ -357,10 +352,10 @@ const checkTokenIsValidApi = async (req, res, next) => {
     },
     message: "Login successfull",
   });
-}; 
+};
 
 const verifyOtpApi = async (req, res, next) => {
-  console.log("381req....body....", req.body)
+  console.log("381req....body....", req.body);
   try {
     let { email, otp, type } = req.body;
     if (!email || !otp) {
@@ -368,14 +363,14 @@ const verifyOtpApi = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "Email and otp are required" });
     }
-    email = email.replace(/"/g, '');
-    console.log("Email", email)
+    email = email.replace(/"/g, "");
+    console.log("Email", email);
     const otpDoc = await Otp.findOne({
       email,
       otp,
     }).sort({ $natural: 1 });
 
-    console.log("otpDoc381", otpDoc)
+    console.log("otpDoc381", otpDoc);
 
     if (!otpDoc) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
@@ -397,7 +392,7 @@ const verifyOtpApi = async (req, res, next) => {
     }
 
     let user = await User.findOne({ email });
-    console.log("411 user", user)
+    console.log("411 user", user);
     if (!email) {
       return res.status(400).json({ status: "error", message: "Invalid otp" });
     }
@@ -409,7 +404,7 @@ const verifyOtpApi = async (req, res, next) => {
     }
     const token = createSecretToken({ id: user._id });
     const userData = await getUserData(user);
-    console.log("userData423", userData)
+    console.log("userData423", userData);
 
     res.status(200).json({
       status: "success",
@@ -429,9 +424,8 @@ const forgetPasswordApi = async (req, res, next) => {
   try {
     const { email } = req.body;
     console.log("phone 432", email);
-    const emailWithoutQuotes = email.replace(/"/g, '').replace(/\s+/g, '');
+    const emailWithoutQuotes = email.replace(/"/g, "").replace(/\s+/g, "");
     console.log("Formatted email:", emailWithoutQuotes);
-
 
     if (!email) {
       return res
@@ -612,8 +606,8 @@ Thank You
 //   }
 // };
 
-const resetPasswordApi  = async (req, res, next) => {
-  console.log("req.body of reset password", req.body)
+const resetPasswordApi = async (req, res, next) => {
+  console.log("req.body of reset password", req.body);
   try {
     const { password, confirmPassword, email } = req.body;
 
@@ -622,7 +616,7 @@ const resetPasswordApi  = async (req, res, next) => {
         .status(400)
         .json({ status: "error", message: "All fields are required" });
     }
-   
+
     if (password.length < 8) {
       return res
         .status(400)
@@ -649,7 +643,6 @@ const resetPasswordApi  = async (req, res, next) => {
 };
 
 const changePasswordApi = async (req, res, next) => {
-
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -747,8 +740,8 @@ const getUserProfileApi = async (req, res, next) => {
 };
 
 const updataUserProfileApi = async (req, res, next) => {
-  console.log("body of updae users profile 750",req.body);
-  console.log(req.file.path)
+  console.log("body of updae users profile 750", req.body);
+  console.log(req.file.path);
   try {
     if (!req.file) {
       return res.status(400).send("No image file uploaded");
@@ -758,18 +751,17 @@ const updataUserProfileApi = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
-    console.log("id 760",id)
+    console.log("id 760", id);
     if (!validator.isMongoId(id)) {
       return res.status(400).json({ status: "error", message: "Invalid id" });
     }
     const { name } = req.body;
-    const image = req.file.path
-    console.log("image",image)
-  
+    const image = req.file.path;
+    console.log("image", image);
 
     await User.updateOne({ _id: id }, { name, image });
     const user = await User.findById(id);
-    console.log("user 768", user)
+    console.log("user 768", user);
     const userData = await getUserData(user);
     res.status(200).json({
       status: "success",
