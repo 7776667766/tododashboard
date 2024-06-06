@@ -6,7 +6,6 @@ const reviewSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
- 
   name: {
     type: String,
     required: true,
@@ -21,7 +20,6 @@ const reviewSchema = new mongoose.Schema({
 });
 
 const businessSchema = new mongoose.Schema({
-
   businessId: {
     type: String,
   },
@@ -56,8 +54,8 @@ const businessSchema = new mongoose.Schema({
       },
     ],
   },
-  googleId:{
-    type :String
+  googleId: {
+    type: String,
   },
 
   timeSlots: {
@@ -70,19 +68,51 @@ const businessSchema = new mongoose.Schema({
       },
     ],
     default: [
-      { day: "Monday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
-      { day: "Tuesday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
-      { day: "Wednesday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
-      { day: "Thursday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
-      { day: "Friday", startTime: "09:00 AM", endTime: "05:00 PM", active: true },
-      { day: "Saturday", startTime: "07:00 AM", endTime: "04:00 PM", active: true },
+      {
+        day: "Monday",
+        startTime: "09:00 AM",
+        endTime: "05:00 PM",
+        active: true,
+      },
+      {
+        day: "Tuesday",
+        startTime: "09:00 AM",
+        endTime: "05:00 PM",
+        active: true,
+      },
+      {
+        day: "Wednesday",
+        startTime: "09:00 AM",
+        endTime: "05:00 PM",
+        active: true,
+      },
+      {
+        day: "Thursday",
+        startTime: "09:00 AM",
+        endTime: "05:00 PM",
+        active: true,
+      },
+      {
+        day: "Friday",
+        startTime: "09:00 AM",
+        endTime: "05:00 PM",
+        active: true,
+      },
+      {
+        day: "Saturday",
+        startTime: "07:00 AM",
+        endTime: "04:00 PM",
+        active: true,
+      },
     ],
     trim: true,
   },
 
-  TransactionDates: [{
-    type: Date,
-  }],
+  TransactionDates: [
+    {
+      type: Date,
+    },
+  ],
 
   slug: {
     type: String,
@@ -91,14 +121,14 @@ const businessSchema = new mongoose.Schema({
   },
   galleryImg: [
     {
-      type: String
-    }
+      type: String,
+    },
   ],
 
   profileLogo: [
     {
-      type: String
-    }
+      type: String,
+    },
   ],
 
   bannerText: {
@@ -118,7 +148,7 @@ const businessSchema = new mongoose.Schema({
   },
 
   fontSize: {
-    type: Number
+    type: Number,
   },
 
   logo: {
@@ -146,7 +176,6 @@ const businessSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Address is required"],
   },
-
 
   socialLinks: {
     type: Array,
@@ -184,7 +213,7 @@ const businessSchema = new mongoose.Schema({
 
   rejectreason: {
     type: String,
-    default: "payment is not clear"
+    default: "payment is not clear",
   },
 
   createdAt: {
@@ -204,8 +233,7 @@ const businessSchema = new mongoose.Schema({
 
   payment: {
     type: String,
-  }
-
+  },
 });
 
 module.exports = mongoose.model("Business", businessSchema);
