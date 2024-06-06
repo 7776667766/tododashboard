@@ -6,11 +6,7 @@ const reviewSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+ 
   name: {
     type: String,
     required: true,
@@ -59,6 +55,9 @@ const businessSchema = new mongoose.Schema({
         active: Boolean,
       },
     ],
+  },
+  googleId:{
+    type :String
   },
 
   timeSlots: {
