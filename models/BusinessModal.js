@@ -1,5 +1,29 @@
 const mongoose = require("mongoose");
 
+const reviewSchema = new mongoose.Schema({
+  description: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+  },
+});
+
 const businessSchema = new mongoose.Schema({
 
   businessId: {
@@ -23,6 +47,8 @@ const businessSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Email is required"],
   },
+
+  reviews: [reviewSchema],
 
   businessTiming: {
     type: [
@@ -65,6 +91,12 @@ const businessSchema = new mongoose.Schema({
     unique: true,
   },
   galleryImg: [
+    {
+      type: String
+    }
+  ],
+
+  profileLogo: [
     {
       type: String
     }
