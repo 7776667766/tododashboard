@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const businessSchema = new mongoose.Schema({
-  
+
   businessId: {
     type: String,
   },
@@ -22,6 +22,17 @@ const businessSchema = new mongoose.Schema({
     type: String,
     trim: true,
     required: [true, "Email is required"],
+  },
+
+  businessTiming: {
+    type: [
+      {
+        day: String,
+        From: String,
+        To: String,
+        active: Boolean,
+      },
+    ],
   },
 
   timeSlots: {
@@ -53,11 +64,9 @@ const businessSchema = new mongoose.Schema({
     required: [true, "Slug is required"],
     unique: true,
   },
-  
-
   galleryImg: [
     {
-      type : String
+      type: String
     }
   ],
 
@@ -106,7 +115,7 @@ const businessSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Address is required"],
   },
-  
+
 
   socialLinks: {
     type: Array,
@@ -128,7 +137,7 @@ const businessSchema = new mongoose.Schema({
     enum: ["approved", "rejected", "pending"],
     default: "pending",
   },
-  
+
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -156,7 +165,7 @@ const businessSchema = new mongoose.Schema({
     type: Date,
   },
 
-  status: { 
+  status: {
     type: String,
     enum: ["true", "rejected", "pending"],
     default: "pending",
