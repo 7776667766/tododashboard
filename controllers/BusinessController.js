@@ -385,14 +385,18 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 
 const registerBusinessApi = async (req, res, next) => {
   console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
+  console.log("Profile Logo File:", req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : 'No profileLogo  uploaded');
+
   console.log("other Files:", req.files['files']);
-  console.log("req body 384", req.body)
+  console.log("req body 384", req.body.reviews)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     //for logo Image
     const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
+      //for profileLogo 
+      const profileLogo = req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : null;
     //for gallery Images Array
     let galleryImg = [];
     if (req.files['files']) {
@@ -412,7 +416,6 @@ const registerBusinessApi = async (req, res, next) => {
       socialLinks,
       googleId,
       address,
-      businessTiming,
       slug,
     } = req.body;
 
@@ -504,6 +507,26 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
+    let businesstimings = [];
+    try {
+      businesstimings= JSON.parse(req.body.businessTiming);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "businesstimings must be a valid JSON array",
+      });
+    }
+
+    let reviewsdata = [];
+    try {
+      reviewsdata= JSON.parse(req.body.reviews);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "Reviews must be a valid JSON array",
+      });
+    }
+
     const myBusiness = await Business.create({
       name,
       email,
@@ -512,10 +535,12 @@ const registerBusinessApi = async (req, res, next) => {
       address,
       socialLinks,
       slug: slug,
+      profilelogo:profileLogo,
       logo: logoImg,
       images,
       galleryImg,
-      businessTiming,
+      businessTiming:businesstimings,
+      reviews: reviewsdata,
       googleId,
       bookingService: Ownerdata.bookingService,
       fontService: Ownerdata.fontFamily,
@@ -528,8 +553,8 @@ const registerBusinessApi = async (req, res, next) => {
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
     });
-    conso
-    le.log("user email5511", user.email);
+
+    console.log("user email5511", user.email);
 
     const imagePath = path.resolve(
       __dirname,
@@ -630,6 +655,7 @@ const registerBusinessApi = async (req, res, next) => {
         googleId: myBusiness.googleId,
         slug: myBusiness.slug,
         fontFamily: myBusiness.fontFamily,
+        reviews: myBusiness.reviews,
         fontSize: myBusiness.fontSize,
         ...myBusiness,
         logo: logoImg,
@@ -1330,6 +1356,7 @@ const businessData = async (businessData) => {
     websiteService: businessData.websiteService,
     requestStatus: businessData.requestStatus,
     timeSlots: businessData.timeSlots,
+    reviews: businessData.reviews,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleId: businessData.googleId,
