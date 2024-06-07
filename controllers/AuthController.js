@@ -337,6 +337,7 @@ const loginApi = async (req, res, next) => {
 
 const checkTokenIsValidApi = async (req, res, next) => {
   const { id } = req.user;
+  console.log("id", id);
   const user = await User.findById(id);
   if (!user) {
     return res.status(400).json({ status: "error", message: "Invalid user" });

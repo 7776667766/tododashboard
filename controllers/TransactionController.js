@@ -29,7 +29,7 @@ const addTransactionApi = async (req, res, next) => {
     if (!name || !token || !subscriptionPlan) {
       return res
         .status(400)
-        .json({ status: "error", message: "please select buiness plan" });
+        .json({ status: "error", message: "Please select business plan" });
     }
 
     const creditCardInfo = req.body.token;
@@ -77,10 +77,10 @@ const addTransactionApi = async (req, res, next) => {
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
-      currency: 'usd',
+      currency: "usd",
       payment_method: paymentMethod.id,
       customer: customer.id,
-      confirmation_method: 'automatic',
+      confirmation_method: "automatic",
     });
 
     const { exp_month, exp_year, last4, brand } = paymentMethod.card;
@@ -118,7 +118,7 @@ const addTransactionApi = async (req, res, next) => {
         clientSecret: paymentIntent.client_secret,
         stripeSubscriptionEndDate: subscription.current_period_end,
       });
-      console.log("newTransaction", newTransaction)
+      console.log("newTransaction", newTransaction);
 
       res.status(201).json({
         status: "success",
@@ -127,16 +127,21 @@ const addTransactionApi = async (req, res, next) => {
         newcard,
       });
     }
-
   } catch (error) {
     console.error("Error in Adding Transaction Details", error);
-    if (error.type === 'StripeCardError' && error.decline_code === 'insufficient_funds') {
+    if (
+      error.type === "StripeCardError" &&
+      error.decline_code === "insufficient_funds"
+    ) {
       res.status(400).json({
         status: "error",
-        message: "Your card has insufficient funds. Please use another card or add funds to your card.",
+        message:
+          "Your card has insufficient funds. Please use another card or add funds to your card.",
       });
     } else {
-      res.status(500).json({ status: "error", message: "Internal Server Error" });
+      res
+        .status(500)
+        .json({ status: "error", message: "Internal Server Error" });
     }
   }
 };
@@ -168,7 +173,7 @@ const getTransactionbyUserId = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     const { id } = req.user;
-    console.log("id201 ",id)
+    console.log("id201 ", id);
     const user = await User.findById(id);
     if (!user) {
       return res.status(400).json({
@@ -198,7 +203,7 @@ const getTransactionbyUserId = async (req, res, next) => {
       status: "success",
       data: adminTransaction,
     });
-    console.log("adminTracsaction230pro",adminTransaction)
+    console.log("adminTracsaction230pro", adminTransaction);
   } catch (error) {
     console.log("Error in get transaction by user id", error);
     res.status(400).json({ status: "error", message: error.message });
