@@ -3,17 +3,18 @@ const mongoose = require("mongoose");
 const reviewSchema = new mongoose.Schema({
   description: {
     type: String,
-    required: true,
+    required: [true, "description is required"],
     trim: true,
   },
   name: {
     type: String,
-    required: true,
+    required: [true, "name is required"],
     trim: true,
   },
 
   rating: {
     type: Number,
+    required: [true, "Rating is required"],
     min: 1,
     max: 5,
   },
