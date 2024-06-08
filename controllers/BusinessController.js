@@ -625,14 +625,15 @@ const registerBusinessApi = async (req, res, next) => {
         });
       }
     });
-    socialLinks?.map((link) => {
-      if (!validator.isURL(link.link)) {
-        return res.status(400).json({
-          status: "error",
-          message: "Social link is invalid",
-        });
-      }
-    });
+
+    // socialLinks?.map((link) => {
+    //   if (!validator.isURL(link.link)) {
+    //     return res.status(400).json({
+    //       status: "error",
+    //       message: "Social link is invalid",
+    //     });
+    //   }
+    // });
 
     const user = await User.findById(id);
     console.log("user email", user.email);
