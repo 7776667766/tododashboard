@@ -578,9 +578,10 @@ const registerBusinessApi = async (req, res, next) => {
       googleId,
       address,
       slug,
+      reviews=[]
     } = req.body;
 
-    if (!name || !email || !phone || !description || !address || !slug) {
+    if (!name || !email || !phone || !description || !address || !slug || !reviews ) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -687,6 +688,16 @@ const registerBusinessApi = async (req, res, next) => {
         message: "Reviews must be a valid JSON array",
       });
     }
+
+    for (const review of reviewsdata) {
+      if (!review.rating || !review.description || !review.name) {
+        return res.status(400).json({
+          status: "error",
+          message: "Each review must have a Rating, Description, and  Name",
+        });
+      }
+    }
+
 
     const myBusiness = await Business.create({
       name,
@@ -839,7 +850,7 @@ const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find({
       slug: { $ne: "dummy-business" },
-    });
+    }).sort({ createdAt: -1 }); ;
 
     const businessDataList = [];
 
