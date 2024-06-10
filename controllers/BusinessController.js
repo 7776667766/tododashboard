@@ -626,15 +626,6 @@ const registerBusinessApi = async (req, res, next) => {
       }
     });
 
-    // socialLinks?.map((link) => {
-    //   if (!validator.isURL(link.link)) {
-    //     return res.status(400).json({
-    //       status: "error",
-    //       message: "Social link is invalid",
-    //     });
-    //   }
-    // });
-
     const user = await User.findById(id);
     console.log("user email", user.email);
 
@@ -701,17 +692,15 @@ const registerBusinessApi = async (req, res, next) => {
     }
     console.log("socialLinksData",socialLinksData)
 
-
     for (const review of reviewsdata) {
       if (!review.rating || !review.description || !review.name) {
         return res.status(400).json({
           status: "error",
           message: "Each review must have a Rating, Description, and  Name",
-        });
+        })
       }
     }
-
-
+    
     const myBusiness = await Business.create({
       name,
       email,

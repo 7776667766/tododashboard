@@ -32,15 +32,10 @@ const reviewSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+
     deletedAt: {  
         type: Date,
     },
-
-    // status: {
-    //     type: String,
-    //     enum: ["completed", "pending", "cancelled"],
-    //     default: "pending",
-    // },
 });
 
 module.exports = mongoose.model("Review", reviewSchema);
