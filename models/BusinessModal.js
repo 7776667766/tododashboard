@@ -59,55 +59,55 @@ const businessSchema = new mongoose.Schema({
     type: String,
   },
 
-  timeSlots: {
-    type: [
-      {
-        day: String,
-        startTime: String,
-        endTime: String,
-        active: Boolean,
-      },
-    ],
-    default: [
-      {
-        day: "Monday",
-        startTime: "09:00 AM",
-        endTime: "05:00 PM",
-        active: true,
-      },
-      {
-        day: "Tuesday",
-        startTime: "09:00 AM",
-        endTime: "05:00 PM",
-        active: true,
-      },
-      {
-        day: "Wednesday",
-        startTime: "09:00 AM",
-        endTime: "05:00 PM",
-        active: true,
-      },
-      {
-        day: "Thursday",
-        startTime: "09:00 AM",
-        endTime: "05:00 PM",
-        active: true,
-      },
-      {
-        day: "Friday",
-        startTime: "09:00 AM",
-        endTime: "05:00 PM",
-        active: true,
-      },
-      {
-        day: "Saturday",
-        startTime: "07:00 AM",
-        endTime: "04:00 PM",
-        active: true,
-      },
-    ],
-    trim: true,
-  },
+  // timeSlots: {
+  //   type: [
+  //     {
+  //       day: String,
+  //       startTime: String,
+  //       endTime: String,
+  //       active: Boolean,
+  //     },
+  //   ],
+  //   default: [
+  //     {
+  //       day: "Monday",
+  //       startTime: "09:00 AM",
+  //       endTime: "05:00 PM",
+  //       active: true,
+  //     },
+  //     {
+  //       day: "Tuesday",
+  //       startTime: "09:00 AM",
+  //       endTime: "05:00 PM",
+  //       active: true,
+  //     },
+  //     {
+  //       day: "Wednesday",
+  //       startTime: "09:00 AM",
+  //       endTime: "05:00 PM",
+  //       active: true,
+  //     },
+  //     {
+  //       day: "Thursday",
+  //       startTime: "09:00 AM",
+  //       endTime: "05:00 PM",
+  //       active: true,
+  //     },
+  //     {
+  //       day: "Friday",
+  //       startTime: "09:00 AM",
+  //       endTime: "05:00 PM",
+  //       active: true,
+  //     },
+  //     {
+  //       day: "Saturday",
+  //       startTime: "07:00 AM",
+  //       endTime: "04:00 PM",
+  //       active: true,
+  //     },
+  //   ],
+  //   trim: true,
+  // },
 
   TransactionDates: [
     {
@@ -183,10 +183,10 @@ const businessSchema = new mongoose.Schema({
     trim: true,
   },
 
-  images: {
-    type: Array,
-    trim: true,
-  },
+  // images: {
+  //   type: Array,
+  //   trim: true,
+  // },
 
   googleId: {
     type: String,

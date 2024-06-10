@@ -690,6 +690,18 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
+    let socialLinksData = [];
+    try {
+      socialLinksData= JSON.parse(req.body.socialLinks);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "socialLinksData must be a valid JSON array",
+      });
+    }
+    console.log("socialLinksData",socialLinksData)
+
+
     for (const review of reviewsdata) {
       if (!review.rating || !review.description || !review.name) {
         return res.status(400).json({
@@ -706,7 +718,7 @@ const registerBusinessApi = async (req, res, next) => {
       phone,
       description,
       address,
-      socialLinks,
+      socialLinks:socialLinksData,
       slug: slug,
       profilelogo:profileLogo,
       logo: logoImg,
