@@ -285,7 +285,7 @@ const addManagerApi = async (req, res) => {
 //       });
 //     }
 
-   
+
 //     if (id !== manager.createdBy && req.user.role !== "owner") {
 //       return res.status(400).json({
 //         status: "error",
@@ -323,9 +323,9 @@ const updateManagerApi = async (req, res) => {
     const { id } = req.user;
     const { managerId } = req.params;
     console.log("first manager id is ", managerId);
-    const { name, email,phone } = req.body;
+    const { name, email, phone } = req.body;
 
-    if (!name || !email ) {
+    if (!name || !email) {
       return res.status(400).json({
         status: "error",
         message: "name, email, and phone are required",
@@ -361,14 +361,14 @@ const updateManagerApi = async (req, res) => {
         message: "User is not a manager",
       });
     }
-    
+
     // if (id !== manager.createdBy && req.user.role !== "owner") {
     //   return res.status(400).json({
     //     status: "error",
     //     message: "You are not authorized to update this manager",
     //   });
     // }
-   
+
     const updatedFields = {
       name,
       email,
@@ -376,7 +376,7 @@ const updateManagerApi = async (req, res) => {
       // ...req.body
     };
 
-   
+
     console.log("updated fields are ", updatedFields);
     await User.findByIdAndUpdate(managerId, updatedFields);
 
@@ -556,8 +556,8 @@ const registerBusinessApi = async (req, res, next) => {
     }
     //for logo Image
     const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
-      //for profileLogo 
-      const profileLogo = req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : null;
+    //for profileLogo 
+    const profileLogo = req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : null;
     //for gallery Images Array
     let galleryImg = [];
     if (req.files["files"]) {
@@ -575,13 +575,13 @@ const registerBusinessApi = async (req, res, next) => {
       description,
       images,
       socialLinks,
-      googleId,
+      googleMap,
       address,
       slug,
-      reviews=[]
+      reviews = []
     } = req.body;
 
-    if (!name || !email || !phone || !description || !address || !slug || !reviews ) {
+    if (!name || !email || !phone || !description || !address || !slug || !reviews) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -663,7 +663,7 @@ const registerBusinessApi = async (req, res, next) => {
 
     let businesstimings = [];
     try {
-      businesstimings= JSON.parse(req.body.businessTiming);
+      businesstimings = JSON.parse(req.body.businessTiming);
     } catch (err) {
       return res.status(400).json({
         status: "error",
@@ -671,9 +671,10 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
+    console.log("businesstimings 674", businesstimings)
     let reviewsdata = [];
     try {
-      reviewsdata= JSON.parse(req.body.reviews);
+      reviewsdata = JSON.parse(req.body.reviews);
     } catch (err) {
       return res.status(400).json({
         status: "error",
@@ -683,14 +684,14 @@ const registerBusinessApi = async (req, res, next) => {
 
     let socialLinksData = [];
     try {
-      socialLinksData= JSON.parse(req.body.socialLinks);
+      socialLinksData = JSON.parse(req.body.socialLinks);
     } catch (err) {
       return res.status(400).json({
         status: "error",
         message: "socialLinksData must be a valid JSON array",
       });
     }
-    console.log("socialLinksData",socialLinksData)
+    console.log("socialLinksData", socialLinksData)
 
     for (const review of reviewsdata) {
       if (!review.rating || !review.description || !review.name) {
@@ -700,22 +701,22 @@ const registerBusinessApi = async (req, res, next) => {
         })
       }
     }
-    
+
     const myBusiness = await Business.create({
       name,
       email,
       phone,
       description,
       address,
-      socialLinks:socialLinksData,
+      socialLinks: socialLinksData,
       slug: slug,
-      profilelogo:profileLogo,
+      profilelogo: profileLogo,
       logo: logoImg,
       images,
       galleryImg,
-      businessTiming:businesstimings,
+      businessTiming: businesstimings,
       reviews: reviewsdata,
-      googleId,
+      googleMap,
       bookingService: Ownerdata.bookingService,
       fontService: Ownerdata.fontFamily,
       fontSize: Ownerdata.fontSize,
@@ -826,7 +827,7 @@ const registerBusinessApi = async (req, res, next) => {
         businessTiming: myBusiness.businessTiming,
         images: myBusiness.images,
         galleryImg,
-        googleId: myBusiness.googleId,
+        googleMap: myBusiness.googleMap,
         slug: myBusiness.slug,
         fontFamily: myBusiness.fontFamily,
         reviews: myBusiness.reviews,
@@ -852,7 +853,7 @@ const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find({
       slug: { $ne: "dummy-business" },
-    }).sort({ createdAt: -1 }); ;
+    }).sort({ createdAt: -1 });;
 
     const businessDataList = [];
 
@@ -935,7 +936,7 @@ const MultiplebusinessData = async (businessData) => {
     requestStatus: business.requestStatus,
     theme: business.theme || "",
     images: business.images,
-    googleId: business.googleId,
+    googleMap: business.googleMap,
     fontFamily: business.fontFamily,
     fontSize: business.fontSize,
     slug: business.slug,
@@ -1259,7 +1260,7 @@ const addDummyBusinessApi = async (req, res) => {
       description,
       address,
       socialLinks,
-      googleId,
+      googleMap,
       fontFamily,
       fontSize,
       slug,
@@ -1302,7 +1303,7 @@ const addDummyBusinessApi = async (req, res) => {
       bannerText,
       color,
       socialLinks,
-      googleId,
+      googleMap,
       slug: mySlug,
       theme: "theme-1",
       bookingService: true,
@@ -1532,7 +1533,7 @@ const businessData = async (businessData) => {
     reviews: businessData.reviews,
     theme: businessData?.theme || "",
     images: businessData.images,
-    googleId: businessData.googleId,
+    googleMap: businessData.googleMap,
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
     slug: businessData.slug,

@@ -49,13 +49,13 @@ const businessSchema = new mongoose.Schema({
     type: [
       {
         day: String,
-        From: String,
-        To: String,
+        from: String,
+        to: String,
         active: Boolean,
       },
     ],
   },
-  googleId: {
+  googleMap: {
     type: String,
   },
 
