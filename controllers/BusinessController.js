@@ -547,7 +547,6 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 const registerBusinessApi = async (req, res, next) => {
   console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
   console.log("Profile Logo File:", req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : 'No profileLogo  uploaded');
-
   console.log("other Files:", req.files['files']);
   console.log("req body 384", req.body.reviews)
   try {
@@ -574,7 +573,6 @@ const registerBusinessApi = async (req, res, next) => {
       phone,
       description,
       images,
-      socialLinks,
       googleMap,
       address,
       slug,
@@ -950,10 +948,6 @@ const MultiplebusinessData = async (businessData) => {
   }));
 };
 
-//     if (req.user === undefined) {
-//       return res.status(400).json({ status: "error", message: "Invalid user" });
-//     }
-
 //     const { id } = req.user;
 //     const user = await User.findById(id);
 
@@ -1050,7 +1044,6 @@ const getBusinessByUserIdApi = async (req, res) => {
     }
 
     let business;
-    // ROLE OF MANAGER
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
       console.log("manger873", manager)
@@ -1079,7 +1072,6 @@ const getBusinessByUserIdApi = async (req, res) => {
         });
       }
       business.TransactionDate = transactionDates
-      // ROLE OF ADMIN
     } else if (user.role === "admin") {
       const targetSlug = "dummy-business";
       business = await Business.findOne({ slug: targetSlug });
@@ -1090,7 +1082,6 @@ const getBusinessByUserIdApi = async (req, res) => {
           message: "Dummy business not found",
         });
       }
-      // ROLE OF OWNER
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
 
