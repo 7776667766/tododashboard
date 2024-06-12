@@ -546,7 +546,6 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 
 const registerBusinessApi = async (req, res, next) => {
   console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
-  console.log("Profile Logo File:", req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : 'No profileLogo  uploaded');
   console.log("other Files:", req.files['files']);
   console.log("req body 384", req.body.reviews)
   try {
@@ -555,8 +554,16 @@ const registerBusinessApi = async (req, res, next) => {
     }
     //for logo Image
     const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
-    //for profileLogo 
-    const profileLogo = req?.files['profileLogo'] ? req.files['profileLogo'][0]?.path : null;
+
+   //for Profile Image 
+    let ProfileImg = [];
+    if (req.files["profileLogo"]) {
+      req.files["profileLogo"].forEach((file) => {
+        ProfileImg.push(file.path);
+      });
+    }
+    console.log("ProfileImg:", ProfileImg);
+
     //for gallery Images Array
     let galleryImg = [];
     if (req.files["files"]) {
@@ -708,7 +715,7 @@ const registerBusinessApi = async (req, res, next) => {
       address,
       socialLinks: socialLinksData,
       slug: slug,
-      profilelogo: profileLogo,
+      profilelogo:ProfileImg,
       logo: logoImg,
       images,
       galleryImg,
@@ -823,6 +830,7 @@ const registerBusinessApi = async (req, res, next) => {
         address: myBusiness.address,
         socialLinks: myBusiness.socialLinks,
         businessTiming: myBusiness.businessTiming,
+        profilelogo:myBusiness.ProfileImg,
         images: myBusiness.images,
         galleryImg,
         googleMap: myBusiness.googleMap,
@@ -1520,6 +1528,7 @@ const businessData = async (businessData) => {
     bookingService: businessData.bookingService,
     websiteService: businessData.websiteService,
     requestStatus: businessData.requestStatus,
+    profilelogo:businessData.ProfileImg,
     timeSlots: businessData.timeSlots,
     reviews: businessData.reviews,
     theme: businessData?.theme || "",
