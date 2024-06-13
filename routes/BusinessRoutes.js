@@ -101,10 +101,10 @@ router.post(
 router.post(
   "/add-dummy-business",
   auth,
-  upload("business").fields([
+  upload("business/gallery").fields([
     { name: "logo", maxCount: 1 },
-    { name: "bannerImg", maxCount: 1 },
-  ]),
+    { name: "profileLogo", maxCount: 16},
+    { name: "files", maxCount: 12 }]),
   addDummyBusinessApi
 );
 

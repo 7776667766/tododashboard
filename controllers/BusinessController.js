@@ -544,7 +544,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
   }
 };
 
-const registerBusinessApi = async (req, res, next) => {
+const registerBusinessApi = async (req, res) => {
   console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
   console.log("other Files:", req.files['files']);
   console.log("req body 384", req.body.reviews)
@@ -555,7 +555,7 @@ const registerBusinessApi = async (req, res, next) => {
     //for logo Image
     const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
 
-   //for Profile Image 
+    //for Profile Image 
     let ProfileImg = [];
     if (req.files["profileLogo"]) {
       req.files["profileLogo"].forEach((file) => {
@@ -583,7 +583,7 @@ const registerBusinessApi = async (req, res, next) => {
       googleMap,
       address,
       slug,
-      reviews = []
+      reviews 
     } = req.body;
 
     if (!name || !email || !phone || !description || !address || !slug || !reviews) {
@@ -649,7 +649,6 @@ const registerBusinessApi = async (req, res, next) => {
     }
 
     const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
-    console.log("Ownerdata 481", Ownerdata)
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -676,7 +675,6 @@ const registerBusinessApi = async (req, res, next) => {
       });
     }
 
-    console.log("businesstimings 674", businesstimings)
     let reviewsdata = [];
     try {
       reviewsdata = JSON.parse(req.body.reviews);
@@ -696,7 +694,6 @@ const registerBusinessApi = async (req, res, next) => {
         message: "socialLinksData must be a valid JSON array",
       });
     }
-    console.log("socialLinksData", socialLinksData)
 
     for (const review of reviewsdata) {
       if (!review.rating || !review.description || !review.name) {
@@ -715,7 +712,7 @@ const registerBusinessApi = async (req, res, next) => {
       address,
       socialLinks: socialLinksData,
       slug: slug,
-      profilelogo:ProfileImg,
+      profilelogo: ProfileImg,
       logo: logoImg,
       images,
       galleryImg,
@@ -733,8 +730,6 @@ const registerBusinessApi = async (req, res, next) => {
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
     });
-
-    console.log("user email5511", user.email);
 
     const imagePath = path.resolve(
       __dirname,
@@ -809,7 +804,6 @@ const registerBusinessApi = async (req, res, next) => {
         },
       ],
     });
-    console.log("user mail send", userMailSend);
 
     if (!userMailSend) {
       console.error("Error sending confirmation emails");
@@ -830,7 +824,7 @@ const registerBusinessApi = async (req, res, next) => {
         address: myBusiness.address,
         socialLinks: myBusiness.socialLinks,
         businessTiming: myBusiness.businessTiming,
-        profilelogo:myBusiness.ProfileImg,
+        profilelogo: myBusiness.ProfileImg,
         images: myBusiness.images,
         galleryImg,
         googleMap: myBusiness.googleMap,
@@ -1237,33 +1231,181 @@ const selectedTheme = async (req, res) => {
 };
 
 const addDummyBusinessApi = async (req, res) => {
-  console.log("body request", req.body);
-  let logo = req.files["logo"][0].path;
-  let bannerImg = req.files["bannerImg"][0].path;
+  // console.log("body request", req.body);
+  // let logo = req.files["logo"][0].path;
+  // let bannerImg = req.files["bannerImg"][0].path;
 
-  console.log("logo", logo);
-  console.log("bannerImg", bannerImg);
+  // console.log("logo", logo);
+  // console.log("bannerImg", bannerImg);
 
+  // try {
+  //   if (req.user === undefined) {
+  //     return res.status(400).json({ status: "error", message: "Invalid user" });
+  //   }
+
+  //   const { id } = req.user;
+  //   const {
+  //     name,
+  //     email,
+  //     bannerText,
+  //     color,
+  //     phone,
+  //     description,
+  //     address,
+  //     socialLinks,
+  //     googleMap,
+  //     fontFamily,
+  //     fontSize,
+  //     slug,
+  //   } = req.body;
+
+  //   const user = await User.findById(id);
+
+  //   if (!user) {
+  //     return res.status(400).json({
+  //       status: "error",
+  //       message: "User not found",
+  //     });
+  //   }
+
+  //   if (user.role !== "admin") {
+  //     return res.status(400).json({
+  //       status: "error",
+  //       message: "You are not authorized to add dummy business",
+  //     });
+  //   }
+
+  //   const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
+
+  //   const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+  //   if (slugAlreadyExist) {
+  //     return res.status(400).json({
+  //       status: "error",
+  //       message: "Slug already exists",
+  //     });
+  //   }
+
+  //   const myBusiness = await Business.create({
+  //     name,
+  //     email,
+  //     phone,
+  //     description,
+  //     address,
+  //     logo,
+  //     bannerImg,
+  //     bannerText,
+  //     color,
+  //     socialLinks,
+  //     googleMap,
+  //     slug: mySlug,
+  //     theme: "theme-1",
+  //     bookingService: true,
+  //     websiteService: true,
+  //     fontFamily,
+  //     fontSize,
+  //   });
+
+  //   console.log("Checking MY Buisness Payload ", myBusiness);
+  //   res.status(200).json({
+  //     status: "success",
+  //     data: myBusiness,
+  //     message: "Dummy Business Added Successfully",
+  //   });
+  // } catch (error) {
+  //   console.log("Error in Dummy Business", error);
+  //   res.status(400).json({ status: "error", message: error.message });
+  // }
+
+  console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
+  console.log("other Files:", req.files['files']);
+  console.log("req body 384", req.body.reviews)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
+    //for logo Image
+    const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
+
+    //for Profile Image 
+    let ProfileImg = [];
+    if (req.files["profileLogo"]) {
+      req.files["profileLogo"].forEach((file) => {
+        ProfileImg.push(file.path);
+      });
+    }
+    console.log("ProfileImg:", ProfileImg);
+
+    //for gallery Images Array
+    let galleryImg = [];
+    if (req.files["files"]) {
+      req.files["files"].forEach((file) => {
+        galleryImg.push(file.path);
+      });
+    }
+    console.log("Gallery Images:", galleryImg);
 
     const { id } = req.user;
     const {
       name,
       email,
       bannerText,
-      color,
       phone,
       description,
-      address,
-      socialLinks,
+      fontSize,
+      color,
+      bannerImg,
+      images,
       googleMap,
       fontFamily,
-      fontSize,
+      address,
       slug,
+      reviews
     } = req.body;
+
+    if (!name || !email || !phone || !description || !address || !slug || !reviews) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+
+    const existingSlug = await Business.findOne({ slug: slug });
+    if (existingSlug) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
+    const existingPhone = await Business.findOne({ phone: phone });
+    if (existingPhone) {
+      return res.status(400).json({
+        status: "error",
+        message: "Phone number already exists",
+      });
+    }
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email is invalid",
+      });
+    }
+
+    if (!validator.isMongoId(id)) {
+      return res.status(400).json({
+        status: "error",
+        message: "User Id is invalid",
+      });
+    }
+    images?.map((image) => {
+      if (!validator.isURL(image)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Image url is invalid",
+        });
+      }
+    });
 
     const user = await User.findById(id);
 
@@ -1274,21 +1416,59 @@ const addDummyBusinessApi = async (req, res) => {
       });
     }
 
-    if (user.role !== "admin") {
+      if (user.role !== "admin") {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to add dummy business",
       });
     }
 
-    const mySlug = slugify(slug, { lower: true, remove: /[*+~.()'"#!:@]/g });
-
-    const slugAlreadyExist = await Business.findOne({ slug: mySlug });
+    
+    const slugAlreadyExist = await Business.findOne({ slug: slug });
     if (slugAlreadyExist) {
       return res.status(400).json({
         status: "error",
         message: "Slug already exists",
       });
+    }
+
+    let businesstimings = [];
+    try {
+      businesstimings = JSON.parse(req.body.businessTiming);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "businesstimings must be a valid JSON array",
+      });
+    }
+
+    let reviewsdata = [];
+    try {
+      reviewsdata = JSON.parse(req.body.reviews);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "Reviews must be a valid JSON array",
+      });
+    }
+
+    let socialLinksData = [];
+    try {
+      socialLinksData = JSON.parse(req.body.socialLinks);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "socialLinksData must be a valid JSON array",
+      });
+    }
+
+    for (const review of reviewsdata) {
+      if (!review.rating || !review.description || !review.name) {
+        return res.status(400).json({
+          status: "error",
+          message: "Each review must have a Rating, Description, and  Name",
+        })
+      }
     }
 
     const myBusiness = await Business.create({
@@ -1297,28 +1477,33 @@ const addDummyBusinessApi = async (req, res) => {
       phone,
       description,
       address,
-      logo,
-      bannerImg,
-      bannerText,
-      color,
-      socialLinks,
+      socialLinks: socialLinksData,
+      slug: slug,
+      profilelogo: ProfileImg,
+      logo: logoImg,
+      images,
+      galleryImg,
+      businessTiming: businesstimings,
+      reviews: reviewsdata,
       googleMap,
-      slug: mySlug,
-      theme: "theme-1",
       bookingService: true,
       websiteService: true,
       fontFamily,
       fontSize,
+      theme: "theme-1",
+      createdBy: id,
+      bannerText,
+      color: color,
+      bannerImg,
     });
-
-    console.log("Checking MY Buisness Payload ", myBusiness);
+    console.log("myBusiness", myBusiness)
     res.status(200).json({
       status: "success",
       data: myBusiness,
-      message: "Dummy Business Added Successfully",
+      message: "Business registered successfully",
     });
   } catch (error) {
-    console.log("Error in Dummy Business", error);
+    console.log("Error in register business", error);
     res.status(400).json({ status: "error", message: error.message });
   }
 };
@@ -1528,7 +1713,7 @@ const businessData = async (businessData) => {
     bookingService: businessData.bookingService,
     websiteService: businessData.websiteService,
     requestStatus: businessData.requestStatus,
-    profilelogo:businessData.ProfileImg,
+    profilelogo: businessData?.ProfileImg?.map(imgFullPath),
     timeSlots: businessData.timeSlots,
     reviews: businessData.reviews,
     theme: businessData?.theme || "",
@@ -1537,7 +1722,7 @@ const businessData = async (businessData) => {
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
     slug: businessData.slug,
-    galleryImg: businessData.galleryImg.map(imgFullPath),
+    galleryImg: businessData?.galleryImg?.map(imgFullPath),
     logo: imgFullPath(businessData.logo),
     bannerText: businessData.bannerText,
     bannerImg: imgFullPath(businessData.bannerImg),
