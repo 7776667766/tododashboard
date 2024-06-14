@@ -18,6 +18,10 @@ const reviewSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
+  profileLogo:{
+    type:String,
+    // required:[true,"Profile Logo is required"]
+    }
 });
 
 const businessSchema = new mongoose.Schema({

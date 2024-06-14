@@ -19,11 +19,11 @@ const bookingSchema = new mongoose.Schema({
     required: [true, "Specialist Id is required"],
     trim: true,
   },
-  businessId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Business",
-    required: [true, "Business Id is required"],
-  },
+    // businessId: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Business",
+    //   required: [true, "Business Id is required"],
+    // },
 
   name: {
     type: String,

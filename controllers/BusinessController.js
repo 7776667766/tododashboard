@@ -362,12 +362,7 @@ const updateManagerApi = async (req, res) => {
       });
     }
 
-    // if (id !== manager.createdBy && req.user.role !== "owner") {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "You are not authorized to update this manager",
-    //   });
-    // }
+
 
     const updatedFields = {
       name,
@@ -583,7 +578,7 @@ const registerBusinessApi = async (req, res) => {
       googleMap,
       address,
       slug,
-      reviews 
+      reviews
     } = req.body;
 
     if (!name || !email || !phone || !description || !address || !slug || !reviews) {
@@ -684,6 +679,7 @@ const registerBusinessApi = async (req, res) => {
         message: "Reviews must be a valid JSON array",
       });
     }
+
 
     let socialLinksData = [];
     try {
@@ -848,6 +844,153 @@ const registerBusinessApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+const updateBusinessApi = async (req, res) => {
+  console.log("req body", req.body)
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        status: "error",
+        message: "business Id is required",
+      });
+    }
+
+
+    const existingBusiness = await Business.findById(id);
+    console.log(existingBusiness, "existingBusiness 860")
+    if (!existingBusiness) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+
+    let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
+
+    let ProfileImg = [];
+    if (req.files["profileLogo"])
+      req.files["profileLogo"]?.forEach((file) => {
+        ProfileImg.push(file.path);
+      })
+        ?? existingBusiness?.profileLogo;
+ 
+
+
+    let galleryImg = []
+    req.files["files"]?.forEach((file) => {
+      galleryImg.push(file.path);
+    }) ?? existingBusiness?.galleryImg;
+
+    const {
+      name,
+      email,
+      phone,
+      description,
+      images,
+      googleMap,
+      address,
+      slug,
+      reviews,
+      businessTiming,
+      socialLinks
+    } = req.body;
+
+    if (!name || !email || !phone || !description || !address || !slug || !reviews) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email is invalid",
+      });
+    }
+
+    images?.forEach((image) => {
+      if (!validator.isURL(image)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Image url is invalid",
+        });
+      }
+    });
+
+    let businesstimings;
+    try {
+      businesstimings = JSON.parse(businessTiming);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "businessTiming must be a valid JSON array",
+      });
+    }
+
+    let reviewsdata;
+    try {
+      reviewsdata = JSON.parse(reviews);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "Reviews must be a valid JSON array",
+      });
+    }
+
+  
+    for (const review of reviewsdata) {
+      if (!review.rating || !review.description || !review.name) {
+        return res.status(400).json({
+          status: "error",
+          message: "Each review must have a Rating, Description, and Name",
+        });
+      }
+    }
+
+    
+    
+    const updatedBusiness = await Business.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          email,
+          phone,
+          description,
+          address,
+          socialLinks,
+          slug,
+          profilelogo: ProfileImg,
+          logo: logoImg,
+          images,
+          galleryImg,
+          businessTiming: businesstimings,
+          reviews: reviewsdata,
+          googleMap,
+        },
+      },
+      { new: true }
+    );
+
+    const updatedBusinessData = await businessData(updatedBusiness);
+    console.log("updatedBusinessData", updatedBusinessData)
+
+    res.status(200).json({
+      status: "success",
+      data: updatedBusinessData,
+      message: "Business updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in updating business", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
@@ -950,84 +1093,7 @@ const MultiplebusinessData = async (businessData) => {
   }));
 };
 
-//     const { id } = req.user;
-//     const user = await User.findById(id);
 
-//     if (!user) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "User not found",
-//       });
-//     }
-//     const { businessId } = req.body;
-//     // console.log("businessId728",businessId)
-
-//     let business;
-
-//     if (user.role === "manager") {
-//       const manager = await Manager.findOne({ managerId: id });
-//       if (!manager) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Manager not found",
-//         });
-//       }
-//       console.log("manager", manager)
-
-//       business = await Business.findById(manager.businessId);
-
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Business not found",
-//         });
-//       }
-//     } else if (user.role === "admin") {
-//       const targetSlug = "dummy-business";
-//       business = await Business.findOne({ slug: targetSlug });
-
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "dummy business not found",
-//         });
-//       }
-//       console.log("businessId760", business._id);
-//     } else if (user.role === "owner") {
-
-//       const owner = await Owner.findOne({ ownerId: id });
-//       if (!owner) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Owner not found",
-//         });
-//       }
-
-//       business = await Business.findById(businessId);
-
-//       console.log("business774",business)
-
-//       // business = await Business.findOne({
-//       //   createdBy: id,
-//       // });
-//       console.log("business773",business)
-
-//       if (!business) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: "Business not found",
-//         });
-//       }
-//     }
-//     res.status(200).json({
-//       status: "success",
-//       data: await businessData(business),
-//     });
-//   } catch (error) {
-//     console.log("Error in get business by user id", error);
-//     res.status(400).json({ status: "error", message: error.message });
-//   }
-// };
 
 const getBusinessByUserIdApi = async (req, res) => {
   try {
@@ -1416,14 +1482,14 @@ const addDummyBusinessApi = async (req, res) => {
       });
     }
 
-      if (user.role !== "admin") {
+    if (user.role !== "admin") {
       return res.status(400).json({
         status: "error",
         message: "You are not authorized to add dummy business",
       });
     }
 
-    
+
     const slugAlreadyExist = await Business.findOne({ slug: slug });
     if (slugAlreadyExist) {
       return res.status(400).json({
@@ -1799,6 +1865,7 @@ module.exports = {
   handleCustomBusinessApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,
+  updateBusinessApi,
   deleteManagerApi,
   getBusinessByOwnerIdApi,
   getManagersByBusinessIdApi,
