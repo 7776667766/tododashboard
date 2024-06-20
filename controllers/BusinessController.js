@@ -680,6 +680,10 @@ const registerBusinessApi = async (req, res) => {
       });
     }
 
+    reviewsdata = reviewsdata.map((review, index) => ({
+      ...review,
+      profileLogo: imgFullPath(ProfileImg[index]) || null
+    }));
 
     let socialLinksData = [];
     try {
@@ -692,6 +696,7 @@ const registerBusinessApi = async (req, res) => {
     }
 
     for (const review of reviewsdata) {
+
       if (!review.rating || !review.description || !review.name) {
         return res.status(400).json({
           status: "error",
@@ -845,7 +850,7 @@ const registerBusinessApi = async (req, res) => {
   }
 };
 const updateBusinessApi = async (req, res) => {
-  console.log("req body", req.body)
+  console.log("req body 853", req.body)
   try {
     const { id } = req.body;
 
@@ -856,9 +861,7 @@ const updateBusinessApi = async (req, res) => {
       });
     }
 
-
     const existingBusiness = await Business.findById(id);
-    console.log(existingBusiness, "existingBusiness 860")
     if (!existingBusiness) {
       return res.status(404).json({
         status: "error",
@@ -874,13 +877,16 @@ const updateBusinessApi = async (req, res) => {
         ProfileImg.push(file.path);
       })
         ?? existingBusiness?.profileLogo;
- 
 
+    let galleryImg = [];
 
-    let galleryImg = []
-    req.files["files"]?.forEach((file) => {
-      galleryImg.push(file.path);
-    }) ?? existingBusiness?.galleryImg;
+    if (req.files && req.files["files"]) {
+      req.files["files"].forEach((file) => {
+        galleryImg.push(file.path);
+      });
+    } else {
+      galleryImg = req.body?.files || [];
+    }
 
     const {
       name,
@@ -903,22 +909,6 @@ const updateBusinessApi = async (req, res) => {
       });
     }
 
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({
-        status: "error",
-        message: "Email is invalid",
-      });
-    }
-
-    images?.forEach((image) => {
-      if (!validator.isURL(image)) {
-        return res.status(400).json({
-          status: "error",
-          message: "Image url is invalid",
-        });
-      }
-    });
-
     let businesstimings;
     try {
       businesstimings = JSON.parse(businessTiming);
@@ -938,19 +928,13 @@ const updateBusinessApi = async (req, res) => {
         message: "Reviews must be a valid JSON array",
       });
     }
+    // imgFullPath(business.bannerImg)
+    reviewsdata = reviewsdata.map((review, index) => ({
+      ...review,
+      profileLogo: imgFullPath(ProfileImg[index]) || null
+    }));
 
-  
-    for (const review of reviewsdata) {
-      if (!review.rating || !review.description || !review.name) {
-        return res.status(400).json({
-          status: "error",
-          message: "Each review must have a Rating, Description, and Name",
-        });
-      }
-    }
 
-    
-    
     const updatedBusiness = await Business.findByIdAndUpdate(
       id,
       {
@@ -962,7 +946,6 @@ const updateBusinessApi = async (req, res) => {
           address,
           socialLinks,
           slug,
-          profilelogo: ProfileImg,
           logo: logoImg,
           images,
           galleryImg,
@@ -975,8 +958,8 @@ const updateBusinessApi = async (req, res) => {
     );
 
     const updatedBusinessData = await businessData(updatedBusiness);
-    console.log("updatedBusinessData", updatedBusinessData)
 
+    console.log("updatedBusinessData", updatedBusinessData)
     res.status(200).json({
       status: "success",
       data: updatedBusinessData,
@@ -1781,7 +1764,7 @@ const businessData = async (businessData) => {
     requestStatus: businessData.requestStatus,
     profilelogo: businessData?.ProfileImg?.map(imgFullPath),
     timeSlots: businessData.timeSlots,
-    reviews: businessData.reviews,
+    reviews: businessData?.reviews,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleMap: businessData.googleMap,
