@@ -687,10 +687,10 @@ const registerBusinessApi = async (req, res) => {
       });
     }
 
-    reviewsdata = reviewsdata.map((review, index) => ({
-      ...review,
-      profileLogo: imgFullPath(ProfileImg[index]) || null,
-    }));
+    // reviewsdata = reviewsdata.map((review, index) => ({
+    //   ...review,
+    //   profileLogo: imgFullPath(ProfileImg[index]) || null,
+    // }));
 
     let socialLinksData = [];
     try {
@@ -1766,6 +1766,12 @@ const businessData = async (businessData) => {
   if (!businessData) {
     return null;
   }
+  const newReviews = businessData?.reviews.map((review) => ({
+    rating: review.rating,
+    description: review.description,
+    name: review.name,
+    profileLogo: imgFullPath(review.profileLogo),
+  }));
   return {
     id: businessData._id,
     name: businessData.name,
@@ -1780,7 +1786,7 @@ const businessData = async (businessData) => {
     requestStatus: businessData.requestStatus,
     profilelogo: businessData?.ProfileImg?.map(imgFullPath),
     timeSlots: businessData.timeSlots,
-    reviews: businessData?.reviews,
+    reviews: newReviews, // businessData?.reviews,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleMap: businessData.googleMap,
