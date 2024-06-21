@@ -3,7 +3,7 @@ const User = require("../models/UserModel");
 const Manager = require("../models/ManagerModel");
 const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
-const slugify = require("slugify");
+// const slugify = require("slugify");
 const { sendEmail } = require("../util/sendEmail");
 const imgFullPath = require("../util/imgFullPath");
 const Owner = require("../models/OwnerModel");
@@ -42,7 +42,7 @@ const addSpecialistApi = async (req, res) => {
     }
 
     const user = await User.findById(id);
-    console.log("user 44 line", user)
+    console.log("user 44 line", user);
 
     if (!user) {
       return res.status(400).json({
@@ -211,7 +211,7 @@ const addManagerApi = async (req, res) => {
       createdBy: id,
       managerId: newUser._id,
     });
-    console.log("NEW MANAGER 214", newManager)
+    console.log("NEW MANAGER 214", newManager);
 
     res.status(200).json({
       status: "success",
@@ -284,7 +284,6 @@ const addManagerApi = async (req, res) => {
 //         message: "User is not a manager",
 //       });
 //     }
-
 
 //     if (id !== manager.createdBy && req.user.role !== "owner") {
 //       return res.status(400).json({
@@ -362,15 +361,12 @@ const updateManagerApi = async (req, res) => {
       });
     }
 
-
-
     const updatedFields = {
       name,
       email,
       phone,
       // ...req.body
     };
-
 
     console.log("updated fields are ", updatedFields);
     await User.findByIdAndUpdate(managerId, updatedFields);
@@ -540,17 +536,20 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
 };
 
 const registerBusinessApi = async (req, res) => {
-  console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
-  console.log("other Files:", req.files['files']);
-  console.log("req body 384", req.body.reviews)
+  console.log(
+    "Logo File:",
+    req?.files["logo"] ? req.files["logo"][0]?.path : "No logo file uploaded"
+  );
+  console.log("other Files:", req.files["files"]);
+  console.log("req body 384", req.body.reviews);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     //for logo Image
-    const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
+    const logoImg = req?.files["logo"] ? req.files["logo"][0]?.path : null;
 
-    //for Profile Image 
+    //for Profile Image
     let ProfileImg = [];
     if (req.files["profileLogo"]) {
       req.files["profileLogo"].forEach((file) => {
@@ -578,10 +577,18 @@ const registerBusinessApi = async (req, res) => {
       googleMap,
       address,
       slug,
-      reviews
+      reviews,
     } = req.body;
 
-    if (!name || !email || !phone || !description || !address || !slug || !reviews) {
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !description ||
+      !address ||
+      !slug ||
+      !reviews
+    ) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -682,7 +689,7 @@ const registerBusinessApi = async (req, res) => {
 
     reviewsdata = reviewsdata.map((review, index) => ({
       ...review,
-      profileLogo: imgFullPath(ProfileImg[index]) || null
+      profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
     let socialLinksData = [];
@@ -696,12 +703,11 @@ const registerBusinessApi = async (req, res) => {
     }
 
     for (const review of reviewsdata) {
-
       if (!review.rating || !review.description || !review.name) {
         return res.status(400).json({
           status: "error",
           message: "Each review must have a Rating, Description, and  Name",
-        })
+        });
       }
     }
 
@@ -732,12 +738,6 @@ const registerBusinessApi = async (req, res) => {
       rejectreason: Ownerdata.rejectreason,
     });
 
-    const imagePath = path.resolve(
-      __dirname,
-      "../uploads/emails/check-icon.png"
-    );
-
-    console.log(imagePath);
     const userMailSend = await sendEmail({
       email: user.email,
       subject: "New Business Created Successfully",
@@ -772,9 +772,9 @@ const registerBusinessApi = async (req, res) => {
         <body style="background-color: rgb(241, 236, 236);padding:30px">
           <div style="display: flex; justify-content: center; align-items: center" >
             <div class="main-card" style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
-              <div style="text-align: center;padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png" width="160px" height="auto" alt="Description of the image">
+              <div style="text-align: center;padding-top: 20px;"> <img src="${process.env.SERVER_URL}images/logo/makelypro.png" width="160px" height="auto" alt="MakelyPro">
               </div>
-              <div style="text-align: center; padding-top: 20px;"> <img src="cid:checkedlogin_1" width="66px" height="auto" alt="Description of the image">
+              <div style="text-align: center; padding-top: 20px;"> <img src="${process.env.SERVER_URL}/images/icons/circle-tick.png" width="66px" height="auto" alt="Check Icon">
               </div>
               <div style="text-align: center; color:#CAFF82; font-size: 22px; margin-top: 12px; margin-bottom : 15px;">
                   Congratulations
@@ -797,13 +797,6 @@ const registerBusinessApi = async (req, res) => {
         </body>
       </html>
       `,
-      attachments: [
-        {
-          filename: "check-icon.png",
-          path: imagePath,
-          cid: "checkedlogin_1",
-        },
-      ],
     });
 
     if (!userMailSend) {
@@ -850,7 +843,7 @@ const registerBusinessApi = async (req, res) => {
   }
 };
 const updateBusinessApi = async (req, res) => {
-  console.log("req body 853", req.body)
+  console.log("req body 853", req.body);
   try {
     const { id } = req.body;
 
@@ -875,8 +868,7 @@ const updateBusinessApi = async (req, res) => {
     if (req.files["profileLogo"])
       req.files["profileLogo"]?.forEach((file) => {
         ProfileImg.push(file.path);
-      })
-        ?? existingBusiness?.profileLogo;
+      }) ?? existingBusiness?.profileLogo;
 
     let galleryImg = [];
 
@@ -899,10 +891,18 @@ const updateBusinessApi = async (req, res) => {
       slug,
       reviews,
       businessTiming,
-      socialLinks
+      socialLinks,
     } = req.body;
 
-    if (!name || !email || !phone || !description || !address || !slug || !reviews) {
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !description ||
+      !address ||
+      !slug ||
+      !reviews
+    ) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -942,9 +942,8 @@ const updateBusinessApi = async (req, res) => {
     // imgFullPath(business.bannerImg)
     reviewsdata = reviewsdata.map((review, index) => ({
       ...review,
-      profileLogo: imgFullPath(ProfileImg[index]) || null
+      profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
-
 
     const updatedBusiness = await Business.findByIdAndUpdate(
       id,
@@ -970,7 +969,7 @@ const updateBusinessApi = async (req, res) => {
 
     const updatedBusinessData = await businessData(updatedBusiness);
 
-    console.log("updatedBusinessData", updatedBusinessData)
+    console.log("updatedBusinessData", updatedBusinessData);
     res.status(200).json({
       status: "success",
       data: updatedBusinessData,
@@ -985,12 +984,11 @@ const updateBusinessApi = async (req, res) => {
   }
 };
 
-
 const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find({
       slug: { $ne: "dummy-business" },
-    }).sort({ createdAt: -1 });;
+    }).sort({ createdAt: -1 });
 
     const businessDataList = [];
 
@@ -1087,8 +1085,6 @@ const MultiplebusinessData = async (businessData) => {
   }));
 };
 
-
-
 const getBusinessByUserIdApi = async (req, res) => {
   try {
     if (req.user === undefined) {
@@ -1108,7 +1104,7 @@ const getBusinessByUserIdApi = async (req, res) => {
     let business;
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
-      console.log("manger873", manager)
+      console.log("manger873", manager);
       if (!manager) {
         return res.status(400).json({
           status: "error",
@@ -1118,12 +1114,18 @@ const getBusinessByUserIdApi = async (req, res) => {
 
       business = await Business.findById(manager.businessId);
 
-      const transactions = await Transaction.find({ businessId: manager.businessId });
+      const transactions = await Transaction.find({
+        businessId: manager.businessId,
+      });
       const transactionDates = [];
 
       for (const transaction of transactions) {
-        const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
-        const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const subscriptionEndDate = new Date(
+          transaction.stripeSubscriptionEndDate * 1000
+        );
+        const sevenDaysBefore = new Date(
+          subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000
+        );
         transactionDates.push(sevenDaysBefore);
       }
 
@@ -1133,7 +1135,7 @@ const getBusinessByUserIdApi = async (req, res) => {
           message: "Business not found",
         });
       }
-      business.TransactionDate = transactionDates
+      business.TransactionDate = transactionDates;
     } else if (user.role === "admin") {
       const targetSlug = "dummy-business";
       business = await Business.findOne({ slug: targetSlug });
@@ -1171,8 +1173,12 @@ const getBusinessByUserIdApi = async (req, res) => {
       const transactionDates = [];
 
       for (const transaction of transactions) {
-        const subscriptionEndDate = new Date(transaction.stripeSubscriptionEndDate * 1000);
-        const sevenDaysBefore = new Date(subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const subscriptionEndDate = new Date(
+          transaction.stripeSubscriptionEndDate * 1000
+        );
+        const sevenDaysBefore = new Date(
+          subscriptionEndDate.getTime() - 7 * 24 * 60 * 60 * 1000
+        );
         transactionDates.push(sevenDaysBefore);
       }
       business.TransactionDate = transactionDates;
@@ -1206,7 +1212,7 @@ const getBusinessDetailBySlugApi = async (req, res) => {
     const business = await Business.findOne({
       slug: slug,
     });
-    console.log("business 9544", business)
+    console.log("business 9544", business);
     if (!business) {
       return res.status(400).json({
         status: "error",
@@ -1231,7 +1237,7 @@ const selectedTheme = async (req, res) => {
 
     const { id } = req.user;
     const user = await User.findById(id);
-    console.log("user 970", user)
+    console.log("user 970", user);
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -1376,17 +1382,20 @@ const addDummyBusinessApi = async (req, res) => {
   //   res.status(400).json({ status: "error", message: error.message });
   // }
 
-  console.log("Logo File:", req?.files['logo'] ? req.files['logo'][0]?.path : 'No logo file uploaded');
-  console.log("other Files:", req.files['files']);
-  console.log("req body 384", req.body.reviews)
+  console.log(
+    "Logo File:",
+    req?.files["logo"] ? req.files["logo"][0]?.path : "No logo file uploaded"
+  );
+  console.log("other Files:", req.files["files"]);
+  console.log("req body 384", req.body.reviews);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
     //for logo Image
-    const logoImg = req?.files['logo'] ? req.files['logo'][0]?.path : null;
+    const logoImg = req?.files["logo"] ? req.files["logo"][0]?.path : null;
 
-    //for Profile Image 
+    //for Profile Image
     let ProfileImg = [];
     if (req.files["profileLogo"]) {
       req.files["profileLogo"].forEach((file) => {
@@ -1419,10 +1428,18 @@ const addDummyBusinessApi = async (req, res) => {
       fontFamily,
       address,
       slug,
-      reviews
+      reviews,
     } = req.body;
 
-    if (!name || !email || !phone || !description || !address || !slug || !reviews) {
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !description ||
+      !address ||
+      !slug ||
+      !reviews
+    ) {
       return res.status(400).json({
         status: "error",
         message: "All fields are required",
@@ -1483,7 +1500,6 @@ const addDummyBusinessApi = async (req, res) => {
       });
     }
 
-
     const slugAlreadyExist = await Business.findOne({ slug: slug });
     if (slugAlreadyExist) {
       return res.status(400).json({
@@ -1527,7 +1543,7 @@ const addDummyBusinessApi = async (req, res) => {
         return res.status(400).json({
           status: "error",
           message: "Each review must have a Rating, Description, and  Name",
-        })
+        });
       }
     }
 
@@ -1556,7 +1572,7 @@ const addDummyBusinessApi = async (req, res) => {
       color: color,
       bannerImg,
     });
-    console.log("myBusiness", myBusiness)
+    console.log("myBusiness", myBusiness);
     res.status(200).json({
       status: "success",
       data: myBusiness,
@@ -1850,7 +1866,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => { };
+const showAllBusinessApi = async (req, res) => {};
 
 module.exports = {
   addSpecialistApi,

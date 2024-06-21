@@ -5,5 +5,4 @@ const imgFullPath = (imgPath) => {
   // return "http://192.168.18.27:3000/" + imgPath;
   return process.env.SERVER_URL + imgPath;
 };
-module.exports = imgFullPath;   
-
+module.exports = imgFullPath;

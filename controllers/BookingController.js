@@ -110,7 +110,7 @@ const addBookingApi = async (req, res, next) => {
       timeSlot,
       price,
     });
-    ///user notification 
+    ///user notification
     // const userMailSend = await sendEmail({
     //   email: user.email,
     //   subject: "Booking Confirmation",
@@ -156,7 +156,11 @@ const getBookingByBusinessApi = async (req, res, next) => {
       });
     }
 
-    if (user.role === "manager" || user.role === "owner" || user.role === "admin") {
+    if (
+      user.role === "manager" ||
+      user.role === "owner" ||
+      user.role === "admin"
+    ) {
       const { businessId } = req.body;
       console.log("businessId22222", businessId);
       let myBookings = [];
@@ -171,7 +175,7 @@ const getBookingByBusinessApi = async (req, res, next) => {
           myBookings.push(myBookingData);
         })
       );
-      console.log("myBookings----123", myBookings)
+      console.log("myBookings----123", myBookings);
       return res.status(200).json({
         status: "success",
         data: myBookings,
@@ -214,7 +218,7 @@ const updateBookingApi = async (req, res) => {
         message: "Booking Id is required",
       });
     }
- 
+
     if (!validator.isMongoId(bookingId)) {
       return res.status(400).json({
         status: "error",
@@ -511,7 +515,7 @@ const cancelBookingApi = async (req, res, next) => {
         <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
          
             <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
-              <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="https://makely.bixosoft.com/_next/static/media/makely.b4c87dfe.png"  width="160px" height="auto" alt="Description of the image">
+              <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="${process.env.SERVER_URL}images/logo/makelypro.png"  width="160px" height="auto" alt="MakelyPro">
               </div>
           <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Booking Cancel</p></div>
           <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
@@ -541,7 +545,7 @@ const cancelBookingApi = async (req, res, next) => {
       return res.status(500).json({
         status: "error",
         message: "Error sending confirmation emails",
-      });  
+      });
     }
 
     const updateddata = await getBookingData(updatedBooking);
@@ -615,7 +619,7 @@ const resehduledBookingApi = async (req, res, next) => {
         $set: {
           date: new Date(date),
           timeSlot: timeSlot,
-          status: "rescheduled"
+          status: "rescheduled",
         },
       },
       { new: true }
@@ -635,7 +639,6 @@ const resehduledBookingApi = async (req, res, next) => {
     });
   }
 };
-
 
 module.exports = {
   addBookingApi,
@@ -667,13 +670,15 @@ const getBookingData = async (data) => {
     address: 1,
   });
 
-  const serviceData = await Service.findById(serviceId).select({
-    _id: 1,
-    name: 1,
-    image: 1,
-    timeSlots: 1,
-    timeInterval: 1,
-  }).exec();
+  const serviceData = await Service.findById(serviceId)
+    .select({
+      _id: 1,
+      name: 1,
+      image: 1,
+      timeSlots: 1,
+      timeInterval: 1,
+    })
+    .exec();
 
   const myBookingData = {
     id: data._id,
@@ -696,7 +701,7 @@ const getBookingData = async (data) => {
       name: serviceData.name,
       image: imgFullPath(serviceData.image),
       timeSlots: serviceData.timeSlots,
-      timeInterval: serviceData.timeInterval
+      timeInterval: serviceData.timeInterval,
     },
   };
 
