@@ -687,10 +687,10 @@ const registerBusinessApi = async (req, res) => {
       });
     }
 
-    // reviewsdata = reviewsdata.map((review, index) => ({
-    //   ...review,
-    //   profileLogo: imgFullPath(ProfileImg[index]) || null,
-    // }));
+    reviewsdata = reviewsdata.map((review, index) => ({
+      ...review,
+      profileLogo: ProfileImg[index] || null,
+    }));
 
     let socialLinksData = [];
     try {
