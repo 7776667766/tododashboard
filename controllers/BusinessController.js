@@ -908,6 +908,17 @@ const updateBusinessApi = async (req, res) => {
         message: "All fields are required",
       });
     }
+    
+    let socialLinksData = [];
+    try {
+      socialLinksData = JSON.parse(socialLinks);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "socialLinksData must be a valid JSON array",
+      });
+    }
+
 
     let businesstimings;
     try {
@@ -944,7 +955,7 @@ const updateBusinessApi = async (req, res) => {
           phone,
           description,
           address,
-          socialLinks,
+          socialLinks:socialLinksData,
           slug,
           logo: logoImg,
           images,
