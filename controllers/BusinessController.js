@@ -908,7 +908,7 @@ const updateBusinessApi = async (req, res) => {
         message: "All fields are required",
       });
     }
-    
+
     let socialLinksData = [];
     try {
       socialLinksData = JSON.parse(socialLinks);
@@ -954,7 +954,7 @@ const updateBusinessApi = async (req, res) => {
           phone,
           description,
           address,
-          socialLinks:socialLinksData,
+          socialLinks: socialLinksData,
           slug,
           logo: logoImg,
           images,
@@ -1086,6 +1086,8 @@ const MultiplebusinessData = async (businessData) => {
 };
 
 const getBusinessByUserIdApi = async (req, res) => {
+
+  console.log("details of business 1090", req.body)
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1137,15 +1139,17 @@ const getBusinessByUserIdApi = async (req, res) => {
       }
       business.TransactionDate = transactionDates;
     } else if (user.role === "admin") {
-      const targetSlug = "dummy-business";
-      business = await Business.findOne({ slug: targetSlug });
+      const businessId = req.body.businessId;
+      console.log("business ID FOR ADMIN EDIT", businessId);
 
-      if (!business) {
-        return res.status(400).json({
-          status: "error",
-          message: "Dummy business not found",
-        });
-      }
+      let businessById = await Business.findById(businessId);
+      let businessBySlug = await Business.findOne({ slug: "dummy-business" });
+
+       business = businessById || businessBySlug;
+
+      console.log("final business", business);
+  
+   
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
 
