@@ -6,7 +6,7 @@ const BusinessRequest = require("../models/BusinessRequest")
 
 const addBusinessApi = async (req, res, next) => {
     try {
-        const { description, slug,  } = req.body;
+        const { description, slug, } = req.body;
 
         if (!description || !slug) {
             return res.status(400).json({
@@ -14,7 +14,7 @@ const addBusinessApi = async (req, res, next) => {
                 message: "All fields are required",
             });
         }
-        
+
         const newBusiness = await BusinessRequest.create({
             ...req.body,
         });
@@ -29,27 +29,33 @@ const addBusinessApi = async (req, res, next) => {
     }
 };
 
-// const getContactListApi = async (req, res, next) => {
-//     try {
-//         const contactData = await Contact.find({ deletedAt: { $exists: false } })
-//         if (!contactData) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: "Contact List not found",
-//             });
-//         }
-//         res.status(200).json({
-//             status: "success",
-//             data: contactData,
-//         });
-//     } catch (error) {
-//         console.log("Error in get Contacts List", error);
-//         res.status(400).json({ status: "error", message: error.message });
-//     }
-// };
+const getbusinessRequest = async (req, res, next) => {
+    const { businessId } = req.body;
+    try {
+        const BusienssData = await BusinessRequest.find({
+            deletedAt: null || undefined,
+            businessId,
+            active: true
+        })
+        if (!BusienssData) {
+            return res.status(400).json({
+                status: "error",
+                message: "Contact List not found",
+            });
+        }
+        res.status(200).json({
+            status: "success",
+            data: BusienssData,
+        });
+    } catch (error) {
+        console.log("Error in get BusienssData", error);
+        res.status(400).json({ status: "error", message: error.message });
+    }
+};
 
 module.exports = {
-    addBusinessApi, 
+    addBusinessApi,
+    getbusinessRequest
 };
 
 
