@@ -33,13 +33,16 @@ const addBusinessApi = async (req, res, next) => {
 };
 
 const getbusinessRequest = async (req, res, next) => {
+    console.log("36...",req.body)
     try {
 
+        const userId=req.body.ownerId
 
         const newBusinessData = []
-        
+
         const BusienssData = await BusinessRequest.find({
             deletedAt: null || undefined,
+            ownerId,
             active: true
         })
 
@@ -48,7 +51,6 @@ const getbusinessRequest = async (req, res, next) => {
 
         const ownerData = await Owner.findById({ newBusienssData })
         console.log("ownerData", ownerData.name)
-
 
         if (!BusienssData) {
             return res.status(400).json({

@@ -20,6 +20,6 @@ const businessSchema = new mongoose.Schema({
 
 });
 
-const Card = mongoose.model('BusinessRequest', businessSchema);
+const Buisness = mongoose.model('BusinessRequest', businessSchema);
 
-module.exports = Card;
+module.exports = Buisness;
