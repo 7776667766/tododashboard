@@ -734,7 +734,7 @@ const getServiceData = async (data) => {
     },
     email: 1,
   });
-  const business = await Business.findById(data.businessId);
+  const business = await Business.findByIdmyServices(data.businessId);
   const myBusinessData = await businessData(business);
   const myServiceData = {
     id: data._id,
