@@ -7,6 +7,6 @@ const {
 
 router.post("/request-send/add", addBusinessApi);
 
-router.get("/request-send/get", getbusinessRequest)
+router.post("/request-send/get", getbusinessRequest)
 
 module.exports = router;
