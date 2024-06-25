@@ -37,11 +37,12 @@ const getbusinessRequest = async (req, res, next) => {
 
 
         const newBusinessData = []
+        
         const BusienssData = await BusinessRequest.find({
             deletedAt: null || undefined,
-            businessId,
             active: true
         })
+
         const newBusienssData = BusienssData.ownerId
         console.log("newBusienssData 4666", newBusienssData)
 
