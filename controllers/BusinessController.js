@@ -11,6 +11,7 @@ const Service = require("../models/Service/ServiceModel");
 const ServiceType = require("../models/Service/ServiceTypeModel");
 const path = require("path");
 const Transaction = require("../models/TransactionModel");
+const { makelyLogo, circleTickImg } = require("../util/assets");
 
 const addSpecialistApi = async (req, res) => {
   try {
@@ -772,9 +773,9 @@ const registerBusinessApi = async (req, res) => {
         <body style="background-color: rgb(241, 236, 236);padding:30px">
           <div style="display: flex; justify-content: center; align-items: center" >
             <div class="main-card" style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
-              <div style="text-align: center;padding-top: 20px;"> <img src="${process.env.SERVER_URL}images/logo/makelypro.png" width="160px" height="auto" alt="MakelyPro">
+              <div style="text-align: center;padding-top: 20px;"> <img src="${makelyLogo}" width="160px" height="auto" alt="MakelyPro">
               </div>
-              <div style="text-align: center; padding-top: 20px;"> <img src="${process.env.SERVER_URL}/images/icons/circle-tick.png" width="66px" height="auto" alt="Check Icon">
+              <div style="text-align: center; padding-top: 20px;"> <img src="${circleTickImg}" width="66px" height="auto" alt="Check Icon">
               </div>
               <div style="text-align: center; color:#CAFF82; font-size: 22px; margin-top: 12px; margin-bottom : 15px;">
                   Congratulations
@@ -918,7 +919,6 @@ const updateBusinessApi = async (req, res) => {
         message: "socialLinksData must be a valid JSON array",
       });
     }
-
 
     let businesstimings;
     try {
@@ -1086,8 +1086,7 @@ const MultiplebusinessData = async (businessData) => {
 };
 
 const getBusinessByUserIdApi = async (req, res) => {
-
-  console.log("details of business 1090", req.body)
+  console.log("details of business 1090", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1145,11 +1144,9 @@ const getBusinessByUserIdApi = async (req, res) => {
       let businessById = await Business.findById(businessId);
       let businessBySlug = await Business.findOne({ slug: "dummy-business" });
 
-       business = businessById || businessBySlug;
+      business = businessById || businessBySlug;
 
       console.log("final business", business);
-  
-   
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
 

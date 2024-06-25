@@ -6,6 +6,7 @@ const Service = require("../models/Service/ServiceModel");
 const User = require("../models/UserModel");
 const { sendEmail } = require("../util/sendEmail");
 const imgFullPath = require("../util/imgFullPath");
+const { makelyLogo } = require("../util/assets");
 require("dotenv").config();
 
 const addBookingApi = async (req, res, next) => {
@@ -515,7 +516,7 @@ const cancelBookingApi = async (req, res, next) => {
         <body style="background-color: #E3E3E3;padding-top:30px;padding-bottom:30px;padding-right:15px;padding-left:15px;">
          
             <div class="card-wdth" style="background-color: white !important; max-width: 550px; height: auto;padding: 15px; margin:auto;" >
-              <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="${process.env.SERVER_URL}images/logo/makelypro.png"  width="160px" height="auto" alt="MakelyPro">
+              <div style="text-align: center;margin-top: 10px; padding-top: 20px;"> <img src="${makelyLogo}"  width="160px" height="auto" alt="MakelyPro">
               </div>
           <div><p style="text-align: center;font-weight: 500;font-size: 26px;font-family: 'Poppins', sans-serif;font-size: 18px;color: #000000;">Booking Cancel</p></div>
           <div class="hole-container" style="padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;"> 
