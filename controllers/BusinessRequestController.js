@@ -6,7 +6,7 @@ const BusinessRequest = require("../models/BusinessRequest")
 
 const addBusinessApi = async (req, res, next) => {
     try {
-        const { description, slug, } = req.body;
+        const { description, googleBusiness,ownerId } = req.body;
 
         if (!description || !slug) {
             return res.status(400).json({

@@ -1,21 +1,20 @@
 const mongoose = require('mongoose');
 
 const businessSchema = new mongoose.Schema({
-  businessId:{
+  ownerId:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Business",
-    required: [true, "Business ID is required"],
-
+    ref: "Owner",
+    required: [true, "Owner ID is required"],
   },
-  name: {
+  description: {
     type: String,
-    required: [true, 'name Name is required'],
+    required: [true, 'description is required'],
     trim: true,
   },
 
-  slug: {
+  googleBusiness: {
     type: String,
-    required: [true, 'Slug Name is required'],
+    required: [true, 'Google Business is required'],
     trim: true,
   },
 
