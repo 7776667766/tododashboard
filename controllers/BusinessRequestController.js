@@ -3,13 +3,13 @@ const Plan = require("../models/PlanModel");
 const validator = require("validator");
 const Contact = require("../models/ContactModal");
 const BusinessRequest = require("../models/BusinessRequest");
-const OwnerModel = require("../models/OwnerModel");
+const Owner = require("../models/OwnerModel");
 
 const addBusinessApi = async (req, res, next) => {
     try {
         const { description, googleBusiness, ownerId } = req.body;
 
-        if (!description || googleBusiness  || ownerId) {
+        if (!description || googleBusiness || ownerId) {
             return res.status(400).json({
                 status: "error",
                 message: "All fields are required",
@@ -19,7 +19,7 @@ const addBusinessApi = async (req, res, next) => {
         const newBusiness = await BusinessRequest.create({
             ...req.body,
         });
-        console.log("newBusiness",newBusiness)
+        console.log("newBusiness", newBusiness)
 
         res.status(200).json({
             status: "success",
@@ -33,10 +33,8 @@ const addBusinessApi = async (req, res, next) => {
 };
 
 const getbusinessRequest = async (req, res, next) => {
-    const { businessId } = req.body;
     try {
-        const ownerData = await OwnerModel.findById({ businessId })
-        console.log("ownerData", ownerData.name)
+
 
         const newBusinessData = []
         const BusienssData = await BusinessRequest.find({
@@ -44,12 +42,17 @@ const getbusinessRequest = async (req, res, next) => {
             businessId,
             active: true
         })
+        const newBusienssData = BusienssData.ownerId
+        console.log("newBusienssData 4666", newBusienssData)
+
+        const ownerData = await Owner.findById({ newBusienssData })
+        console.log("ownerData", ownerData.name)
 
 
         if (!BusienssData) {
             return res.status(400).json({
                 status: "error",
-                message: "Contact List not found",
+                message: "Busienss Data not found",
             });
         }
 
