@@ -1,24 +1,23 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const businessSchema = new mongoose.Schema({
-  ownerId:{
+  ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Owner",
   },
   description: {
     type: String,
-    required: [true, 'description is required'],
+    required: [true, "Description is required"],
     trim: true,
   },
 
   googleBusiness: {
     type: String,
-    required: [true, 'Google Business is required'],
+    required: [true, "Google Business is required"],
     trim: true,
   },
-
 });
 
-const Buisness = mongoose.model('BusinessRequest', businessSchema);
+const Buisness = mongoose.model("BusinessRequest", businessSchema);
 
 module.exports = Buisness;
