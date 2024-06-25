@@ -42,7 +42,7 @@ const getbusinessRequest = async (req, res, next) => {
 
         const BusienssData = await BusinessRequest.find({
             deletedAt: null || undefined,
-            ownerId,
+            userId,
             active: true
         })
 
