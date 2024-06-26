@@ -62,13 +62,13 @@ const getAdminRequestToRegisterBusiness = async (req, res, next) => {
         console.log("newBusinessData 58", newBusinessData)
 
 
-        const newdata=[{
-            ...newBusinessData,
-            name : username
-    }]
+   
         res.status(200).json({
             status: "success",
-            data: newdata
+            data: {
+                name :username,
+                ...newBusinessData
+            }
         });
     } catch (error) {
         console.log("Error in get BusienssData", error);
