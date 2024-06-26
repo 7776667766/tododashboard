@@ -9,7 +9,7 @@ const addBusinessApi = async (req, res, next) => {
     try {
         const { description, googleBusiness, ownerId } = req.body;
 
-        if (!description || googleBusiness || ownerId) {
+        if (!description || !googleBusiness || !ownerId) {
             return res.status(400).json({
                 status: "error",
                 message: "All fields are required",
