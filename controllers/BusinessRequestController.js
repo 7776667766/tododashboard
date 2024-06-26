@@ -31,16 +31,21 @@ const getAdminRequestToRegisterBusiness = async (req, res, next) => {
     console.log("36...",req.body)
     try {
         const userId=req.body.ownerId
+        console.log("userId 34", userId)
+
         const newBusinessData = []
+
         const BusienssData = await BusinessRequest.find({
             deletedAt: null || undefined,
-            userId,
             active: true
         })
-        const newBusienssData = BusienssData.ownerId
-        console.log("newBusienssData 4666", newBusienssData)
-        const ownerData = await Owner.findById({ newBusienssData })
-        console.log("ownerData", ownerData.name)
+        console.log("BusienssData 40", BusienssData)
+
+        const userData = await User.findById({ _id:userId })
+        console.log("userData 43", userData)
+
+ 
+        const username= userData.name
         if (!BusienssData) {
             return res.status(400).json({
                 status: "error",
@@ -53,9 +58,14 @@ const getAdminRequestToRegisterBusiness = async (req, res, next) => {
                 newBusinessData.push(myBusinessData);
             })
         );
+        console.log("newBusinessData 58", newBusinessData)
+        const newData={
+            ...newBusinessData,
+            name : userData,
+        }
         res.status(200).json({
             status: "success",
-            data,
+            newData,
         });
     } catch (error) {
         console.log("Error in get BusienssData", error);
@@ -69,9 +79,8 @@ module.exports = {
 const getBuinessData = async (business) => {
     console.log("business 80", business)
     const myServiceData = {
-        name: data.name,
-        description: data.description,
-        googleBusiness: data.googleBusiness
+        description: business.description,
+        googleBusiness: business.googleBusiness
     };
     return myServiceData;
 };
