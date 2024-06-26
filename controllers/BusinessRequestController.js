@@ -4,7 +4,7 @@ const validator = require("validator");
 const Contact = require("../models/ContactModal");
 const BusinessRequest = require("../models/BusinessRequest");
 const Owner = require("../models/OwnerModel");
-const addBusinessApi = async (req, res, next) => {
+const requestAdminToRegister = async (req, res, next) => {
     try {
         const { description, googleBusiness, ownerId } = req.body;
         if (!description || !googleBusiness || !ownerId) {
@@ -27,7 +27,7 @@ const addBusinessApi = async (req, res, next) => {
         res.status(500).json({ status: "error", message: error });
     }
 };
-const getbusinessRequest = async (req, res, next) => {
+const getAdminRequestToRegisterBusiness = async (req, res, next) => {
     console.log("36...",req.body)
     try {
         const userId=req.body.ownerId
@@ -63,8 +63,8 @@ const getbusinessRequest = async (req, res, next) => {
     }
 };
 module.exports = {
-    addBusinessApi,
-    getbusinessRequest
+    requestAdminToRegister,
+    getAdminRequestToRegisterBusiness
 };
 const getBuinessData = async (business) => {
     console.log("business 80", business)

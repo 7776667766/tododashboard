@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const {
-    addBusinessApi,
-    getbusinessRequest,
+    requestAdminToRegister,
+    getAdminRequestToRegisterBusiness,
 } = require("../controllers/BusinessRequestController");
 
 
-router.post("/request-send/add", addBusinessApi);
+router.post("/request-admin-to-register-business", requestAdminToRegister);
 
-router.post("/request-send/get", getbusinessRequest)
+router.post("/get-admin-request-to-register-business", getAdminRequestToRegisterBusiness)
 
 module.exports = router;
