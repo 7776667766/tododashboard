@@ -28,9 +28,9 @@ const requestAdminToRegister = async (req, res, next) => {
     }
 };
 const getAdminRequestToRegisterBusiness = async (req, res, next) => {
-    console.log("36...",req.body)
+    console.log("36...", req.body)
     try {
-        const userId=req.body.ownerId
+        const userId = req.body.ownerId
         console.log("userId 34", userId)
 
         const newBusinessData = []
@@ -41,11 +41,12 @@ const getAdminRequestToRegisterBusiness = async (req, res, next) => {
         })
         console.log("BusienssData 40", BusienssData)
 
-        const userData = await User.findById({ _id:userId })
+        const userData = await User.findById({ _id: userId })
         console.log("userData 43", userData)
 
- 
-        const username= userData.name
+
+        const username = userData.name
+
         if (!BusienssData) {
             return res.status(400).json({
                 status: "error",
@@ -59,13 +60,14 @@ const getAdminRequestToRegisterBusiness = async (req, res, next) => {
             })
         );
         console.log("newBusinessData 58", newBusinessData)
-        const newData={
-            ...newBusinessData,
-            name : userData,
-        }
+
+
         res.status(200).json({
             status: "success",
-            newData,
+            data: [{
+                name: username,
+                ...newBusinessData
+            }],
         });
     } catch (error) {
         console.log("Error in get BusienssData", error);
