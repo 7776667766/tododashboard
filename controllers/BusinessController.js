@@ -3,6 +3,7 @@ const User = require("../models/UserModel");
 const Manager = require("../models/ManagerModel");
 const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
+const BusinesseditRequest = require("../models/RequestEditModal")
 // const slugify = require("slugify");
 const { sendEmail } = require("../util/sendEmail");
 const imgFullPath = require("../util/imgFullPath");
@@ -843,6 +844,10 @@ const registerBusinessApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
+
+
+
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -939,7 +944,7 @@ const updateBusinessApi = async (req, res) => {
         message: "Reviews must be a valid JSON array",
       });
     }
-    // imgFullPath(business.bannerImg)
+
     reviewsdata = reviewsdata.map((review, index) => ({
       ...review,
       profileLogo: imgFullPath(ProfileImg[index]) || null,
@@ -984,6 +989,169 @@ const updateBusinessApi = async (req, res) => {
   }
 };
 
+
+const BusinessEditRequestApi = async (req, res) => {
+  console.log("req body 853", req.body);
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        status: "error",
+        message: "business Id is required",
+      });
+    }
+
+    const existingBusiness = await Business.findById(id);
+    if (!existingBusiness) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+
+    console.log("existingBusiness in 1012 edit business", existingBusiness)
+
+    let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
+
+    let ProfileImg = [];
+    if (req.files["profileLogo"])
+      req.files["profileLogo"]?.forEach((file) => {
+        ProfileImg.push(file.path);
+      }) ?? existingBusiness?.profileLogo;
+
+    let galleryImg = [];
+
+    if (req.files && req.files["files"]) {
+      req.files["files"].forEach((file) => {
+        galleryImg.push(file.path);
+      });
+    } else {
+      galleryImg = req.body?.files || [];
+    }
+
+    const {
+      name,
+      email,
+      phone,
+      description,
+      images,
+      googleMap,
+      address,
+      slug,
+      reviews,
+      businessTiming,
+      socialLinks,
+      status,
+    } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !description ||
+      !address ||
+      !slug ||
+      !reviews
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+
+    let socialLinksData = [];
+    try {
+      socialLinksData = JSON.parse(socialLinks);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "socialLinksData must be a valid JSON array",
+      });
+    }
+
+    let businesstimings;
+    try {
+      businesstimings = JSON.parse(businessTiming);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "businessTiming must be a valid JSON array",
+      });
+    }
+
+    let reviewsdata;
+    try {
+      reviewsdata = JSON.parse(reviews);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "Reviews must be a valid JSON array",
+      });
+    }
+
+    reviewsdata = reviewsdata.map((review, index) => ({
+      ...review,
+      profileLogo: imgFullPath(ProfileImg[index]) || null,
+    }));
+
+    const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
+
+    if (!Ownerdata) {
+      return res.status(400).json({
+        status: "error",
+        message: "Ownerdata not found",
+      });
+    }
+
+
+
+    const myBusiness = await BusinesseditRequest.create({
+      name,
+      email,
+      phone,
+      description,
+      address,
+      socialLinks: socialLinksData,
+      slug: slug,
+      profilelogo: ProfileImg,
+      logo: logoImg,
+      images,
+      status,
+      galleryImg,
+      businessTiming: businesstimings,
+      reviews: reviewsdata,
+      googleMap,
+      bookingService: Ownerdata.bookingService,
+      fontService: Ownerdata.fontFamily,
+      fontSize: Ownerdata.fontSize,
+      websiteService: Ownerdata.websiteService,
+      theme: Ownerdata.theme || "",
+      createdBy: id,
+      bannerText: Ownerdata.bannerText,
+      color: Ownerdata.color,
+      bannerImg: Ownerdata.bannerImge,
+      rejectreason: Ownerdata.rejectreason,
+
+    });
+    const updatedBusinessData = await businessData(myBusiness);
+
+    console.log("updatedBusinessData", updatedBusinessData);
+    res.status(200).json({
+      status: "success",
+      data: updatedBusinessData,
+      message: "Business request send successfully",
+    });
+  } catch (error) {
+    console.log("Error in updating business", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
 const getAllBusinessApi = async (req, res, next) => {
   try {
     const business = await Business.find({
@@ -1008,6 +1176,7 @@ const getAllBusinessApi = async (req, res, next) => {
 };
 
 const getBusinessByOwnerIdApi = async (req, res, next) => {
+
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1873,7 +2042,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => {};
+const showAllBusinessApi = async (req, res) => { };
 
 module.exports = {
   addSpecialistApi,
@@ -1883,6 +2052,7 @@ module.exports = {
   getSpecialistByBusinessIdApi,
   addManagerApi,
   updateBusinessApi,
+  BusinessEditRequestApi,
   deleteManagerApi,
   getBusinessByOwnerIdApi,
   getManagersByBusinessIdApi,

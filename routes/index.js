@@ -36,6 +36,7 @@ const templateRoutes = require("./TemplateRoutes");
 const reviewRoutes = require("./ReviewRoutes");
 const contactRoutes = require("./ContactRoutes");
 const customRequest = require("./CustomRequestRoutes");
+const editBusinessRequest = require("./BusinessEditRoutes");
 
 
 
@@ -50,6 +51,7 @@ router.use("/api", templateRoutes);
 router.use("/api", reviewRoutes);
 router.use("/api", contactRoutes);
 router.use("/api", customRequest);
+router.use("/api", editBusinessRequest);
 
 
 module.exports = router;
