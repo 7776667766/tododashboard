@@ -41,20 +41,12 @@ router.post(
     { name: "files", maxCount: 12 }]), updateBusinessApi);
 
 router.post(
-  "/business-edit-request", BusinessEditRequestApi);
-
-
-
-router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);
-
-
 
 router.get(
   "/show-all-business-api",
   showAllBusinessApi
 );
-
 
 router.get("/business-by-ownerId", auth, getBusinessByOwnerIdApi);
 
@@ -74,8 +66,6 @@ router.post("/register-business", upload("business/gallery").fields([
   { name: "profileLogo", maxCount: 16 },
   { name: "files", maxCount: 12 }]), auth, registerBusinessApi);
 
-
-
 router.get("/business/get-all-business", getAllBusinessApi);
 router.post("/business/get-my-business-list/", auth, getBusinessByUserIdApi);
 router.get("/business/get-business-detail/:slug", getBusinessDetailBySlugApi);
@@ -85,7 +75,6 @@ router.post(
   upload("business/banners").single("bannerImg"),
   selectedTheme
 );
-
 
 router.post(
   "/business/custom-business",
