@@ -230,7 +230,6 @@ const addManagerApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-//update manager
 // const updateManagerApi = async (req, res) => {
 //   try {
 //     if (req.user === undefined) {
@@ -846,8 +845,6 @@ const registerBusinessApi = async (req, res) => {
 };
 
 
-
-
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -1058,6 +1055,7 @@ const BusinessEditRequestApi = async (req, res) => {
         message: "All fields are required",
       });
     }
+    //25-30 l
 
     let socialLinksData = [];
     try {
@@ -1128,8 +1126,7 @@ const BusinessEditRequestApi = async (req, res) => {
   }
 };
 
-
-const BusinessGetRequestApi = async(req,res)=>{
+const BusinessGetRequestApi = async (req, res) => {
   try {
     const business = await BusinesseditRequest.find({
     }).sort({ createdAt: -1 });
@@ -1142,7 +1139,7 @@ const BusinessGetRequestApi = async(req,res)=>{
       })
     );
 
-    console.log("businessDataList",businessDataList)
+    console.log("businessDataList", businessDataList)
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -1958,7 +1955,7 @@ const businessData = async (businessData) => {
   return {
     id: businessData._id,
     name: businessData.name,
-    status:businessData.status,
+    status: businessData.status,
     email: businessData.email,
     phone: businessData.phone,
     description: businessData.description,
@@ -1970,7 +1967,7 @@ const businessData = async (businessData) => {
     requestStatus: businessData.requestStatus,
     profilelogo: businessData?.ProfileImg?.map(imgFullPath),
     timeSlots: businessData.timeSlots,
-    reviews: newReviews, // businessData?.reviews,
+    reviews: newReviews,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleMap: businessData.googleMap,
