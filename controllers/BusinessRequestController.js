@@ -65,11 +65,11 @@ const getAdminRequestToRegisterBusiness = async (req, res, next) => {
    
         res.status(200).json({
             status: "success",
-            data: [{
+            data: {
                 name :username,
                 ...newBusinessData
                 
-            }]
+            }
                
             
         });
