@@ -989,7 +989,6 @@ const updateBusinessApi = async (req, res) => {
   }
 };
 
-
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -1129,6 +1128,31 @@ const BusinessEditRequestApi = async (req, res) => {
   }
 };
 
+
+const BusinessGetRequestApi = async(req,res)=>{
+  try {
+    const business = await BusinesseditRequest.find({
+    }).sort({ createdAt: -1 });
+
+    const businessDataList = [];
+
+    await Promise.all(
+      business.map(async (business) => {
+        businessDataList.push(await businessData(business));
+      })
+    );
+
+    
+    res.status(200).json({
+      status: "success",
+      data: businessDataList,
+    });
+  } catch (error) {
+    console.log("Error in getting all business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+
+}
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
@@ -2033,6 +2057,7 @@ module.exports = {
   BusinessEditRequestApi,
   deleteManagerApi,
   getBusinessByOwnerIdApi,
+  BusinessGetRequestApi,
   getManagersByBusinessIdApi,
   getAllBusinessApi,
   registerBusinessApi,
