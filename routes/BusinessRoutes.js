@@ -21,6 +21,7 @@ const {
   deleteSpecialistApi,
   getBusinessByServiceType,
   updateBusinessApi,
+  BusinessEditRequestApi,
   handleCustomBusinessApi,
   showAllBusinessApi
 } = require("../controllers/BusinessController");
@@ -32,19 +33,30 @@ router.get("/specialist/delete/:specilaistId", deleteSpecialistApi);
 router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);
 
-  
+
 router.post(
-  "/business-update" , upload("business/gallery").fields([
+  "/business-update", upload("business/gallery").fields([
     { name: "logo", maxCount: 1 },
-    { name: "profileLogo", maxCount: 16},
+    { name: "profileLogo", maxCount: 16 },
     { name: "files", maxCount: 12 }]), updateBusinessApi);
+
+router.post(
+  "/business-edit-request", BusinessEditRequestApi);
+
+
+
+router.post(
+  "/specialist/update/:specialistId", updateSpecialsitApi);
+
 
 
 router.get(
   "/show-all-business-api",
   showAllBusinessApi
 );
-router.get("/business-by-ownerId", auth,  getBusinessByOwnerIdApi);
+
+
+router.get("/business-by-ownerId", auth, getBusinessByOwnerIdApi);
 
 router.get("/specialist/:businessId", auth, getSpecialistByBusinessIdApi);
 router.post("/manager/add", auth, addManagerApi);
@@ -59,7 +71,7 @@ router.post(
 
 router.post("/register-business", upload("business/gallery").fields([
   { name: "logo", maxCount: 1 },
-  { name: "profileLogo", maxCount: 16},
+  { name: "profileLogo", maxCount: 16 },
   { name: "files", maxCount: 12 }]), auth, registerBusinessApi);
 
 
@@ -98,7 +110,7 @@ router.post(
   auth,
   upload("business/gallery").fields([
     { name: "logo", maxCount: 1 },
-    { name: "profileLogo", maxCount: 16},
+    { name: "profileLogo", maxCount: 16 },
     { name: "files", maxCount: 12 }]),
   addDummyBusinessApi
 );

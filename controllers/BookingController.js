@@ -36,7 +36,6 @@ const addBookingApi = async (req, res, next) => {
       specialistId,
       businessId,
       name,
-      // phone,
       date,
       timeSlot,
       status,
@@ -48,7 +47,6 @@ const addBookingApi = async (req, res, next) => {
       !specialistId ||
       !businessId ||
       !name ||
-      // !phone ||
       !date ||
       !timeSlot ||
       !price
@@ -111,20 +109,7 @@ const addBookingApi = async (req, res, next) => {
       timeSlot,
       price,
     });
-    ///user notification
-    // const userMailSend = await sendEmail({
-    //   email: user.email,
-    //   subject: "Booking Confirmation",
 
-    // });
-
-    // if (!userMailSend || !businessOwnerMailSend) {
-    //   console.error("Error sending confirmation emails");
-    //   return res.status(500).json({
-    //     status: "error",
-    //     message: "Error sending confirmation emails",
-    //   });
-    // }
     const myBookingData = await getBookingData(newBooking);
     res.status(200).json({
       status: "success",
@@ -142,7 +127,6 @@ const addBookingApi = async (req, res, next) => {
 };
 
 const getBookingByBusinessApi = async (req, res, next) => {
-  console.log("body of booking", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -163,7 +147,6 @@ const getBookingByBusinessApi = async (req, res, next) => {
       user.role === "admin"
     ) {
       const { businessId } = req.body;
-      console.log("businessId22222", businessId);
       let myBookings = [];
       const bookings = await Booking.find({
         businessId: businessId,
@@ -176,7 +159,6 @@ const getBookingByBusinessApi = async (req, res, next) => {
           myBookings.push(myBookingData);
         })
       );
-      console.log("myBookings----123", myBookings);
       return res.status(200).json({
         status: "success",
         data: myBookings,
@@ -241,7 +223,8 @@ const updateBookingApi = async (req, res) => {
           status: "error",
           message: "Service does not exist",
         });
-      }
+      } console.log("businessId22222", businessId);
+
     }
 
     if (specialistId) {
@@ -427,9 +410,7 @@ const cancelBookingApi = async (req, res, next) => {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
     }
-
     const { id } = req.user;
-
     const user = await User.findById(id);
 
     if (!user) {
