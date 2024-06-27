@@ -1095,17 +1095,6 @@ const BusinessEditRequestApi = async (req, res) => {
       profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
-    const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
-
-    if (!Ownerdata) {
-      return res.status(400).json({
-        status: "error",
-        message: "Ownerdata not found",
-      });
-    }
-
-
-
     const myBusiness = await BusinesseditRequest.create({
       name,
       email,
@@ -1122,17 +1111,6 @@ const BusinessEditRequestApi = async (req, res) => {
       businessTiming: businesstimings,
       reviews: reviewsdata,
       googleMap,
-      bookingService: Ownerdata.bookingService,
-      fontService: Ownerdata.fontFamily,
-      fontSize: Ownerdata.fontSize,
-      websiteService: Ownerdata.websiteService,
-      theme: Ownerdata.theme || "",
-      createdBy: id,
-      bannerText: Ownerdata.bannerText,
-      color: Ownerdata.color,
-      bannerImg: Ownerdata.bannerImge,
-      rejectreason: Ownerdata.rejectreason,
-
     });
     const updatedBusinessData = await businessData(myBusiness);
 
