@@ -1142,7 +1142,7 @@ const BusinessGetRequestApi = async(req,res)=>{
       })
     );
 
-    
+    console.log("businessDataList",businessDataList)
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -1958,6 +1958,7 @@ const businessData = async (businessData) => {
   return {
     id: businessData._id,
     name: businessData.name,
+    status:businessData.status,
     email: businessData.email,
     phone: businessData.phone,
     description: businessData.description,
