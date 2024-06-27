@@ -26,11 +26,6 @@ const reviewSchema = new mongoose.Schema({
   
 const BuisnessRequestSchema = new mongoose.Schema({
 
-    businessId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Business",
-        required: [true, "Business Id is required"],
-    },
     status: {
         type: String,
         enum: ["rejected", "pending", "appproved"],
