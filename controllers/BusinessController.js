@@ -992,7 +992,9 @@ const BusinessEditRequestApi = async (req, res) => {
 
   try {
     const { id } = req.body;
-    const businessId=req.body.id
+    const businessId= req.body.id
+    console.log("businessId 996", businessId);
+
 
     if (!id) {
       return res.status(400).json({
@@ -1113,6 +1115,9 @@ const BusinessEditRequestApi = async (req, res) => {
       reviews: reviewsdata,
       googleMap,
     });
+
+    console.log("myBusiness 1117", myBusiness);
+
     const updatedBusinessData = await businessData(myBusiness);
 
     console.log("updatedBusinessData", updatedBusinessData);
@@ -1960,6 +1965,7 @@ const businessData = async (businessData) => {
   return {
     id: businessData._id,
     name: businessData.name,
+    businessId : businessData.businessId,
     status: businessData.status,
     email: businessData.email,
     phone: businessData.phone,
