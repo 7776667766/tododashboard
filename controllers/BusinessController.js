@@ -929,7 +929,7 @@ const updateBusinessApi = async (req, res) => {
     // }));
 
     const updatedBusiness = await Business.findByIdAndUpdate(
-      businessId,
+      { id: templateId },
       {
    
          $set:
@@ -938,6 +938,22 @@ const updateBusinessApi = async (req, res) => {
       },
       { new: true }
     );
+
+
+
+    // await Template.findOneAndUpdate(
+    //   { _id: templateId },
+    //   {
+    //     $set: {
+    //       ...req.body,
+
+    //       bookingImage: bookingImg,
+    //       websiteImage: websiteImg,
+    //     },
+    //   },
+    //   { new: true }
+    // );
+
 
     const updatedBusinessData = await businessData(updatedBusiness);
 
