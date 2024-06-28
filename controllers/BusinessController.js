@@ -848,7 +848,16 @@ const registerBusinessApi = async (req, res) => {
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
-    const { id } = req.body;
+    const { id , businessId } = req.body;
+
+
+    if (!businessId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Owners business Id is required",
+      });
+    }
+
 
     if (!id) {
       return res.status(400).json({
@@ -866,105 +875,64 @@ const updateBusinessApi = async (req, res) => {
     }
     console.log("existingBusiness 867",existingBusiness)
 
-    let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
+    // let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
-    let ProfileImg = [];
-    if (req.files["profileLogo"])
-      req.files["profileLogo"]?.forEach((file) => {
-        ProfileImg.push(file.path);
-      }) ?? existingBusiness?.profileLogo;
+    // let ProfileImg = [];
+    // if (req.files["profileLogo"])
+    //   req.files["profileLogo"]?.forEach((file) => {
+    //     ProfileImg.push(file.path);
+    //   }) ?? existingBusiness?.profileLogo;
 
-    let galleryImg = [];
+    // let galleryImg = [];
 
-    if (req.files && req.files["files"]) {
-      req.files["files"].forEach((file) => {
-        galleryImg.push(file.path);
-      });
-    } else {
-      galleryImg = req.body?.files || [];
-    }
+    // if (req.files && req.files["files"]) {
+    //   req.files["files"].forEach((file) => {
+    //     galleryImg.push(file.path);
+    //   });
+    // } else {
+    //   galleryImg = req.body?.files || [];
+    // }
 
-    const {
-      name,
-      email,
-      phone,
-      description,
-      images,
-      googleMap,
-      address,
-      slug,
-      reviews,
-      businessTiming,
-      socialLinks,
-    } = req.body;
+    // let socialLinksData = [];
+    // try {
+    //   socialLinksData = JSON.parse(socialLinks);
+    // } catch (err) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "socialLinksData must be a valid JSON array",
+    //   });
+    // }
 
-    if (
-      !name ||
-      !email ||
-      !phone ||
-      !description ||
-      !address ||
-      !slug ||
-      !reviews
-    ) {
-      return res.status(400).json({
-        status: "error",
-        message: "All fields are required",
-      });
-    }
+    // let businesstimings;
+    // try {
+    //   businesstimings = JSON.parse(businessTiming);
+    // } catch (err) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "businessTiming must be a valid JSON array",
+    //   });
+    // }
 
-    let socialLinksData = [];
-    try {
-      socialLinksData = JSON.parse(socialLinks);
-    } catch (err) {
-      return res.status(400).json({
-        status: "error",
-        message: "socialLinksData must be a valid JSON array",
-      });
-    }
+    // let reviewsdata;
+    // try {
+    //   reviewsdata = JSON.parse(reviews);
+    // } catch (err) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Reviews must be a valid JSON array",
+    //   });
+    // }
 
-    let businesstimings;
-    try {
-      businesstimings = JSON.parse(businessTiming);
-    } catch (err) {
-      return res.status(400).json({
-        status: "error",
-        message: "businessTiming must be a valid JSON array",
-      });
-    }
-
-    let reviewsdata;
-    try {
-      reviewsdata = JSON.parse(reviews);
-    } catch (err) {
-      return res.status(400).json({
-        status: "error",
-        message: "Reviews must be a valid JSON array",
-      });
-    }
-
-    reviewsdata = reviewsdata.map((review, index) => ({
-      ...review,
-      profileLogo: imgFullPath(ProfileImg[index]) || null,
-    }));
+    // reviewsdata = reviewsdata.map((review, index) => ({
+    //   ...review,
+    //   profileLogo: imgFullPath(ProfileImg[index]) || null,
+    // }));
 
     const updatedBusiness = await Business.findByIdAndUpdate(
-      id,
+    businessId,
       {
         $set: {
-          name,
-          email,
-          phone,
-          description,
-          address,
-          socialLinks: socialLinksData,
-          slug,
-          logo: logoImg,
-          images,
-          galleryImg,
-          businessTiming: businesstimings,
-          reviews: reviewsdata,
-          googleMap,
+          ...existingBusiness
         },
       },
       { new: true }
