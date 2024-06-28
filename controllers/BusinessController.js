@@ -857,13 +857,14 @@ const updateBusinessApi = async (req, res) => {
       });
     }
 
-    const existingBusiness = await Business.findById(id);
+    const existingBusiness = await BusinesseditRequest.findById(id);
     if (!existingBusiness) {
       return res.status(404).json({
         status: "error",
         message: "Business not found",
       });
     }
+    console.log("existingBusiness 867",existingBusiness)
 
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
@@ -988,8 +989,10 @@ const updateBusinessApi = async (req, res) => {
 
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
+
   try {
     const { id } = req.body;
+    const businessId=req.body.id
 
     if (!id) {
       return res.status(400).json({
@@ -1055,7 +1058,7 @@ const BusinessEditRequestApi = async (req, res) => {
         message: "All fields are required",
       });
     }
-    //25-30 l
+
 
     let socialLinksData = [];
     try {
@@ -1093,6 +1096,7 @@ const BusinessEditRequestApi = async (req, res) => {
     }));
 
     const myBusiness = await BusinesseditRequest.create({
+      businessId,
       name,
       email,
       phone,
@@ -1150,6 +1154,7 @@ const BusinessGetRequestApi = async (req, res) => {
   }
 
 }
+
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
