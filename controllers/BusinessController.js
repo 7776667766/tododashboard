@@ -929,7 +929,7 @@ const updateBusinessApi = async (req, res) => {
     // }));
 
     const updatedBusiness = await Business.findByIdAndUpdate(
-      { id: templateId },
+      { _id: businessId },
       {
    
          $set:
@@ -958,7 +958,7 @@ const updateBusinessApi = async (req, res) => {
     const updatedBusinessData = await businessData(updatedBusiness);
 
     console.log("updatedBusinessData", updatedBusinessData);
-    
+
     res.status(200).json({
       status: "success",
       data: updatedBusinessData,
