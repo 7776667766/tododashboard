@@ -848,80 +848,74 @@ const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
     const { id, businessId } = req.body;
+if(!businessId){
 
+}
       //for logo Image
-      const logoImg = req?.files["logo"] ? req?.files["logo"][0]?.path : null;
+      // const logoImg = req?.files["logo"] ? req?.files["logo"][0]?.path : null;
 
-      //for Profile Image
-      let ProfileImg = [];
-      if (req?.files["profileLogo"]) {
-        req.files["profileLogo"].forEach((file) => {
-          ProfileImg?.push(file.path);
-        });
-      }
-      console.log("ProfileImg:", ProfileImg);
+      // //for Profile Image
+      // let ProfileImg = [];
+      // if (req?.files["profileLogo"]) {
+      //   req?.files["profileLogo"].forEach((file) => {
+      //     ProfileImg?.push(file.path);
+      //   });
+      // }
+      // console.log("ProfileImg:", ProfileImg);
   
-      //for gallery Images Array
-      let galleryImg = [];
-      if (req.files["files"]) {
-        req.files["files"].forEach((file) => {
-          galleryImg.push(file.path);
-        });
-      }
-      console.log("Gallery Images:", galleryImg);
+      // //for gallery Images Array
+      // let galleryImg = [];
+      // if (req?.files["files"]) {
+      //   req?.files["files"].forEach((file) => {
+      //     galleryImg.push(file.path);
+      //   });
+      // }
+      // console.log("Gallery Images:", galleryImg);
 
-      let businesstimings = [];
-      try {
-        businesstimings = JSON.parse(req.body.businessTiming);
-      } catch (err) {
-        return res.status(400).json({
-          status: "error",
-          message: "businesstimings must be a valid JSON array",
-        });
-      }
+      // let businesstimings = [];
+      // try {
+      //   businesstimings = JSON.parse(req?.body?.businessTiming);
+      // } catch (err) {
+      //   return res.status(400).json({
+      //     status: "error",
+      //     message: "businesstimings must be a valid JSON array",
+      //   });
+      // }
   
-      let reviewsdata = [];
-      try {
-        reviewsdata = JSON.parse(req?.body?.reviews);
-      } catch (err) {
-        return res.status(400).json({
-          status: "error",
-          message: "Reviews must be a valid JSON array",
-        });
-      }
+      // let reviewsdata = [];
+      // try {
+      //   reviewsdata = JSON.parse(req?.body?.reviews);
+      // } catch (err) {
+      //   return res.status(400).json({
+      //     status: "error",
+      //     message: "Reviews must be a valid JSON array",
+      //   });
+      // }
   
-      reviewsdata = reviewsdata.map((review, index) => ({
-        ...review,
-        profileLogo: ProfileImg[index] || null,
-      }));
+      // reviewsdata = reviewsdata.map((review, index) => ({
+      //   ...review,
+      //   profileLogo: ProfileImg[index] || null,
+      // }));
   
-      let socialLinksData = [];
-      try {
-        socialLinksData = JSON.parse(req?.body?.socialLinks);
-      } catch (err) {
-        return res.status(400).json({
-          status: "error",
-          message: "socialLinksData must be a valid JSON array",
-        });
-      }
+      // let socialLinksData = [];
+      // try {
+      //   socialLinksData = JSON.parse(req?.body?.socialLinks);
+      // } catch (err) {
+      //   return res.status(400).json({
+      //     status: "error",
+      //     message: "socialLinksData must be a valid JSON array",
+      //   });
+      // }
   
-      for (const review of reviewsdata) {
-        if (!review.rating || !review.description || !review.name) {
-          return res.status(400).json({
-            status: "error",
-            message: "Each review must have a Rating, Description, and  Name",
-          });
-        }
-      }
+      // for (const review of reviewsdata) {
+      //   if (!review.rating || !review.description || !review.name) {
+      //     return res.status(400).json({
+      //       status: "error",
+      //       message: "Each review must have a Rating, Description, and  Name",
+      //     });
+      //   }
+      // }
 
-      
-
-    // if (!businessId) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Owners business Id is required",
-    //   });
-    // }
 
     if (!id) {
       return res.status(400).json({
@@ -941,9 +935,7 @@ const updateBusinessApi = async (req, res) => {
       address: req.body?.address || existingBusiness.address,
       businessTiming: businesstimings|| existingBusiness.businessTiming,
       socialLinks: socialLinksData || existingBusiness.socialLinks,
-
       reviews: reviewsdata || existingBusiness.reviews,
-     
       googleMap: req?.body?.googleMap || existingBusiness.googleMap,
       slug: req?.body?.slug || existingBusiness.slug,
       galleryImg: galleryImg || existingBusiness.galleryImg,
