@@ -230,7 +230,6 @@ const addManagerApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
-//update manager
 // const updateManagerApi = async (req, res) => {
 //   try {
 //     if (req.user === undefined) {
@@ -846,8 +845,6 @@ const registerBusinessApi = async (req, res) => {
 };
 
 
-
-
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -860,13 +857,14 @@ const updateBusinessApi = async (req, res) => {
       });
     }
 
-    const existingBusiness = await Business.findById(id);
+    const existingBusiness = await BusinesseditRequest.findById(id);
     if (!existingBusiness) {
       return res.status(404).json({
         status: "error",
         message: "Business not found",
       });
     }
+    console.log("existingBusiness 867",existingBusiness)
 
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
@@ -991,8 +989,10 @@ const updateBusinessApi = async (req, res) => {
 
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
+
   try {
     const { id } = req.body;
+    const businessId=req.body.id
 
     if (!id) {
       return res.status(400).json({
@@ -1059,6 +1059,7 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
+
     let socialLinksData = [];
     try {
       socialLinksData = JSON.parse(socialLinks);
@@ -1095,6 +1096,7 @@ const BusinessEditRequestApi = async (req, res) => {
     }));
 
     const myBusiness = await BusinesseditRequest.create({
+      businessId,
       name,
       email,
       phone,
@@ -1128,8 +1130,7 @@ const BusinessEditRequestApi = async (req, res) => {
   }
 };
 
-
-const BusinessGetRequestApi = async(req,res)=>{
+const BusinessGetRequestApi = async (req, res) => {
   try {
     const business = await BusinesseditRequest.find({
     }).sort({ createdAt: -1 });
@@ -1142,7 +1143,7 @@ const BusinessGetRequestApi = async(req,res)=>{
       })
     );
 
-    console.log("businessDataList",businessDataList)
+    console.log("businessDataList", businessDataList)
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -1153,6 +1154,7 @@ const BusinessGetRequestApi = async(req,res)=>{
   }
 
 }
+
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
@@ -1958,7 +1960,7 @@ const businessData = async (businessData) => {
   return {
     id: businessData._id,
     name: businessData.name,
-    status:businessData.status,
+    status: businessData.status,
     email: businessData.email,
     phone: businessData.phone,
     description: businessData.description,
@@ -1970,7 +1972,7 @@ const businessData = async (businessData) => {
     requestStatus: businessData.requestStatus,
     profilelogo: businessData?.ProfileImg?.map(imgFullPath),
     timeSlots: businessData.timeSlots,
-    reviews: newReviews, // businessData?.reviews,
+    reviews: newReviews,
     theme: businessData?.theme || "",
     images: businessData.images,
     googleMap: businessData.googleMap,
