@@ -848,7 +848,7 @@ const registerBusinessApi = async (req, res) => {
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
-    const { id , businessId } = req.body;
+    const { id, businessId } = req.body;
 
 
     if (!businessId) {
@@ -873,7 +873,7 @@ const updateBusinessApi = async (req, res) => {
         message: "Business not found",
       });
     }
-    console.log("existingBusiness 867",existingBusiness)
+    console.log("existingBusiness 867", existingBusiness)
 
     // let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
@@ -929,11 +929,12 @@ const updateBusinessApi = async (req, res) => {
     // }));
 
     const updatedBusiness = await Business.findByIdAndUpdate(
-    businessId,
+      businessId,
       {
-        $set: {
-          ...existingBusiness
-        },
+   
+         $set:
+          {existingBusiness} ,
+
       },
       { new: true }
     );
@@ -941,6 +942,7 @@ const updateBusinessApi = async (req, res) => {
     const updatedBusinessData = await businessData(updatedBusiness);
 
     console.log("updatedBusinessData", updatedBusinessData);
+    
     res.status(200).json({
       status: "success",
       data: updatedBusinessData,
