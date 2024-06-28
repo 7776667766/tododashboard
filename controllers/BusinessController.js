@@ -844,78 +844,20 @@ const registerBusinessApi = async (req, res) => {
   }
 };
 
+
+
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
     const { id, businessId } = req.body;
 if(!businessId){
 
-}
-      //for logo Image
-      // const logoImg = req?.files["logo"] ? req?.files["logo"][0]?.path : null;
-
-      // //for Profile Image
-      // let ProfileImg = [];
-      // if (req?.files["profileLogo"]) {
-      //   req?.files["profileLogo"].forEach((file) => {
-      //     ProfileImg?.push(file.path);
-      //   });
-      // }
-      // console.log("ProfileImg:", ProfileImg);
-  
-      // //for gallery Images Array
-      // let galleryImg = [];
-      // if (req?.files["files"]) {
-      //   req?.files["files"].forEach((file) => {
-      //     galleryImg.push(file.path);
-      //   });
-      // }
-      // console.log("Gallery Images:", galleryImg);
-
-      // let businesstimings = [];
-      // try {
-      //   businesstimings = JSON.parse(req?.body?.businessTiming);
-      // } catch (err) {
-      //   return res.status(400).json({
-      //     status: "error",
-      //     message: "businesstimings must be a valid JSON array",
-      //   });
-      // }
-  
-      // let reviewsdata = [];
-      // try {
-      //   reviewsdata = JSON.parse(req?.body?.reviews);
-      // } catch (err) {
-      //   return res.status(400).json({
-      //     status: "error",
-      //     message: "Reviews must be a valid JSON array",
-      //   });
-      // }
-  
-      // reviewsdata = reviewsdata.map((review, index) => ({
-      //   ...review,
-      //   profileLogo: ProfileImg[index] || null,
-      // }));
-  
-      // let socialLinksData = [];
-      // try {
-      //   socialLinksData = JSON.parse(req?.body?.socialLinks);
-      // } catch (err) {
-      //   return res.status(400).json({
-      //     status: "error",
-      //     message: "socialLinksData must be a valid JSON array",
-      //   });
-      // }
-  
-      // for (const review of reviewsdata) {
-      //   if (!review.rating || !review.description || !review.name) {
-      //     return res.status(400).json({
-      //       status: "error",
-      //       message: "Each review must have a Rating, Description, and  Name",
-      //     });
-      //   }
-      // }
-
+    if (!businessId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Owners business Id is required",
+      });
+    }
 
     if (!id) {
       return res.status(400).json({
@@ -925,25 +867,38 @@ if(!businessId){
     }
 
     const existingBusiness = await BusinesseditRequest.findById(id);
+    if (!existingBusiness) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
     console.log("existingBusiness 867", existingBusiness);
 
+    // Merge existingBusiness data into Business model
     const updatedBusinessFields = {
-      name: req.body?.name || existingBusiness.name,
-      email: req.body?.email || existingBusiness.email,
-      phone: req.body?.phone || existingBusiness.phone,
-      description: req.body?.description || existingBusiness.description,
-      address: req.body?.address || existingBusiness.address,
-      businessTiming: businesstimings|| existingBusiness.businessTiming,
-      socialLinks: socialLinksData || existingBusiness.socialLinks,
-      reviews: reviewsdata || existingBusiness.reviews,
-      googleMap: req?.body?.googleMap || existingBusiness.googleMap,
-      slug: req?.body?.slug || existingBusiness.slug,
-      galleryImg: galleryImg || existingBusiness.galleryImg,
-      // logo: logoImg || existingBusiness.logo,
+      name: existingBusiness.name,
+      email: existingBusiness.email,
+      phone: existingBusiness.phone,
+      description: existingBusiness.description,
+      address: existingBusiness.address,
+      businessTiming: existingBusiness.businessTiming,
+      socialLinks: existingBusiness.socialLinks,
+      bookingService: existingBusiness.bookingService,
+      websiteService: existingBusiness.websiteService,
+      requestStatus: existingBusiness.requestStatus,
+      reviews: existingBusiness.reviews,
+      theme: existingBusiness.theme,
+      googleMap: existingBusiness.googleMap,
+      slug: existingBusiness.slug,
+      galleryImg: existingBusiness.galleryImg,
+      logo: existingBusiness.logo,
+      bannerImg: existingBusiness.bannerImg,
+      rejectreason: existingBusiness.rejectreason,
     };
 
     const updatedBusiness = await Business.findByIdAndUpdate(
-      businessId || req.body.id ,
+      businessId,
       { $set: updatedBusinessFields },
       { new: true }
     );
@@ -966,12 +921,11 @@ if(!businessId){
   }
 };
 
-
-
 // const updateBusinessApi = async (req, res) => {
 //   console.log("req body 853", req.body);
 //   try {
 //     const { id, businessId } = req.body;
+
 
 //     if (!businessId) {
 //       return res.status(400).json({
@@ -980,10 +934,11 @@ if(!businessId){
 //       });
 //     }
 
+
 //     if (!id) {
 //       return res.status(400).json({
 //         status: "error",
-//         message: "Business Id is required",
+//         message: "business Id is required",
 //       });
 //     }
 
@@ -994,34 +949,87 @@ if(!businessId){
 //         message: "Business not found",
 //       });
 //     }
-//     console.log("existingBusiness 867", existingBusiness);
+//     console.log("existingBusiness 867", existingBusiness)
 
-//     const updatedBusinessFields = {
-//       name: existingBusiness.name,
-//       email: existingBusiness.email,
-//       phone: existingBusiness.phone,
-//       description: existingBusiness.description,
-//       address: existingBusiness.address,
-//       businessTiming: existingBusiness.businessTiming,
-//       socialLinks: existingBusiness.socialLinks,
-//       bookingService: existingBusiness.bookingService,
-//       websiteService: existingBusiness.websiteService,
-//       requestStatus: existingBusiness.requestStatus,
-//       reviews: existingBusiness.reviews,
-//       theme: existingBusiness.theme,
-//       googleMap: existingBusiness.googleMap,
-//       slug: existingBusiness.slug,
-//       galleryImg: existingBusiness.galleryImg,
-//       logo: existingBusiness.logo,
-//       bannerImg: existingBusiness.bannerImg,
-//       rejectreason: existingBusiness.rejectreason,
-//     };
+//     // let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
+
+//     // let ProfileImg = [];
+//     // if (req.files["profileLogo"])
+//     //   req.files["profileLogo"]?.forEach((file) => {
+//     //     ProfileImg.push(file.path);
+//     //   }) ?? existingBusiness?.profileLogo;
+
+//     // let galleryImg = [];
+
+//     // if (req.files && req.files["files"]) {
+//     //   req.files["files"].forEach((file) => {
+//     //     galleryImg.push(file.path);
+//     //   });
+//     // } else {
+//     //   galleryImg = req.body?.files || [];
+//     // }
+
+//     // let socialLinksData = [];
+//     // try {
+//     //   socialLinksData = JSON.parse(socialLinks);
+//     // } catch (err) {
+//     //   return res.status(400).json({
+//     //     status: "error",
+//     //     message: "socialLinksData must be a valid JSON array",
+//     //   });
+//     // }
+
+//     // let businesstimings;
+//     // try {
+//     //   businesstimings = JSON.parse(businessTiming);
+//     // } catch (err) {
+//     //   return res.status(400).json({
+//     //     status: "error",
+//     //     message: "businessTiming must be a valid JSON array",
+//     //   });
+//     // }
+
+//     // let reviewsdata;
+//     // try {
+//     //   reviewsdata = JSON.parse(reviews);
+//     // } catch (err) {
+//     //   return res.status(400).json({
+//     //     status: "error",
+//     //     message: "Reviews must be a valid JSON array",
+//     //   });
+//     // }
+
+//     // reviewsdata = reviewsdata.map((review, index) => ({
+//     //   ...review,
+//     //   profileLogo: imgFullPath(ProfileImg[index]) || null,
+//     // }));
 
 //     const updatedBusiness = await Business.findByIdAndUpdate(
-//       businessId,
-//       { $set: updatedBusinessFields },
+//       { id: templateId },
+//       {
+   
+//          $set:
+//           { ...existingBusiness} ,
+
+//       },
 //       { new: true }
 //     );
+
+
+
+//     // await Template.findOneAndUpdate(
+//     //   { _id: templateId },
+//     //   {
+//     //     $set: {
+//     //       ...req.body,
+
+//     //       bookingImage: bookingImg,
+//     //       websiteImage: websiteImg,
+//     //     },
+//     //   },
+//     //   { new: true }
+//     // );
+
 
 //     const updatedBusinessData = await businessData(updatedBusiness);
 
