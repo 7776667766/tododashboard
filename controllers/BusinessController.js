@@ -845,11 +845,11 @@ const registerBusinessApi = async (req, res) => {
 };
 
 
+
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
     const { id, businessId } = req.body;
-
 
     if (!businessId) {
       return res.status(400).json({
@@ -858,11 +858,10 @@ const updateBusinessApi = async (req, res) => {
       });
     }
 
-
     if (!id) {
       return res.status(400).json({
         status: "error",
-        message: "business Id is required",
+        message: "Business Id is required",
       });
     }
 
@@ -873,87 +872,34 @@ const updateBusinessApi = async (req, res) => {
         message: "Business not found",
       });
     }
-    console.log("existingBusiness 867", existingBusiness)
+    console.log("existingBusiness 867", existingBusiness);
 
-    // let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
-
-    // let ProfileImg = [];
-    // if (req.files["profileLogo"])
-    //   req.files["profileLogo"]?.forEach((file) => {
-    //     ProfileImg.push(file.path);
-    //   }) ?? existingBusiness?.profileLogo;
-
-    // let galleryImg = [];
-
-    // if (req.files && req.files["files"]) {
-    //   req.files["files"].forEach((file) => {
-    //     galleryImg.push(file.path);
-    //   });
-    // } else {
-    //   galleryImg = req.body?.files || [];
-    // }
-
-    // let socialLinksData = [];
-    // try {
-    //   socialLinksData = JSON.parse(socialLinks);
-    // } catch (err) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "socialLinksData must be a valid JSON array",
-    //   });
-    // }
-
-    // let businesstimings;
-    // try {
-    //   businesstimings = JSON.parse(businessTiming);
-    // } catch (err) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "businessTiming must be a valid JSON array",
-    //   });
-    // }
-
-    // let reviewsdata;
-    // try {
-    //   reviewsdata = JSON.parse(reviews);
-    // } catch (err) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Reviews must be a valid JSON array",
-    //   });
-    // }
-
-    // reviewsdata = reviewsdata.map((review, index) => ({
-    //   ...review,
-    //   profileLogo: imgFullPath(ProfileImg[index]) || null,
-    // }));
+    const updatedBusinessFields = {
+      name: existingBusiness.name,
+      email: existingBusiness.email,
+      phone: existingBusiness.phone,
+      description: existingBusiness.description,
+      address: existingBusiness.address,
+      businessTiming: existingBusiness.businessTiming,
+      socialLinks: existingBusiness.socialLinks,
+      bookingService: existingBusiness.bookingService,
+      websiteService: existingBusiness.websiteService,
+      requestStatus: existingBusiness.requestStatus,
+      reviews: existingBusiness.reviews,
+      theme: existingBusiness.theme,
+      googleMap: existingBusiness.googleMap,
+      slug: existingBusiness.slug,
+      galleryImg: existingBusiness.galleryImg,
+      logo: existingBusiness.logo,
+      bannerImg: existingBusiness.bannerImg,
+      rejectreason: existingBusiness.rejectreason,
+    };
 
     const updatedBusiness = await Business.findByIdAndUpdate(
-      { _id: businessId },
-      {
-   
-         $set:
-          {existingBusiness} ,
-
-      },
+      businessId,
+      { $set: updatedBusinessFields },
       { new: true }
     );
-
-
-
-    // await Template.findOneAndUpdate(
-    //   { _id: templateId },
-    //   {
-    //     $set: {
-    //       ...req.body,
-
-    //       bookingImage: bookingImg,
-    //       websiteImage: websiteImg,
-    //     },
-    //   },
-    //   { new: true }
-    // );
-
 
     const updatedBusinessData = await businessData(updatedBusiness);
 
@@ -972,6 +918,133 @@ const updateBusinessApi = async (req, res) => {
     });
   }
 };
+
+// const updateBusinessApi = async (req, res) => {
+//   console.log("req body 853", req.body);
+//   try {
+//     const { id, businessId } = req.body;
+
+
+//     if (!businessId) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "Owners business Id is required",
+//       });
+//     }
+
+
+//     if (!id) {
+//       return res.status(400).json({
+//         status: "error",
+//         message: "business Id is required",
+//       });
+//     }
+
+//     const existingBusiness = await BusinesseditRequest.findById(id);
+//     if (!existingBusiness) {
+//       return res.status(404).json({
+//         status: "error",
+//         message: "Business not found",
+//       });
+//     }
+//     console.log("existingBusiness 867", existingBusiness)
+
+//     // let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
+
+//     // let ProfileImg = [];
+//     // if (req.files["profileLogo"])
+//     //   req.files["profileLogo"]?.forEach((file) => {
+//     //     ProfileImg.push(file.path);
+//     //   }) ?? existingBusiness?.profileLogo;
+
+//     // let galleryImg = [];
+
+//     // if (req.files && req.files["files"]) {
+//     //   req.files["files"].forEach((file) => {
+//     //     galleryImg.push(file.path);
+//     //   });
+//     // } else {
+//     //   galleryImg = req.body?.files || [];
+//     // }
+
+//     // let socialLinksData = [];
+//     // try {
+//     //   socialLinksData = JSON.parse(socialLinks);
+//     // } catch (err) {
+//     //   return res.status(400).json({
+//     //     status: "error",
+//     //     message: "socialLinksData must be a valid JSON array",
+//     //   });
+//     // }
+
+//     // let businesstimings;
+//     // try {
+//     //   businesstimings = JSON.parse(businessTiming);
+//     // } catch (err) {
+//     //   return res.status(400).json({
+//     //     status: "error",
+//     //     message: "businessTiming must be a valid JSON array",
+//     //   });
+//     // }
+
+//     // let reviewsdata;
+//     // try {
+//     //   reviewsdata = JSON.parse(reviews);
+//     // } catch (err) {
+//     //   return res.status(400).json({
+//     //     status: "error",
+//     //     message: "Reviews must be a valid JSON array",
+//     //   });
+//     // }
+
+//     // reviewsdata = reviewsdata.map((review, index) => ({
+//     //   ...review,
+//     //   profileLogo: imgFullPath(ProfileImg[index]) || null,
+//     // }));
+
+//     const updatedBusiness = await Business.findByIdAndUpdate(
+//       { id: templateId },
+//       {
+   
+//          $set:
+//           { ...existingBusiness} ,
+
+//       },
+//       { new: true }
+//     );
+
+
+
+//     // await Template.findOneAndUpdate(
+//     //   { _id: templateId },
+//     //   {
+//     //     $set: {
+//     //       ...req.body,
+
+//     //       bookingImage: bookingImg,
+//     //       websiteImage: websiteImg,
+//     //     },
+//     //   },
+//     //   { new: true }
+//     // );
+
+
+//     const updatedBusinessData = await businessData(updatedBusiness);
+
+//     console.log("updatedBusinessData", updatedBusinessData);
+//     res.status(200).json({
+//       status: "success",
+//       data: updatedBusinessData,
+//       message: "Business updated successfully",
+//     });
+//   } catch (error) {
+//     console.log("Error in updating business", error);
+//     res.status(500).json({
+//       status: "error",
+//       message: error.message,
+//     });
+//   }
+// };
 
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
