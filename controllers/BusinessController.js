@@ -850,22 +850,18 @@ const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
     const { id, businessId } = req.body;
-if(!businessId){
-
     if (!businessId) {
       return res.status(400).json({
         status: "error",
         message: "Owners business Id is required",
       });
     }
-
     if (!id) {
       return res.status(400).json({
         status: "error",
         message: "Business Id is required",
       });
     }
-
     const existingBusiness = await BusinesseditRequest.findById(id);
     if (!existingBusiness) {
       return res.status(404).json({
@@ -874,7 +870,6 @@ if(!businessId){
       });
     }
     console.log("existingBusiness 867", existingBusiness);
-
     // Merge existingBusiness data into Business model
     const updatedBusinessFields = {
       name: existingBusiness.name,
@@ -896,17 +891,13 @@ if(!businessId){
       bannerImg: existingBusiness.bannerImg,
       rejectreason: existingBusiness.rejectreason,
     };
-
     const updatedBusiness = await Business.findByIdAndUpdate(
       businessId,
       { $set: updatedBusinessFields },
       { new: true }
     );
-
     const updatedBusinessData = await businessData(updatedBusiness);
-
     console.log("updatedBusinessData", updatedBusinessData);
-
     res.status(200).json({
       status: "success",
       data: updatedBusinessData,
