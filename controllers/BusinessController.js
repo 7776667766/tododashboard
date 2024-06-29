@@ -845,7 +845,6 @@ const registerBusinessApi = async (req, res) => {
 };
 
 
-
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -1211,6 +1210,33 @@ const BusinessGetRequestApi = async (req, res) => {
   }
 
 }
+
+const GetEditBusinessRequestApi = async (req, res) => {
+  console.log(req.body.id)
+  try {
+    const business = await BusinesseditRequest.findById(id)
+    console.log("business 1223", business)
+
+    const businessData = [];
+
+    await Promise.all(
+      business.map(async (business) => {
+        businessData.push(await businessData(business));
+      })
+    );
+
+    console.log("businessData", businessData)
+    res.status(200).json({
+      status: "success",
+      data: businessData,
+    });
+  } catch (error) {
+    console.log("Error in getting edit business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+
+}
+
 
 
 const getAllBusinessApi = async (req, res, next) => {
@@ -2117,6 +2143,7 @@ module.exports = {
   updateBusinessApi,
   BusinessEditRequestApi,
   deleteManagerApi,
+  GetEditBusinessRequestApi,
   getBusinessByOwnerIdApi,
   BusinessGetRequestApi,
   getManagersByBusinessIdApi,

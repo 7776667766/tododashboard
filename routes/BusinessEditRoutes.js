@@ -2,7 +2,8 @@ const router = require("express").Router();
 const auth = require("../middlewares/auth");
 const {
     BusinessEditRequestApi,
-    BusinessGetRequestApi
+    BusinessGetRequestApi,
+    GetEditBusinessRequestApi
 } = require("../controllers/BusinessController");
 const upload = require("../middlewares/uploadImage");
 
@@ -12,9 +13,10 @@ router.post(
         { name: "profileLogo", maxCount: 16 },
         { name: "files", maxCount: 12 }]), BusinessEditRequestApi);
 
-
 router.get(
     "/business-get-edit-request" , BusinessGetRequestApi);
 
+router.post(
+    "/get-edit-business-by-id-request" , GetEditBusinessRequestApi);
 
 module.exports = router;
