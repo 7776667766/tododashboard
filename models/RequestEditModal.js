@@ -66,6 +66,10 @@ const BuisnessRequestSchema = new mongoose.Schema({
         type: String,
     },
 
+    businessId: {
+        type: String,
+      },
+      
     TransactionDates: [
         {
             type: Date,

@@ -850,21 +850,18 @@ const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
     const { id, businessId } = req.body;
-
     if (!businessId) {
       return res.status(400).json({
         status: "error",
         message: "Owners business Id is required",
       });
     }
-
     if (!id) {
       return res.status(400).json({
         status: "error",
         message: "Business Id is required",
       });
     }
-
     const existingBusiness = await BusinesseditRequest.findById(id);
     if (!existingBusiness) {
       return res.status(404).json({
@@ -873,7 +870,6 @@ const updateBusinessApi = async (req, res) => {
       });
     }
     console.log("existingBusiness 867", existingBusiness);
-
     // Merge existingBusiness data into Business model
     const updatedBusinessFields = {
       name: existingBusiness.name,
@@ -895,15 +891,12 @@ const updateBusinessApi = async (req, res) => {
       bannerImg: existingBusiness.bannerImg,
       rejectreason: existingBusiness.rejectreason,
     };
-
     const updatedBusiness = await Business.findByIdAndUpdate(
       businessId,
       { $set: updatedBusinessFields },
       { new: true }
     );
-
     const updatedBusinessData = await businessData(updatedBusiness);
-
     console.log("updatedBusinessData", updatedBusinessData);
     res.status(200).json({
       status: "success",
@@ -1051,7 +1044,9 @@ const BusinessEditRequestApi = async (req, res) => {
 
   try {
     const { id } = req.body;
-    const businessId = req.body.id
+    const businessId= req.body.id
+    console.log("businessId 996", businessId);
+
 
     if (!id) {
       return res.status(400).json({
@@ -1172,6 +1167,9 @@ const BusinessEditRequestApi = async (req, res) => {
       reviews: reviewsdata,
       googleMap,
     });
+
+    console.log("myBusiness 1117", myBusiness);
+
     const updatedBusinessData = await businessData(myBusiness);
 
     console.log("updatedBusinessData", updatedBusinessData);
@@ -2019,6 +2017,7 @@ const businessData = async (businessData) => {
   return {
     id: businessData._id,
     name: businessData.name,
+    businessId : businessData.businessId,
     status: businessData.status,
     email: businessData.email,
     phone: businessData.phone,
