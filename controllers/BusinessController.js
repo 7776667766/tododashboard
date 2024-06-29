@@ -1212,23 +1212,24 @@ const BusinessGetRequestApi = async (req, res) => {
 }
 
 const GetEditBusinessRequestApi = async (req, res) => {
-  console.log(req.body.id)
+  console.log("id for business",req.body.id)
   try {
+    const {id} =req.body
     const business = await BusinesseditRequest.findById(id)
     console.log("business 1223", business)
 
-    const businessData = [];
+    // const businessData = [];
 
-    await Promise.all(
-      business.map(async (business) => {
-        businessData.push(await businessData(business));
-      })
-    );
+    // await Promise.all(
+    //   business?.map(async (business) => {
+    //     businessData.push(await businessData(business));
+    //   })
+    // );
 
-    console.log("businessData", businessData)
+    // console.log("businessData", businessData)
     res.status(200).json({
       status: "success",
-      data: businessData,
+      data: business,
     });
   } catch (error) {
     console.log("Error in getting edit business", error);
