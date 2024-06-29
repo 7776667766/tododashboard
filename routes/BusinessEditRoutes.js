@@ -18,7 +18,7 @@ router.get(
     "/business-get-edit-request" , BusinessGetRequestApi);
 
 
-router.get(
+router.post(
     "/get-edit-business-by-id-request" , GetEditBusinessRequestApi);
 
 
