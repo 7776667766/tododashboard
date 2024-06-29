@@ -13,16 +13,10 @@ router.post(
         { name: "profileLogo", maxCount: 16 },
         { name: "files", maxCount: 12 }]), BusinessEditRequestApi);
 
-
 router.get(
     "/business-get-edit-request" , BusinessGetRequestApi);
 
-
 router.post(
     "/get-edit-business-by-id-request" , GetEditBusinessRequestApi);
-
-
-    
-
 
 module.exports = router;

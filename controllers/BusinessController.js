@@ -1216,9 +1216,7 @@ const BusinessGetRequestApi = async (req, res) => {
 const GetEditBusinessRequestApi = async (req, res) => {
   console.log(req.body.id)
   try {
-    const business = await BusinesseditRequest.findById({
-      id
-    })
+    const business = await BusinesseditRequest.findById(id)
     console.log("business 1223", business)
 
     const businessData = [];
