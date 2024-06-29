@@ -1193,10 +1193,13 @@ const BusinessGetRequestApi = async (req, res) => {
     const business = await BusinesseditRequest.find({
     }).sort({ createdAt: -1 });
 
+// const business = await Business.find({ createdBy: owner.ownerId });
+
     const businessDataList = [];
 
     await Promise.all(
       business.map(async (business) => {
+  
         businessDataList.push(await businessData(business));
       })
     );
@@ -1238,8 +1241,6 @@ const GetEditBusinessRequestApi = async (req, res) => {
   }
 
 }
-
-
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
