@@ -1083,7 +1083,7 @@ const BusinessEditRequestApi = async (req, res) => {
     }
     console.log("Ownerdata", Ownerdata.name)
 
-    const { id } = req.body;
+    const { userId } = req.body;
     const businessId = req.body.id
 
     if (!id) {
@@ -1093,7 +1093,7 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
-    const existingBusiness = await Business.findById(id);
+    const existingBusiness = await Business.findById({id:userId});
     if (!existingBusiness) {
       return res.status(404).json({
         status: "error",
