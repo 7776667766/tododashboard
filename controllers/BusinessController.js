@@ -1186,23 +1186,52 @@ const BusinessEditRequestApi = async (req, res) => {
   }
 };
 
+// const BusinessGetRequestApi = async (req, res) => {
+//   try {
+//     const business = await BusinesseditRequest.find({
+//     }).sort({ createdAt: -1 });
+
+// // const business = await Business.find({ createdBy: owner.ownerId });
+
+//     const businessDataList = [];
+
+//     await Promise.all(
+//       business.map(async (business) => {
+
+//         businessDataList.push(await businessData(business));
+//       })
+//     );
+
+//     console.log("businessDataList", businessDataList)
+//     res.status(200).json({
+//       status: "success",
+//       data: businessDataList,
+//     });
+//   } catch (error) {
+//     console.log("Error in getting all business", error);
+//     res.status(400).json({ status: "error", message: error.message });
+//   }
+
+// }
+
 const BusinessGetRequestApi = async (req, res) => {
   try {
-    const business = await BusinesseditRequest.find({
-    }).sort({ createdAt: -1 });
-
-// const business = await Business.find({ createdBy: owner.ownerId });
+    // Fetch the businesses and sort them by creation date in descending order
+    const businesses = await BusinesseditRequest.find({}).sort({ createdAt: -1 }).populate('createdBy', 'name');
+    console.log("businesses 1223",businesses)
 
     const businessDataList = [];
 
     await Promise.all(
-      business.map(async (business) => {
-  
-        businessDataList.push(await businessData(business));
+      businesses.map(async (business) => {
+        const businessData = await businessData(business);
+        businessData.ownerName = business.createdBy.name;
+        businessDataList.push(businessData);
       })
     );
 
-    console.log("businessDataList", businessDataList)
+    console.log("businessDataList", businessDataList);
+
     res.status(200).json({
       status: "success",
       data: businessDataList,
@@ -1211,8 +1240,8 @@ const BusinessGetRequestApi = async (req, res) => {
     console.log("Error in getting all business", error);
     res.status(400).json({ status: "error", message: error.message });
   }
+};
 
-}
 
 const GetEditBusinessRequestApi = async (req, res) => {
   console.log("id for business",req.body.id)
