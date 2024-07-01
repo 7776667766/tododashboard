@@ -1226,9 +1226,9 @@ const BusinessGetRequestApi = async (req, res) => {
 
     await Promise.all(
       businesses.map(async (business) => {
-        const businessData = await businessData(business);
-        businessData.ownerName = business.createdBy.name;
-        businessDataList.push(businessData);
+        const businessofData = await businessData(business);
+        businessofData.ownerName = business.createdBy.name;
+        businessDataList.push(businessofData);
       })
     );
 
