@@ -3,7 +3,7 @@ const User = require("../models/UserModel");
 const Manager = require("../models/ManagerModel");
 const Specialist = require("../models/SpecialistModel");
 const Business = require("../models/BusinessModal");
-const BusinesseditRequest = require("../models/RequestEditModal")
+const BusinesseditRequest = require("../models/RequestEditModal");
 // const slugify = require("slugify");
 const { sendEmail } = require("../util/sendEmail");
 const imgFullPath = require("../util/imgFullPath");
@@ -844,7 +844,6 @@ const registerBusinessApi = async (req, res) => {
   }
 };
 
-
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -916,14 +915,12 @@ const updateBusinessApi = async (req, res) => {
 //   try {
 //     const { id, businessId } = req.body;
 
-
 //     if (!businessId) {
 //       return res.status(400).json({
 //         status: "error",
 //         message: "Owners business Id is required",
 //       });
 //     }
-
 
 //     if (!id) {
 //       return res.status(400).json({
@@ -1005,8 +1002,6 @@ const updateBusinessApi = async (req, res) => {
 //       { new: true }
 //     );
 
-
-
 //     // await Template.findOneAndUpdate(
 //     //   { _id: templateId },
 //     //   {
@@ -1019,7 +1014,6 @@ const updateBusinessApi = async (req, res) => {
 //     //   },
 //     //   { new: true }
 //     // );
-
 
 //     const updatedBusinessData = await businessData(updatedBusiness);
 
@@ -1042,11 +1036,7 @@ const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
 
   try {
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-
-    }
-
+ 
     const { id } = req.user;
 
     const user = await User.findById(id);
@@ -1066,29 +1056,30 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
-    const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
+    // const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
 
-    if (!Ownerdata) {
+    // if (!Ownerdata) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Ownerdata not found",
+    //   });
+    // }
+    // console.log("Ownerdata", Ownerdata);
+
+    const { userId } = req.body;
+    console.log("userId", userId);
+
+    const businessId = req.body.userId;
+
+
+    if (!userId) {
       return res.status(400).json({
         status: "error",
-        message: "Ownerdata not found",
-      });
-    }
-    console.log("Ownerdata", Ownerdata.name)
-
-    const { id } = req.body;
-    const businessId= req.body.id
-    console.log("businessId 996", businessId);
-
-
-    if (!id) {
-      return res.status(400).json({
-        status: "error",
-        message: "business Id is required",
+        message: "user Id is required",
       });
     }
 
-    const existingBusiness = await Business.findById(id);
+    const existingBusiness = await Business.findById(userId);
     if (!existingBusiness) {
       return res.status(404).json({
         status: "error",
@@ -1096,7 +1087,7 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
-    console.log("existingBusiness in 1012 edit business", existingBusiness)
+    console.log("existingBusiness in 1012 edit business", existingBusiness);
 
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
@@ -1146,7 +1137,6 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
-
     let socialLinksData = [];
     try {
       socialLinksData = JSON.parse(socialLinks);
@@ -1195,8 +1185,8 @@ const BusinessEditRequestApi = async (req, res) => {
       logo: logoImg,
       images,
       status,
-      createdBy: id,
-      ownerName:Ownerdata.name,
+      createdBy: userId,
+      ownerName: user.name,
       galleryImg,
       businessTiming: businesstimings,
       reviews: reviewsdata,
@@ -1248,30 +1238,20 @@ const BusinessEditRequestApi = async (req, res) => {
 //     res.status(400).json({ status: "error", message: error.message });
 //   }
 
-
-
 const BusinessGetRequestApi = async (req, res) => {
   try {
-
-    if (req.user === undefined) {
-      return res.status(400).json({ status: "error", message: "Invalid user" });
-    }
-
-    const { id } = req.user
-
-
-
-    const businesses = await BusinesseditRequest.find({}).sort({ createdAt: -1 }).populate('createdBy');
-    console.log("businesses 1223", businesses)
+  
+    const businesses = await BusinesseditRequest.find({})
+      .sort({ createdAt: -1 })
+      .populate("createdBy");
+    console.log("businesses 1223", businesses);
 
     const businessDataList = [];
 
     await Promise.all(
       businesses.map(async (business) => {
         const businessofData = await businessData(business);
-
-        businessofData = business.createdBy.name;
-        businessDataList.push(businessData);
+        businessDataList.push(businessofData);
       })
     );
 
@@ -1287,13 +1267,12 @@ const BusinessGetRequestApi = async (req, res) => {
   }
 };
 
-
 const GetEditBusinessRequestApi = async (req, res) => {
-  console.log("id for business",req.body.id)
+  console.log("id for business", req.body.id);
   try {
-    const {id} =req.body
-    const business = await BusinesseditRequest.findById(id)
-    console.log("business 1223", business)
+    const { id } = req.body;
+    const business = await BusinesseditRequest.findById(id);
+    console.log("business 1223", business);
 
     // const businessData = [];
 
@@ -1312,8 +1291,7 @@ const GetEditBusinessRequestApi = async (req, res) => {
     console.log("Error in getting edit business", error);
     res.status(400).json({ status: "error", message: error.message });
   }
-
-}
+};
 
 const getAllBusinessApi = async (req, res, next) => {
   try {
@@ -1339,7 +1317,6 @@ const getAllBusinessApi = async (req, res, next) => {
 };
 
 const getBusinessByOwnerIdApi = async (req, res, next) => {
-
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -2119,7 +2096,7 @@ const businessData = async (businessData) => {
   return {
     id: businessData._id,
     name: businessData.name,
-    businessId : businessData.businessId,
+    businessId: businessData.businessId,
     status: businessData.status,
     email: businessData.email,
     phone: businessData.phone,
@@ -2147,7 +2124,7 @@ const businessData = async (businessData) => {
     amount: businessData.amount,
     rejectreason: businessData.rejectreason,
     TransactionDate: businessData.TransactionDate,
-    ownerName:businessData.ownerName
+    ownerName: businessData.ownerName,
   };
 };
 
@@ -2208,7 +2185,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => { };
+const showAllBusinessApi = async (req, res) => {};
 
 module.exports = {
   addSpecialistApi,
