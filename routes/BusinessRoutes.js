@@ -21,6 +21,7 @@ const {
   deleteSpecialistApi,
   getBusinessByServiceType,
   updateBusinessApi,
+  AdminEditRequestApi,
   // BusinessEditRequestApi,
   handleCustomBusinessApi,
   showAllBusinessApi
@@ -39,6 +40,15 @@ router.post(
     { name: "logo", maxCount: 1 },
     { name: "profileLogo", maxCount: 16 },
     { name: "files", maxCount: 12 }]), updateBusinessApi);
+
+
+
+    router.post(
+      "/admin-business-update", upload("business/gallery").fields([
+        { name: "logo", maxCount: 1 },
+        { name: "profileLogo", maxCount: 16 },
+        { name: "files", maxCount: 12 }]), AdminEditRequestApi);
+        
 
 router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);

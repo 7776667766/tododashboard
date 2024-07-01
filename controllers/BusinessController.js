@@ -910,133 +910,114 @@ const updateBusinessApi = async (req, res) => {
   }
 };
 
-// const updateBusinessApi = async (req, res) => {
-//   console.log("req body 853", req.body);
-//   try {
-//     const { id, businessId } = req.body;
+const AdminEditRequestApi = async (req, res) => {
+  console.log("req body 853", req.body);
+  try {
+    const { userId } = req.body;
 
-//     if (!businessId) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Owners business Id is required",
-//       });
-//     }
+    if (!userId) {
+      return res.status(400).json({
+        status: "error",
+        message: "business Id is required",
+      });
+    }
 
-//     if (!id) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "business Id is required",
-//       });
-//     }
+    const existingBusiness = await Business.findById(userId);
+    if (!existingBusiness) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+    console.log("existingBusiness 867", existingBusiness);
 
-//     const existingBusiness = await BusinesseditRequest.findById(id);
-//     if (!existingBusiness) {
-//       return res.status(404).json({
-//         status: "error",
-//         message: "Business not found",
-//       });
-//     }
-//     console.log("existingBusiness 867", existingBusiness)
+    let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
-//     // let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
+    // let ProfileImg = [];
+    // if (req?.files["profileLogo"])
+    //   req?.files["profileLogo"]?.forEach((file) => {
+    //     ProfileImg.push(file.path);
+    //   }) ?? existingBusiness?.profileLogo;
 
-//     // let ProfileImg = [];
-//     // if (req.files["profileLogo"])
-//     //   req.files["profileLogo"]?.forEach((file) => {
-//     //     ProfileImg.push(file.path);
-//     //   }) ?? existingBusiness?.profileLogo;
+    let galleryImg = [];
 
-//     // let galleryImg = [];
+    if (req?.files && req?.files["files"]) {
+      req?.files["files"].forEach((file) => {
+        galleryImg.push(file.path);
+      });
+    } else {
+      galleryImg = req.body?.files || [];
+    }
 
-//     // if (req.files && req.files["files"]) {
-//     //   req.files["files"].forEach((file) => {
-//     //     galleryImg.push(file.path);
-//     //   });
-//     // } else {
-//     //   galleryImg = req.body?.files || [];
-//     // }
+    let socialLinksData = [];
+    try {
+      socialLinksData = JSON.parse(req?.body?.socialLinks);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "socialLinksData must be a valid JSON array",
+      });
+    }
+    let businesstimings;
+    try {
+      businesstimings = JSON.parse(req?.body?.businessTiming);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "businessTiming must be a valid JSON array",
+      });
+    }
+    let reviewsdata;
+    try {
+      reviewsdata = JSON.parse(req?.body?.reviews);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "Reviews must be a valid JSON array",
+      });
+    }
 
-//     // let socialLinksData = [];
-//     // try {
-//     //   socialLinksData = JSON.parse(socialLinks);
-//     // } catch (err) {
-//     //   return res.status(400).json({
-//     //     status: "error",
-//     //     message: "socialLinksData must be a valid JSON array",
-//     //   });
-//     // }
+    reviewsdata = reviewsdata.map((review, index) => ({
+      ...review,
+      // profileLogo: imgFullPath(ProfileImg[index]) || null,
+    }));
 
-//     // let businesstimings;
-//     // try {
-//     //   businesstimings = JSON.parse(businessTiming);
-//     // } catch (err) {
-//     //   return res.status(400).json({
-//     //     status: "error",
-//     //     message: "businessTiming must be a valid JSON array",
-//     //   });
-//     // }
+    const updatedBusiness = await Business.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          ...req.body,
+          businessTiming: businesstimings,
+          reviews: reviewsdata,
+          socialLinks: socialLinksData,
+          // profilelogo: ProfileImg,
+          logo: logoImg,
+        },
+      },
+      { new: true }
+    );
 
-//     // let reviewsdata;
-//     // try {
-//     //   reviewsdata = JSON.parse(reviews);
-//     // } catch (err) {
-//     //   return res.status(400).json({
-//     //     status: "error",
-//     //     message: "Reviews must be a valid JSON array",
-//     //   });
-//     // }
+    const updatedBusinessData = await businessData(updatedBusiness);
 
-//     // reviewsdata = reviewsdata.map((review, index) => ({
-//     //   ...review,
-//     //   profileLogo: imgFullPath(ProfileImg[index]) || null,
-//     // }));
-
-//     const updatedBusiness = await Business.findByIdAndUpdate(
-//       { id: templateId },
-//       {
-
-//          $set:
-//           { ...existingBusiness} ,
-
-//       },
-//       { new: true }
-//     );
-
-//     // await Template.findOneAndUpdate(
-//     //   { _id: templateId },
-//     //   {
-//     //     $set: {
-//     //       ...req.body,
-
-//     //       bookingImage: bookingImg,
-//     //       websiteImage: websiteImg,
-//     //     },
-//     //   },
-//     //   { new: true }
-//     // );
-
-//     const updatedBusinessData = await businessData(updatedBusiness);
-
-//     console.log("updatedBusinessData", updatedBusinessData);
-//     res.status(200).json({
-//       status: "success",
-//       data: updatedBusinessData,
-//       message: "Business updated successfully",
-//     });
-//   } catch (error) {
-//     console.log("Error in updating business", error);
-//     res.status(500).json({
-//       status: "error",
-//       message: error.message,
-//     });
-//   }
-// };
+    console.log("updatedBusinessData", updatedBusinessData);
+    res.status(200).json({
+      status: "success",
+      data: updatedBusinessData,
+      message: "Business Updated Successfully",
+    });
+  } catch (error) {
+    console.log("Error in updating business", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
 
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
 
   try {
- 
     const { id } = req.user;
 
     const user = await User.findById(id);
@@ -1070,7 +1051,6 @@ const BusinessEditRequestApi = async (req, res) => {
     console.log("userId", userId);
 
     const businessId = req.body.userId;
-
 
     if (!userId) {
       return res.status(400).json({
@@ -1240,7 +1220,6 @@ const BusinessEditRequestApi = async (req, res) => {
 
 const BusinessGetRequestApi = async (req, res) => {
   try {
-  
     const businesses = await BusinesseditRequest.find({})
       .sort({ createdAt: -1 })
       .populate("createdBy");
@@ -2194,6 +2173,7 @@ module.exports = {
   handleCustomBusinessApi,
   getSpecialistByBusinessIdApi,
   addManagerApi,
+  AdminEditRequestApi,
   updateBusinessApi,
   BusinessEditRequestApi,
   deleteManagerApi,
