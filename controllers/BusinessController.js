@@ -1047,10 +1047,10 @@ const BusinessEditRequestApi = async (req, res) => {
 
     }
 
-    const { userId } = req.user;
+    const { id } = req.user;
 
-    const user = await User.findById(userId);
-    console.log("user email", user.name);
+    const user = await User.findById(id);
+    console.log("user", user.name);
 
     if (!user) {
       return res.status(400).json({
