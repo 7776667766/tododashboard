@@ -140,6 +140,11 @@ const BuisnessRequestSchema = new mongoose.Schema({
         required: [true, "Address is required"],
     },
 
+    ownerName:{
+        type: String,
+    
+      },
+
     socialLinks: {
         type: Array,
         trim: true,

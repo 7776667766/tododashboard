@@ -1004,7 +1004,7 @@ const updateBusinessApi = async (req, res) => {
 //     const updatedBusiness = await Business.findByIdAndUpdate(
 //       { id: templateId },
 //       {
-   
+
 //          $set:
 //           { ...existingBusiness} ,
 
@@ -1049,6 +1049,40 @@ const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
 
   try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+
+    }
+
+    const { userId } = req.user;
+
+    const user = await User.findById(userId);
+    console.log("user email", user.name);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "owner") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to register business",
+      });
+    }
+
+    const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
+
+    if (!Ownerdata) {
+      return res.status(400).json({
+        status: "error",
+        message: "Ownerdata not found",
+      });
+    }
+    console.log("Ownerdata", Ownerdata.name)
+
     const { id } = req.body;
     const businessId = req.body.id
 
@@ -1166,6 +1200,8 @@ const BusinessEditRequestApi = async (req, res) => {
       logo: logoImg,
       images,
       status,
+      createdBy: id,
+      ownerName:Ownerdata.name,
       galleryImg,
       businessTiming: businesstimings,
       reviews: reviewsdata,
@@ -1214,21 +1250,30 @@ const BusinessEditRequestApi = async (req, res) => {
 //     res.status(400).json({ status: "error", message: error.message });
 //   }
 
-// }
+
 
 const BusinessGetRequestApi = async (req, res) => {
   try {
-    // Fetch the businesses and sort them by creation date in descending order
-    const businesses = await BusinesseditRequest.find({}).sort({ createdAt: -1 }).populate('createdBy', 'name');
-    console.log("businesses 1223",businesses)
+
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+
+    const { id } = req.user
+
+
+
+    const businesses = await BusinesseditRequest.find({}).sort({ createdAt: -1 }).populate('createdBy');
+    console.log("businesses 1223", businesses)
 
     const businessDataList = [];
 
     await Promise.all(
       businesses.map(async (business) => {
         const businessofData = await businessData(business);
-        businessofData.ownerName = business.createdBy.name;
-        businessDataList.push(businessofData);
+
+        businessofData = business.createdBy.name;
+        businessDataList.push(businessData);
       })
     );
 
@@ -2102,6 +2147,7 @@ const businessData = async (businessData) => {
     amount: businessData.amount,
     rejectreason: businessData.rejectreason,
     TransactionDate: businessData.TransactionDate,
+    ownerName:businessData.ownerName
   };
 };
 

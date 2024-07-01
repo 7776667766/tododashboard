@@ -208,7 +208,7 @@ const businessSchema = new mongoose.Schema({
     ref: "User",
     trim: true,
   },
-
+ 
   bookingService: { type: Boolean, default: false },
   websiteService: { type: Boolean, default: false },
 
