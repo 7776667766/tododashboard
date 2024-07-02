@@ -2,8 +2,30 @@ const User = require("../models/UserModel");
 const BusinessRequest = require("../models/BusinessRequest");
 
 const requestAdminToRegister = async (req, res, next) => {
+
     try {
+        const { id } = req.user;
+
+        const user = await User.findById(id);
+        
+        console.log("user", user);
+
+        if (!user) {
+            return res.status(400).json({
+                status: "error",
+                message: "User not found",
+            });
+        }
+
+        if (user.role !== "owner") {
+            return res.status(400).json({
+                status: "error",
+                message: "You are not authorized to register business",
+            });
+        }
+
         const { description, googleBusiness, ownerId } = req.body;
+
         if (!description || !googleBusiness || !ownerId) {
             return res.status(400).json({
                 status: "error",
@@ -12,20 +34,22 @@ const requestAdminToRegister = async (req, res, next) => {
         }
         const newBusiness = await BusinessRequest.create({
             ...req.body,
+            ownerName: user.name, 
+            ownerId: user.id
         });
         console.log("newBusiness", newBusiness)
         res.status(200).json({
             status: "success",
             data: newBusiness,
             message: "Request Send Successfully",
-        });f
+        }); f
     } catch (error) {
         console.error("Error in Sending Business Details ", error);
         res.status(500).json({ status: "error", message: error });
     }
 };
 
-const getAdminRequestToRegisterBusiness = async (req, res)=> {
+const getAdminRequestToRegisterBusiness = async (req, res) => {
     try {
         const userId = req.body.ownerId
 
@@ -70,7 +94,10 @@ module.exports = {
 const getBuinessData = async (business) => {
     const myServiceData = {
         description: business.description,
-        googleBusiness: business.googleBusiness
+        googleBusiness: business.googleBusiness,
+        ownerName:business.ownerName,
+        ownerId:business.ownerId,
+
     };
     return myServiceData;
 };

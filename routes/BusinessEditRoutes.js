@@ -17,6 +17,6 @@ router.get(
     "/business-get-edit-request" , BusinessGetRequestApi);
 
 router.post(
-    "/get-edit-business-by-id-request" , GetEditBusinessRequestApi);
+    "/get-edit-business-by-id-request" ,auth, GetEditBusinessRequestApi);
 
 module.exports = router;
