@@ -536,6 +536,7 @@ const getManagersByBusinessIdApi = async (req, res, next) => {
   }
 };
 
+//register busienss in owner site
 const registerBusinessApi = async (req, res) => {
   console.log(
     "Logo File:",
@@ -844,6 +845,297 @@ const registerBusinessApi = async (req, res) => {
   }
 };
 
+// for admin panel using owner id according to owner
+
+const registerCustomBusinessApi = async (req, res) => {
+  console.log(
+    "Logo File:",
+    req?.files["logo"] ? req.files["logo"][0]?.path : "No logo file uploaded"
+  );
+  console.log("other Files:", req.files["files"]);
+  console.log("req body 384", req.body.reviews);
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+    //for logo Image
+    const logoImg = req?.files["logo"] ? req.files["logo"][0]?.path : null;
+
+    //for Profile Image
+    let ProfileImg = [];
+    if (req.files["profileLogo"]) {
+      req.files["profileLogo"].forEach((file) => {
+        ProfileImg.push(file.path);
+      });
+    }
+    console.log("ProfileImg:", ProfileImg);
+
+    //for gallery Images Array
+    let galleryImg = [];
+    if (req.files["files"]) {
+      req.files["files"].forEach((file) => {
+        galleryImg.push(file.path);
+      });
+    }
+    console.log("Gallery Images:", galleryImg);
+
+    const { id } = req.user;
+    const {
+      name,
+      email,
+      phone,
+      description,
+      images,
+      googleMap,
+      address,
+      slug,
+      reviews,
+      ownerId
+    } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !description ||
+      !address ||
+      !slug ||
+      !reviews ||
+      !ownerId 
+
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+
+    const existingSlug = await Business.findOne({ slug: slug });
+    if (existingSlug) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
+    const existingPhone = await Business.findOne({ phone: phone });
+    if (existingPhone) {
+      return res.status(400).json({
+        status: "error",
+        message: "Phone number already exists",
+      });
+    }
+    
+    const user = await User.findById(id);
+    console.log("user email", user.email);
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(400).json({
+        status: "error",
+        message: "You are not authorized to register business",
+      });
+    }
+
+    const Ownerdata = await Owner.findOne(ownerId).lean();
+
+    if (!Ownerdata) {
+      return res.status(400).json({
+        status: "error",
+        message: "Ownerdata not found",
+      });
+    }
+
+    const slugAlreadyExist = await Business.findOne({ slug: slug });
+    if (slugAlreadyExist) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
+    let businesstimings = [];
+    try {
+      businesstimings = JSON.parse(req.body.businessTiming);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "businesstimings must be a valid JSON array",
+      });
+    }
+
+    let reviewsdata = [];
+    try {
+      reviewsdata = JSON.parse(req.body.reviews);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "Reviews must be a valid JSON array",
+      });
+    }
+
+    reviewsdata = reviewsdata.map((review, index) => ({
+      ...review,
+      profileLogo: ProfileImg[index] || null,
+    }));
+
+    let socialLinksData = [];
+    try {
+      socialLinksData = JSON.parse(req.body.socialLinks);
+    } catch (err) {
+      return res.status(400).json({
+        status: "error",
+        message: "socialLinksData must be a valid JSON array",
+      });
+    }
+
+    for (const review of reviewsdata) {
+      if (!review.rating || !review.description || !review.name) {
+        return res.status(400).json({
+          status: "error",
+          message: "Each review must have a Rating, Description, and  Name",
+        });
+      }
+    }
+
+    const myBusiness = await Business.create({
+      name,
+      email,
+      phone,
+      description,
+      address,
+      socialLinks: socialLinksData,
+      slug: slug,
+      profilelogo: ProfileImg,
+      logo: logoImg,
+      images,
+      galleryImg,
+      businessTiming: businesstimings,
+      reviews: reviewsdata,
+      googleMap,
+      bookingService: Ownerdata.bookingService,
+      fontService: Ownerdata.fontFamily,
+      fontSize: Ownerdata.fontSize,
+      websiteService: Ownerdata.websiteService,
+      theme: Ownerdata.theme || "",
+      createdBy: id,
+      bannerText: Ownerdata.bannerText,
+      color: Ownerdata.color,
+      bannerImg: Ownerdata.bannerImge,
+      rejectreason: Ownerdata.rejectreason,
+    });
+
+    const userMailSend = await sendEmail({
+      email: user.email,
+      subject: "New Business Created Successfully",
+      html: `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Document</title>
+      
+          <style>
+          
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500&display=swap');
+          @media screen and (max-width: 800px) {
+            .success-business{
+              font-size: 12px !important;
+                    }
+                    .successfully-business{
+                      font-size: 16px !important;
+                    }
+            .main-card{
+             max-height:470px !important;
+              padding:5px !important;
+            }
+            .sub-card{
+              padding-right:5px !important;
+              padding-left:10px !important;
+            }
+                }
+          </style>
+        </head>
+        <body style="background-color: rgb(241, 236, 236);padding:30px">
+          <div style="display: flex; justify-content: center; align-items: center" >
+            <div class="main-card" style="background-color: black; max-width: 500px; height:550px;padding: 15px; margin:auto" >
+              <div style="text-align: center;padding-top: 20px;"> <img src="${makelyLogo}" width="160px" height="auto" alt="MakelyPro">
+              </div>
+              <div style="text-align: center; padding-top: 20px;"> <img src="${circleTickImg}" width="66px" height="auto" alt="Check Icon">
+              </div>
+              <div style="text-align: center; color:#CAFF82; font-size: 22px; margin-top: 12px; margin-bottom : 15px;">
+                  Congratulations
+              </div>
+      <div class="successfully-business" style="text-align: center; color: white; font-size: 22px; "> 
+          Your Business Has Been<br/>
+          Added Successfully
+      </div>  
+          <div style="color: white;font-size: 14px;padding-top:40px; padding-left: 35px;padding-right:35px;font-family: 'Poppins',sans-serif;font-weight: 400;">  
+              <p style="padding: 12px 0px 12px 0px;">Dear ${user.name},</p>
+              <p>
+              Thank you for using ${myBusiness.name}. 
+              We are heartfelt congratulations to you on successfully <br/>registering your business!
+              </p> 
+      </div>    
+          </div>
+      </div>
+          </body>
+           
+        </body>
+      </html>
+      `,
+    });
+
+    if (!userMailSend) {
+      console.error("Error sending confirmation emails");
+      return res.status(500).json({
+        status: "error",
+        message: "Error sending confirmation emails",
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: await businessData({
+        _id: myBusiness._id,
+        name: myBusiness.name,
+        email: myBusiness.email,
+        phone: myBusiness.phone,
+        description: myBusiness.description,
+        address: myBusiness.address,
+        socialLinks: myBusiness.socialLinks,
+        businessTiming: myBusiness.businessTiming,
+        profilelogo: myBusiness.ProfileImg,
+        images: myBusiness.images,
+        galleryImg,
+        googleMap: myBusiness.googleMap,
+        slug: myBusiness.slug,
+        fontFamily: myBusiness.fontFamily,
+        reviews: myBusiness.reviews,
+        fontSize: myBusiness.fontSize,
+        ...myBusiness,
+        logo: logoImg,
+        ...Ownerdata,
+        theme: Ownerdata.theme,
+        bannerText: Ownerdata.bannerText,
+        bannerImg: Ownerdata.bannerImge,
+        color: Ownerdata.color,
+        rejectreason: Ownerdata.rejectreason,
+      }),
+      message: "Business registered successfully",
+    });
+  } catch (error) {
+    console.log("Error in register business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+// for admin site when business edit request gets approved 
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -909,7 +1201,7 @@ const updateBusinessApi = async (req, res) => {
     });
   }
 };
-
+// in owners site to send business edit requests to admin
 const AdminEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -1013,6 +1305,8 @@ const AdminEditRequestApi = async (req, res) => {
     });
   }
 };
+
+// to edit business in admin site
 
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
@@ -1192,32 +1486,7 @@ const BusinessEditRequestApi = async (req, res) => {
   }
 };
 
-// const BusinessGetRequestApi = async (req, res) => {
-//   try {
-//     const business = await BusinesseditRequest.find({
-//     }).sort({ createdAt: -1 });
-
-// // const business = await Business.find({ createdBy: owner.ownerId });
-
-//     const businessDataList = [];
-
-//     await Promise.all(
-//       business.map(async (business) => {
-
-//         businessDataList.push(await businessData(business));
-//       })
-//     );
-
-//     console.log("businessDataList", businessDataList)
-//     res.status(200).json({
-//       status: "success",
-//       data: businessDataList,
-//     });
-//   } catch (error) {
-//     console.log("Error in getting all business", error);
-//     res.status(400).json({ status: "error", message: error.message });
-//   }
-
+//to get all edit business requests in admin site
 const BusinessGetRequestApi = async (req, res) => {
   try {
     const businesses = await BusinesseditRequest.find({})
@@ -1246,6 +1515,7 @@ const BusinessGetRequestApi = async (req, res) => {
   }
 };
 
+// get single business by owner id in admin site
 const GetEditBusinessRequestApi = async (req, res) => {
   console.log("id for business", req.body.id);
   try {
@@ -2184,6 +2454,7 @@ module.exports = {
   getAllBusinessApi,
   registerBusinessApi,
   getBusinessByUserIdApi,
+  registerCustomBusinessApi,
   getBusinessDetailBySlugApi,
   selectedTheme,
   addDummyBusinessApi,
