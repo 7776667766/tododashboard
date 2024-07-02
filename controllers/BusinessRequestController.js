@@ -1,31 +1,23 @@
 const User = require("../models/UserModel");
 const BusinessRequest = require("../models/BusinessRequest");
-
 const requestAdminToRegister = async (req, res, next) => {
-
     try {
         const { id } = req.user;
-
         const user = await User.findById(id);
-        
         console.log("user", user);
-
         if (!user) {
             return res.status(400).json({
                 status: "error",
                 message: "User not found",
             });
         }
-
         if (user.role !== "owner") {
             return res.status(400).json({
                 status: "error",
-                message: "You are not authorized to register business",
+            message: "You are not authorized to Request Business",
             });
         }
-
         const { description, googleBusiness, ownerId } = req.body;
-
         if (!description || !googleBusiness || !ownerId) {
             return res.status(400).json({
                 status: "error",
@@ -34,7 +26,7 @@ const requestAdminToRegister = async (req, res, next) => {
         }
         const newBusiness = await BusinessRequest.create({
             ...req.body,
-            ownerName: user.name, 
+            ownerName: user.name,
             ownerId: user.id
         });
         console.log("newBusiness", newBusiness)
@@ -48,21 +40,13 @@ const requestAdminToRegister = async (req, res, next) => {
         res.status(500).json({ status: "error", message: error });
     }
 };
-
 const getAdminRequestToRegisterBusiness = async (req, res) => {
     try {
-        const userId = req.body.ownerId
-
         const newBusinessData = []
-
         const BusienssData = await BusinessRequest.find({
             deletedAt: null || undefined,
             active: true
-        })
-
-        const userData = await User.findById({ _id: userId })
-
-
+        }).sort({ createdAt: -1 })
         if (!BusienssData) {
             return res.status(400).json({
                 status: "error",
@@ -75,11 +59,9 @@ const getAdminRequestToRegisterBusiness = async (req, res) => {
                 newBusinessData.push(myBusinessData);
             })
         );
-
         res.status(200).json({
             status: "success",
             data: {
-                name: userData.name,
                 ...newBusinessData
             }
         });
@@ -97,7 +79,22 @@ const getBuinessData = async (business) => {
         googleBusiness: business.googleBusiness,
         ownerName:business.ownerName,
         ownerId:business.ownerId,
-
     };
     return myServiceData;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

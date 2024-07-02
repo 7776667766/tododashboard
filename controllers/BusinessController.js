@@ -943,7 +943,7 @@ const registerCustomBusinessApi = async (req, res) => {
       });
     }
 
-    const Ownerdata = await Owner.findOne(ownerId).lean();
+    const Ownerdata = await User.findOne(ownerId)
 
     if (!Ownerdata) {
       return res.status(400).json({
