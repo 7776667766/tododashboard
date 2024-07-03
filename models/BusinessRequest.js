@@ -14,12 +14,10 @@ const businessSchema = new mongoose.Schema({
   },
   ownerName: {
     type: String,
-    // required: [true, "Google Business is required"],
     trim: true,
   },
   ownerId: {
     type: String,
-    // required: [true, "Google Business is required"],
     trim: true,
   },
 });
