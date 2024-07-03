@@ -40,19 +40,22 @@ const requestAdminToRegister = async (req, res, next) => {
     res.status(500).json({ status: "error", message: error });
   }
 };
+
 const getAdminRequestToRegisterBusiness = async (req, res) => {
   try {
     const newBusinessData = [];
     const busienssData = await BusinessRequest.find({
-      deletedAt: null || undefined,
-      active: true,
+      deletedAt: null,
+      active: true, 
     }).sort({ createdAt: -1 });
+
     if (!busienssData) {
       return res.status(400).json({
         status: "error",
         message: "Busienss Data not found",
       });
     }
+
     await Promise.all(
       busienssData.map(async (business) => {
         const ownerData = await User.findById(business.ownerId).select("name");
@@ -68,6 +71,7 @@ const getAdminRequestToRegisterBusiness = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
 module.exports = {
   requestAdminToRegister,
   getAdminRequestToRegisterBusiness,
@@ -78,6 +82,7 @@ const getBuinessData = async (business) => {
     googleBusiness: business.googleBusiness,
     ownerName: business.ownerName,
     ownerId: business.ownerId,
+    active:business.active
   };
   return myServiceData;
 };

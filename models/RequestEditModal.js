@@ -32,6 +32,11 @@ const BuisnessRequestSchema = new mongoose.Schema({
         default: "pending",
     },
 
+    active: {
+        type: Boolean,
+        default: true,
+      },
+      
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

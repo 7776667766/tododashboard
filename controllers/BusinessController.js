@@ -901,7 +901,7 @@ const registerCustomBusinessApi = async (req, res) => {
       !address ||
       !slug ||
       !reviews ||
-      !ownerId 
+      !ownerId
 
     ) {
       return res.status(400).json({
@@ -925,7 +925,7 @@ const registerCustomBusinessApi = async (req, res) => {
         message: "Phone number already exists",
       });
     }
-    
+
     const user = await User.findById(id);
     console.log("user email", user.email);
 
@@ -1135,6 +1135,7 @@ const registerCustomBusinessApi = async (req, res) => {
     res.status(400).json({ status: "error", message: error.message });
   }
 };
+
 // for admin site when business edit request gets approved 
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
@@ -1160,7 +1161,6 @@ const updateBusinessApi = async (req, res) => {
       });
     }
     console.log("existingBusiness 867", existingBusiness);
-    // Merge existingBusiness data into Business model
     const updatedBusinessFields = {
       name: existingBusiness.name,
       email: existingBusiness.email,
@@ -1180,17 +1180,31 @@ const updateBusinessApi = async (req, res) => {
       logo: existingBusiness.logo,
       bannerImg: existingBusiness.bannerImg,
       rejectreason: existingBusiness.rejectreason,
+      active: false,
     };
+
+    const activefalse = {
+      active: false,
+    };
+
+
     const updatedBusiness = await Business.findByIdAndUpdate(
       businessId,
       { $set: updatedBusinessFields },
       { new: true }
     );
+
+    const updatedBusinessStatus = await BusinesseditRequest.findByIdAndUpdate(
+      id,
+      { $set: activefalse },
+      { new: true }
+    );
+
     const updatedBusinessData = await businessData(updatedBusiness);
-    console.log("updatedBusinessData", updatedBusinessData);
+
     res.status(200).json({
       status: "success",
-      data: updatedBusinessData,
+      data: updatedBusinessData, updatedBusinessStatus,
       message: "Business updated successfully",
     });
   } catch (error) {
@@ -1201,6 +1215,54 @@ const updateBusinessApi = async (req, res) => {
     });
   }
 };
+
+const rejecteditBusinessApi = async (req, res) => {
+  try {
+    const { id } = req.body;
+  
+    if (!id) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business Id is required",
+      });
+    }
+    
+    const existingBusiness = await BusinesseditRequest.findById(id);
+    if (!existingBusiness) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+
+    const activefalse = {
+      active: false,
+    };
+
+    const updatedBusiness = await Business.findByIdAndUpdate(
+      id,
+      { $set: activefalse },
+      { new: true }
+    );
+
+    const updatedBusinessData = await businessData(updatedBusiness);
+
+    res.status(200).json({
+      status: "success",
+      data: updatedBusinessData, 
+      message: "Business Edit Request Rejected",
+    });
+  } catch (error) {
+    console.log("Error in updating business", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
+
 // in owners site to send business edit requests to admin
 const AdminEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
@@ -1489,10 +1551,12 @@ const BusinessEditRequestApi = async (req, res) => {
 //to get all edit business requests in admin site
 const BusinessGetRequestApi = async (req, res) => {
   try {
-    const businesses = await BusinesseditRequest.find({})
-      .sort({ createdAt: -1 })
+    const businesses = await BusinesseditRequest.find({
+      active: true,
+    }).sort({ createdAt: -1 })
       .populate("createdBy");
     console.log("businesses 1223", businesses);
+
 
     const businessDataList = [];
 
@@ -1644,7 +1708,6 @@ const MultiplebusinessData = async (businessData) => {
 };
 
 const getBusinessByUserIdApi = async (req, res) => {
-  console.log("details of business 1090", req.body);
   try {
     if (req.user === undefined) {
       return res.status(400).json({ status: "error", message: "Invalid user" });
@@ -1661,9 +1724,9 @@ const getBusinessByUserIdApi = async (req, res) => {
     }
 
     let business;
+
     if (user.role === "manager") {
       const manager = await Manager.findOne({ managerId: id });
-      console.log("manger873", manager);
       if (!manager) {
         return res.status(400).json({
           status: "error",
@@ -1694,17 +1757,19 @@ const getBusinessByUserIdApi = async (req, res) => {
           message: "Business not found",
         });
       }
-      business.TransactionDate = transactionDates;
     } else if (user.role === "admin") {
-      const businessId = req.body.businessId;
-      console.log("business ID FOR ADMIN EDIT", businessId);
 
-      let businessById = await Business.findById(businessId);
-      let businessBySlug = await Business.findOne({ slug: "dummy-business" });
+      if (req.body.businessId) {
+        let businessById = await Business.findById(req.body.businessId.trim().replace(/^"+|"+$/g, ''));
+        business = businessById;
 
-      business = businessById || businessBySlug;
+      }
 
-      console.log("final business", business);
+      if (!req.body.businessId) {
+        let businessBySlug = await Business.findOne({ slug: "dummy-business" });
+        business = businessBySlug;
+      }
+
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
 
@@ -1740,7 +1805,6 @@ const getBusinessByUserIdApi = async (req, res) => {
         );
         transactionDates.push(sevenDaysBefore);
       }
-      business.TransactionDate = transactionDates;
       if (!business) {
         return res.status(400).json({
           status: "error",
@@ -2351,6 +2415,7 @@ const businessData = async (businessData) => {
     phone: businessData.phone,
     description: businessData.description,
     address: businessData.address,
+    active: businessData.active,
     businessTiming: businessData.businessTiming,
     socialLinks: businessData.socialLinks,
     bookingService: businessData.bookingService,
@@ -2434,7 +2499,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => {};
+const showAllBusinessApi = async (req, res) => { };
 
 module.exports = {
   addSpecialistApi,
@@ -2457,6 +2522,7 @@ module.exports = {
   registerCustomBusinessApi,
   getBusinessDetailBySlugApi,
   selectedTheme,
+  rejecteditBusinessApi,
   addDummyBusinessApi,
   handleCancelBusinessApi,
   getBusinessByServiceType,

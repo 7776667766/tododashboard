@@ -24,6 +24,7 @@ const {
   AdminEditRequestApi,
   // BusinessEditRequestApi,
   registerCustomBusinessApi,
+  rejecteditBusinessApi,
   handleCustomBusinessApi,
   showAllBusinessApi
 } = require("../controllers/BusinessController");
@@ -44,12 +45,16 @@ router.post(
 
 
 
-    router.post(
-      "/admin-business-update", upload("business/gallery").fields([
-        { name: "logo", maxCount: 1 },
-        { name: "profileLogo", maxCount: 16 },
-        { name: "files", maxCount: 12 }]), AdminEditRequestApi);
-        
+router.post("/edit-business-rejected", rejecteditBusinessApi);
+
+
+
+router.post(
+  "/admin-business-update", upload("business/gallery").fields([
+    { name: "logo", maxCount: 1 },
+    { name: "profileLogo", maxCount: 16 },
+    { name: "files", maxCount: 12 }]), AdminEditRequestApi);
+
 
 router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);
