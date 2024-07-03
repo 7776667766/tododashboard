@@ -1216,6 +1216,53 @@ const updateBusinessApi = async (req, res) => {
   }
 };
 
+const rejecteditBusinessApi = async (req, res) => {
+  try {
+    const { id } = req.body;
+  
+    if (!id) {
+      return res.status(400).json({
+        status: "error",
+        message: "Business Id is required",
+      });
+    }
+    
+    const existingBusiness = await BusinesseditRequest.findById(id);
+    if (!existingBusiness) {
+      return res.status(404).json({
+        status: "error",
+        message: "Business not found",
+      });
+    }
+
+    const activefalse = {
+      active: false,
+    };
+
+    const updatedBusiness = await Business.findByIdAndUpdate(
+      id,
+      { $set: activefalse },
+      { new: true }
+    );
+
+    const updatedBusinessData = await businessData(updatedBusiness);
+
+    res.status(200).json({
+      status: "success",
+      data: updatedBusinessData, 
+      message: "Business Edit Request Rejected",
+    });
+  } catch (error) {
+    console.log("Error in updating business", error);
+    res.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+};
+
+
+
 // in owners site to send business edit requests to admin
 const AdminEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
@@ -2475,6 +2522,7 @@ module.exports = {
   registerCustomBusinessApi,
   getBusinessDetailBySlugApi,
   selectedTheme,
+  rejecteditBusinessApi,
   addDummyBusinessApi,
   handleCancelBusinessApi,
   getBusinessByServiceType,
