@@ -35,7 +35,6 @@ const requestAdminToRegister = async (req, res, next) => {
       data: newBusiness,
       message: "Request Send Successfully",
     });
-    f;
   } catch (error) {
     console.error("Error in Sending Business Details ", error);
     res.status(500).json({ status: "error", message: error });
