@@ -827,10 +827,47 @@ const getAllUsersApi = async (req, res, next) => {
   }
 };
 
+const addCreditApi = async (req, res, next) => {
+  try {
+      const { amount, userId } = req.body;
+
+      if (!amount || !userId) {
+          return res.status(400).json({
+              status: "error",
+              message: "All fields are required",
+          });
+      }
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+          return res.status(404).json({
+              status: "error",
+              message: "User not found",
+          });
+      }
+
+      user.credit = (user.credit || 0) + amount;
+
+      const updatedUser = await user.save();
+
+      res.status(200).json({
+          status: "success",
+          data: updatedUser,
+          message: "Credit added successfully",
+      });
+  } catch (error) {
+      console.error("Error in adding credit", error);
+      res.status(500).json({ status: "error", message: error.message });
+  }
+
+
+};
 module.exports = {
   registerApi,
   loginApi,
   checkTokenIsValidApi,
+  addCreditApi,
   verifyOtpApi,
   forgetPasswordApi,
   resetPasswordApi,

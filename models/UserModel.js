@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema({
     },
     number: {
       type: String,
-       trim: true,
-       unique: true,
+      trim: true,
+      unique: true,
     },
   },
 
@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema({
     length: [8, "Password must be atleast 8 characters long"],
     trim: true,
   },
+  credit: {
+    type: Number,
+    default: 0,
+  },
+
   createdAt: {
     type: Date,
     default: new Date(),
