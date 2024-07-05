@@ -9,6 +9,7 @@ const createOTPFun = require("../util/otp");
 const imgFullPath = require("../util/imgFullPath");
 const { sendSMS } = require("../util/twilo");
 const { makelyLogo } = require("../util/assets");
+const creditModal = require("../models/creditModal");
 require("dotenv").config();
 
 const registerApi = async (req, res) => {
@@ -829,46 +830,90 @@ const getAllUsersApi = async (req, res, next) => {
 
 const addCreditApi = async (req, res, next) => {
   try {
-      const { amount, userId } = req.body;
+    const { amount, userId } = req.body;
 
-      if (!amount || !userId) {
-          return res.status(400).json({
-              status: "error",
-              message: "All fields are required",
-          });
-      }
-
-      const user = await User.findById(userId);
-
-      if (!user) {
-          return res.status(404).json({
-              status: "error",
-              message: "User not found",
-          });
-      }
-
-      user.credit = (user.credit || 0) + amount;
-
-      const updatedUser = await user.save();
-
-      res.status(200).json({
-          status: "success",
-          data: updatedUser,
-          message: "Credit added successfully",
+    if (!amount || !userId) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
       });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    user.credit = (user.credit || 0) + amount;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      status: "success",
+      data: updatedUser,
+      message: "Credit Assign Successfully",
+    });
   } catch (error) {
-      console.error("Error in adding credit", error);
-      res.status(500).json({ status: "error", message: error.message });
+    console.error("Error in adding credit", error);
+    res.status(500).json({ status: "error", message: error.message });
   }
-
-
 };
+
+const addCreditApiofUser = async (req, res, next) => {
+  try {
+    const { amount, email } = req.body;
+
+    if (!amount || !email) {
+      return res.status(400).json({
+        status: "error",
+        message: "All fields are required",
+      });
+    }
+
+    const existingUserEmail = await User.findOne({ email });
+    console.log("existingUserEmail", existingUserEmail)
+
+
+    if (existingUserEmail) {
+
+      existingUserEmail.credit = (existingUserEmail.credit || 0) + amount;
+
+      updatedUser = await existingUserEmail.save();
+
+      console.log("updatedUser", updatedUser)
+    } else {
+      updatedUser = await creditModal.create({
+        email,
+        amount,
+      });
+    }
+
+    console.log("updatedUser", updatedUser)
+
+
+    res.status(200).json({
+      status: "success",
+      data: updatedUser,
+      message: "Credit  to User Successfully",
+    });
+  } catch (error) {
+    console.error("Error in adding credit", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+
 module.exports = {
   registerApi,
   loginApi,
   checkTokenIsValidApi,
   addCreditApi,
   verifyOtpApi,
+  addCreditApiofUser,
   forgetPasswordApi,
   resetPasswordApi,
   changePasswordApi,

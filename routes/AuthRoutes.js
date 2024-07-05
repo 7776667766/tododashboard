@@ -9,6 +9,7 @@ const {
   updataUserProfileApi,
   logoutApi,
   getAllUsersApi,
+  addCreditApiofUser,
   addCreditApi,
   checkTokenIsValidApi,
 } = require("../controllers/AuthController");
@@ -32,6 +33,9 @@ router.post(
   upload("profile").single("image"),
   updataUserProfileApi
 );
+router.post("/assign-credit-api-by-user", auth, addCreditApiofUser);
+
+
 router.get("/all-users", auth, getAllUsersApi);
 
 module.exports = router;
