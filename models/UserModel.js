@@ -43,7 +43,6 @@ const userSchema = new mongoose.Schema({
   },
   credit: {
     type: Number,
-    default: 0,
   },
 
   createdAt: {
