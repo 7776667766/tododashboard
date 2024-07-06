@@ -722,12 +722,14 @@ const getUserProfileApi = async (req, res, next) => {
     }
 
     const user = await User.findById(id);
+
     if (!user) {
       return res
         .status(400)
         .json({ status: "error", message: "User not found" });
     }
     const userData = await getUserData(user);
+    console.log("userData 732", userData)
     res.status(200).json({
       status: "success",
       data: {
@@ -809,6 +811,7 @@ const getAllUsersApi = async (req, res, next) => {
       email: 1,
       phone: 1,
       image: 1,
+      credit: 1,
       role: 1,
       createdAt: 1,
       verified: 1,
@@ -848,6 +851,14 @@ const addCreditApi = async (req, res, next) => {
       });
     }
 
+    const existingUserAmount = await User.find({ amount });
+    if (existingUserAmount) {
+      return res.status(400).json({
+        status: "error",
+        message: "user already assign",
+      });
+    }
+
     user.credit = (user.credit || 0) + amount;
 
     const updatedUser = await user.save();
@@ -874,9 +885,9 @@ const addCreditApiofUser = async (req, res, next) => {
       });
     }
 
-    const existingUserEmail = await User.findOne({ email });
-    console.log("existingUserEmail", existingUserEmail)
 
+
+    const existingUserEmail = await User.findOne({ email });
 
     if (existingUserEmail) {
 
@@ -944,7 +955,7 @@ const getUserData = async (user) => {
     email: user.email,
     phone: user.phone,
     image: imgFullPath(user.image),
-    credit:user.credit,
+    credit: user.credit,
     role: user.role,
     createdAt: user.createdAt,
     verified: user.verified,
