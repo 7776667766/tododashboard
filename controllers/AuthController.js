@@ -944,6 +944,7 @@ const getUserData = async (user) => {
     email: user.email,
     phone: user.phone,
     image: imgFullPath(user.image),
+    credit:user.credit,
     role: user.role,
     createdAt: user.createdAt,
     verified: user.verified,

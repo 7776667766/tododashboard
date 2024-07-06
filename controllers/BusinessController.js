@@ -845,8 +845,7 @@ const registerBusinessApi = async (req, res) => {
   }
 };
 
-// for admin panel using owner id according to owner
-
+// for admin panel using owner id according to owner3
 const registerCustomBusinessApi = async (req, res) => {
   console.log(
     "Logo File:",
@@ -1261,8 +1260,6 @@ const rejecteditBusinessApi = async (req, res) => {
   }
 };
 
-
-
 // in owners site to send business edit requests to admin
 const AdminEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
@@ -1369,7 +1366,6 @@ const AdminEditRequestApi = async (req, res) => {
 };
 
 // to edit business in admin site
-
 const BusinessEditRequestApi = async (req, res) => {
   console.log("req body 853", req.body);
 
