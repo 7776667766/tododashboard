@@ -859,7 +859,7 @@ const addCreditApi = async (req, res, next) => {
       });
     }
 
-    user.credit = (user.credit || 0) + amount;
+    user.credit = (user.credit) + amount;
 
     const updatedUser = await user.save();
 
