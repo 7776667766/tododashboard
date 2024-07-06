@@ -84,8 +84,8 @@ const BuisnessRequestSchema = new mongoose.Schema({
     slug: {
         type: String,
         required: [true, "Slug is required"],
-        unique: true,
     },
+
     galleryImg: [
         {
             type: String,
@@ -111,7 +111,7 @@ const BuisnessRequestSchema = new mongoose.Schema({
     },
 
     fontFamily: {
-        type: String,
+        type: String,   
     },
 
     fontSize: {

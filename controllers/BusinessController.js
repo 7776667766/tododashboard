@@ -1284,11 +1284,11 @@ const AdminEditRequestApi = async (req, res) => {
 
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
-    // let ProfileImg = [];
-    // if (req?.files["profileLogo"])
-    //   req?.files["profileLogo"]?.forEach((file) => {
-    //     ProfileImg.push(file.path);
-    //   }) ?? existingBusiness?.profileLogo;
+    let ProfileImg = [];
+    if (req?.files["profileLogo"])
+      req?.files["profileLogo"]?.forEach((file) => {
+        ProfileImg.push(file.path);
+      }) ?? existingBusiness?.profileLogo;
 
     let galleryImg = [];
 
@@ -1330,7 +1330,7 @@ const AdminEditRequestApi = async (req, res) => {
 
     reviewsdata = reviewsdata.map((review, index) => ({
       ...review,
-      // profileLogo: imgFullPath(ProfileImg[index]) || null,
+      profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
     const updatedBusiness = await Business.findByIdAndUpdate(
@@ -1341,7 +1341,7 @@ const AdminEditRequestApi = async (req, res) => {
           businessTiming: businesstimings,
           reviews: reviewsdata,
           socialLinks: socialLinksData,
-          // profilelogo: ProfileImg,
+          profilelogo: ProfileImg,
           logo: logoImg,
         },
       },

@@ -210,7 +210,44 @@ const getTransactionbyUserId = async (req, res, next) => {
   }
 };
 
+const addTranstactionWithCreditAmount = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        status: "error",
+        message: "UserId is Required",
+      });
+    }
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+    if (user.credit ){
+      return res.status(200).json({
+        status: "error",
+        message: "Transaction Completed by Credit Amount",
+      });
+    }else{
+      return res.status(200).json({
+        status: "error",
+        message: "This user is not credited yet.Please choose another payment method",
+      }); 
+    }
+  } catch (error) {
+    console.error("Error in adding credit", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+
 module.exports = {
+  addTranstactionWithCreditAmount,
   addTransactionApi,
   getTransactionbyUserId,
 };
