@@ -6,6 +6,9 @@ const creditSchema = new mongoose.Schema({
         required: [true, "Credit Amount is required"],
         trim: true,
     },
+    credit:{
+        type:String,
+    },
     email: {
         type: String,
         trim: true,

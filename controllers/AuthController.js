@@ -59,6 +59,9 @@ const registerApi = async (req, res) => {
       });
     }
 
+    const creditUser = await creditModal.findOne({ email: email })
+    console.log("creditUser", creditUser)
+
     const isEmailExist = await User.findOne({ email });
     if (isEmailExist) {
       return res
@@ -90,6 +93,7 @@ const registerApi = async (req, res) => {
       image: req?.file?.path,
       role,
       password,
+      credit:creditUser.amount
     });
     console.log("user102", user);
 
@@ -883,8 +887,6 @@ const addCreditApiofUser = async (req, res, next) => {
         message: "All fields are required",
       });
     }
-
-
 
     const existingUserEmail = await User.findOne({ email });
 

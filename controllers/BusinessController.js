@@ -639,10 +639,6 @@ const registerBusinessApi = async (req, res) => {
     const user = await User.findById(id);
     console.log("user email", user.email);
 
-
-    const creditUser = await Credit.findOne({ email: user.email })
-    console.log("creditUser", creditUser)
-
     if (!user) {
       return res.status(400).json({
         status: "error",
