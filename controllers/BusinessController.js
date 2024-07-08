@@ -635,8 +635,13 @@ const registerBusinessApi = async (req, res) => {
       }
     });
 
+
     const user = await User.findById(id);
     console.log("user email", user.email);
+
+
+    const creditUser = await Credit.findOne({ email: user.email })
+    console.log("creditUser", creditUser)
 
     if (!user) {
       return res.status(400).json({
@@ -1424,7 +1429,7 @@ const BusinessEditRequestApi = async (req, res) => {
     }
 
     const slugee = req.body.slug ?? existingBusiness?.slug
- 
+
     console.log("slugee", slugee)
     const {
       name,
@@ -1491,6 +1496,7 @@ const BusinessEditRequestApi = async (req, res) => {
       profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
+
     const existingSlug = await Business.findOne({ slug: slug });
     if (existingSlug) {
       return res.status(400).json({
@@ -1499,7 +1505,7 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
-    
+
     const myBusiness = await BusinesseditRequest.create({
       businessId,
       name,
