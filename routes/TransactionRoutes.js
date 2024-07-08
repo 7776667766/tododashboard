@@ -10,6 +10,4 @@ router.post("/transaction/add", auth, addTransactionApi);
 router.get("/transaction/get", auth, getTransactionbyUserId);
 router.post("/add-transaction-by-credit-amount", auth, addTranstactionWithCreditAmount);
 
-
-
 module.exports = router;
