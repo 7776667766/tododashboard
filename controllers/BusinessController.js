@@ -1182,6 +1182,17 @@ const updateBusinessApi = async (req, res) => {
       rejectreason: existingBusiness.rejectreason,
       active: false,
     };
+    let ProfileImg = [];
+    if (req.files["profileLogo"]) {
+      req.files["profileLogo"].forEach((file) => {
+        ProfileImg.push(file.path);
+      });
+    }
+    console.log("ProfileImg:", ProfileImg);
+
+    updatedBusinessFields.profileLogo = ProfileImg;
+
+
 
     const activefalse = {
       active: false,
