@@ -29,6 +29,9 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  duration:{
+    type: String,
+  },
 
   stripeCustomerId: {
     type: String,

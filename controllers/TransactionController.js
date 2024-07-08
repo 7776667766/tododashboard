@@ -3,6 +3,8 @@ const stripe = require("stripe")(
   "sk_test_51NX2rxKZnNaiPBqB5BbVKBBCRFKZ60D6gHoEaJa0etfZIR2B5rArHDA154NYvHtXo39dwXYuFd51sdNHF2N0jyu200Cl2Su7WS"
 );
 const User = require("../models/UserModel");
+const Plan = require("../models/PlanModel");
+
 
 const createSubscription = async (customerId, priceId) => {
   const subscription = await stripe.subscriptions.create({
@@ -212,14 +214,32 @@ const getTransactionbyUserId = async (req, res, next) => {
 
 const addTranstactionWithCreditAmount = async (req, res, next) => {
   try {
-    const { userId } = req.body;
+    const { userId, planId } = req.body;
 
     if (!userId) {
       return res.status(400).json({
         status: "error",
-        message: "UserId is Required",
+        message: "User is Required",
       });
     }
+
+    if (!planId) {
+      return res.status(400).json({
+        status: "error",
+        message: "Plan is required",
+      });
+    }
+
+    const plan = await Plan.findById(planId);
+    console.log("plan 234", plan)
+
+    if (!plan) {
+      return res.status(400).json({
+        status: "error",
+        message: "Plan not found",
+      });
+    }
+
     const user = await User.findById(userId);
 
     if (!user) {
@@ -228,23 +248,31 @@ const addTranstactionWithCreditAmount = async (req, res, next) => {
         message: "User not found",
       });
     }
-    if (user.credit ){
+
+    const newTransactionbyCredit = await Transaction.create({
+      userId: user.id,
+      amount: plan.price,
+      duration:plan.duration,
+    });
+
+    if (user.credit) {
       return res.status(200).json({
         status: "error",
+        newTransactionbyCredit,
         message: "Transaction Completed by Credit Amount",
       });
-    }else{
+    }
+    else {
       return res.status(200).json({
         status: "error",
         message: "This user is not credited yet.Please choose another payment method",
-      }); 
+      });
     }
   } catch (error) {
     console.error("Error in adding credit", error);
     res.status(500).json({ status: "error", message: error.message });
   }
 };
-
 
 module.exports = {
   addTranstactionWithCreditAmount,
