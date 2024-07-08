@@ -257,13 +257,13 @@ const addTranstactionWithCreditAmount = async (req, res, next) => {
 
     if (user.credit) {
       return res.status(200).json({
-        status: "error",
+        status: "success",
         newTransactionbyCredit,
         message: "Transaction Completed by Credit Amount",
       });
     }
     else {
-      return res.status(200).json({
+      return res.status(404).json({
         status: "error",
         message: "This user is not credited yet.Please choose another payment method",
       });
