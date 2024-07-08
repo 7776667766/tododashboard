@@ -4,7 +4,6 @@ const transactionSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "Service is required"],
   },
   price: {
     type: String,
@@ -17,17 +16,14 @@ const transactionSchema = new mongoose.Schema({
   }, 
   stripeSubscriptionEndDate: {
     type: Number,
-    required: true
 },
   name: {
     type: String,
-    required: [true, "Cardholder Name is required"],
     trim: true,
   },
 
   stripePaymentMethodId: {
     type: String,
-    required: true,
   },
   duration:{
     type: String,

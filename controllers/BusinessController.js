@@ -639,10 +639,6 @@ const registerBusinessApi = async (req, res) => {
     const user = await User.findById(id);
     console.log("user email", user.email);
 
-
-    const creditUser = await Credit.findOne({ email: user.email })
-    console.log("creditUser", creditUser)
-
     if (!user) {
       return res.status(400).json({
         status: "error",
@@ -1301,9 +1297,9 @@ const AdminEditRequestApi = async (req, res) => {
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
     let ProfileImg = [];
-    if (req?.files["profileLogo"])
+    if (req?.files && req?.files["profileLogo"])
       req?.files["profileLogo"]?.forEach((file) => {
-        ProfileImg.push(file.path);
+    console.log(file,"file 1302")
       }) ?? existingBusiness?.profileLogo;
 
     let galleryImg = [];
