@@ -121,8 +121,8 @@ const businessSchema = new mongoose.Schema({
 
   slug: {
     type: String,
-    required: [true, "Slug is required"],
-    unique: true,
+    // required: [true, "Slug is required"],
+    // unique: true,
   },
   galleryImg: [
     {

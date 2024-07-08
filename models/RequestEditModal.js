@@ -83,7 +83,6 @@ const BuisnessRequestSchema = new mongoose.Schema({
 
     slug: {
         type: String,
-        required: [true, "Slug is required"],
     },
 
     galleryImg: [

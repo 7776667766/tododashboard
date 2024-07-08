@@ -1218,14 +1218,14 @@ const updateBusinessApi = async (req, res) => {
 const rejecteditBusinessApi = async (req, res) => {
   try {
     const { id } = req.body;
-  
+
     if (!id) {
       return res.status(400).json({
         status: "error",
         message: "Business Id is required",
       });
     }
-    
+
     const existingBusiness = await BusinesseditRequest.findById(id);
     if (!existingBusiness) {
       return res.status(404).json({
@@ -1248,7 +1248,7 @@ const rejecteditBusinessApi = async (req, res) => {
 
     res.status(200).json({
       status: "success",
-      data: updatedBusinessData, 
+      data: updatedBusinessData,
       message: "Business Edit Request Rejected",
     });
   } catch (error) {
@@ -1367,13 +1367,10 @@ const AdminEditRequestApi = async (req, res) => {
 
 // to edit business in admin site
 const BusinessEditRequestApi = async (req, res) => {
-  console.log("req body 853", req.body);
-
   try {
     const { id } = req.user;
 
     const user = await User.findById(id);
-    console.log("user", user.name);
 
     if (!user) {
       return res.status(400).json({
@@ -1389,18 +1386,7 @@ const BusinessEditRequestApi = async (req, res) => {
       });
     }
 
-    // const Ownerdata = await Owner.findOne({ ownerId: id }).lean();
-
-    // if (!Ownerdata) {
-    //   return res.status(400).json({
-    //     status: "error",
-    //     message: "Ownerdata not found",
-    //   });
-    // }
-    // console.log("Ownerdata", Ownerdata);
-
     const { userId } = req.body;
-    console.log("userId", userId);
 
     const businessId = req.body.userId;
 
@@ -1418,8 +1404,6 @@ const BusinessEditRequestApi = async (req, res) => {
         message: "Business not found",
       });
     }
-
-    console.log("existingBusiness in 1012 edit business", existingBusiness);
 
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
@@ -1439,6 +1423,9 @@ const BusinessEditRequestApi = async (req, res) => {
       galleryImg = req.body?.files || [];
     }
 
+    const slugee = req.body.slug ?? existingBusiness?.slug
+ 
+    console.log("slugee", slugee)
     const {
       name,
       email,
@@ -1504,6 +1491,15 @@ const BusinessEditRequestApi = async (req, res) => {
       profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
+    const existingSlug = await Business.findOne({ slug: slug });
+    if (existingSlug) {
+      return res.status(400).json({
+        status: "error",
+        message: "Slug already exists",
+      });
+    }
+
+    
     const myBusiness = await BusinesseditRequest.create({
       businessId,
       name,
@@ -1512,7 +1508,7 @@ const BusinessEditRequestApi = async (req, res) => {
       description,
       address,
       socialLinks: socialLinksData,
-      slug: slug,
+      slug: slugee,
       profilelogo: ProfileImg,
       logo: logoImg,
       images,
@@ -1524,8 +1520,6 @@ const BusinessEditRequestApi = async (req, res) => {
       reviews: reviewsdata,
       googleMap,
     });
-
-    console.log("myBusiness 1117", myBusiness);
 
     const updatedBusinessData = await businessData(myBusiness);
 
