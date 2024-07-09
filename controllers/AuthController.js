@@ -93,7 +93,7 @@ const registerApi = async (req, res) => {
       image: req?.file?.path,
       role,
       password,
-      credit:creditUser.amount
+      credit:creditUser?.amount
     });
     console.log("user102", user);
 
