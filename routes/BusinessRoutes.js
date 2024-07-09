@@ -47,8 +47,6 @@ router.post(
 
 router.post("/edit-business-rejected", rejecteditBusinessApi);
 
-
-
 router.post(
   "/admin-business-update", upload("business/gallery").fields([
     { name: "logo", maxCount: 1 },

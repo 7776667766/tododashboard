@@ -1182,23 +1182,10 @@ const updateBusinessApi = async (req, res) => {
       rejectreason: existingBusiness.rejectreason,
       active: false,
     };
-    let ProfileImg = [];
-    if (req.files["profileLogo"]) {
-      req.files["profileLogo"].forEach((file) => {
-        ProfileImg.push(file.path);
-      });
-    }
-    console.log("ProfileImg:", ProfileImg);
-
-    updatedBusinessFields.profileLogo = ProfileImg;
-
-
 
     const activefalse = {
       active: false,
     };
-
-
     const updatedBusiness = await Business.findByIdAndUpdate(
       businessId,
       { $set: updatedBusinessFields },
@@ -1246,17 +1233,22 @@ const rejecteditBusinessApi = async (req, res) => {
       });
     }
 
+
     const activefalse = {
       active: false,
     };
 
-    const updatedBusiness = await Business.findByIdAndUpdate(
+    const updatedBusiness = await BusinesseditRequest.findByIdAndUpdate(
       id,
       { $set: activefalse },
       { new: true }
     );
 
+
+    console.log("updatedBusiness",updatedBusiness)
+
     const updatedBusinessData = await businessData(updatedBusiness);
+
 
     res.status(200).json({
       status: "success",
