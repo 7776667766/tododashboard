@@ -36,14 +36,11 @@ router.get("/specialist/delete/:specilaistId", deleteSpecialistApi);
 router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);
 
-
 router.post(
   "/business-update", upload("business/gallery").fields([
     { name: "logo", maxCount: 1 },
     { name: "profileLogo", maxCount: 16 },
     { name: "files", maxCount: 12 }]), updateBusinessApi);
-
-
 
 router.post("/edit-business-rejected", rejecteditBusinessApi);
 
@@ -52,7 +49,6 @@ router.post(
     { name: "logo", maxCount: 1 },
     { name: "profileLogo", maxCount: 16 },
     { name: "files", maxCount: 12 }]), AdminEditRequestApi);
-
 
 router.post(
   "/specialist/update/:specialistId", updateSpecialsitApi);
@@ -74,19 +70,15 @@ router.post(
   getBusinessByServiceType
 );
 
-
 router.post("/register-business", upload("business/gallery").fields([
   { name: "logo", maxCount: 1 },
   { name: "profileLogo", maxCount: 16 },
   { name: "files", maxCount: 12 }]), auth, registerBusinessApi);
 
-
-
 router.post("/admin-register-custom-business", upload("business/gallery").fields([
   { name: "logo", maxCount: 1 },
   { name: "profileLogo", maxCount: 16 },
   { name: "files", maxCount: 12 }]), auth, registerCustomBusinessApi);
-
 
 router.get("/business/get-all-business", getAllBusinessApi);
 router.post("/business/get-my-business-list/", auth, getBusinessByUserIdApi);
@@ -103,6 +95,7 @@ router.post(
   auth,
   handleCustomBusinessApi
 );
+
 router.post(
   "/business/custom-business-cancelled",
   auth,

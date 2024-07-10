@@ -322,7 +322,6 @@ const updateManagerApi = async (req, res) => {
 
     const { id } = req.user;
     const { managerId } = req.params;
-    console.log("first manager id is ", managerId);
     const { name, email, phone } = req.body;
 
     if (!name || !email) {
@@ -347,7 +346,6 @@ const updateManagerApi = async (req, res) => {
     }
 
     const manager = await User.findById(managerId);
-    console.log("manager id is ", manager);
     if (!manager) {
       return res.status(400).json({
         status: "error",
@@ -366,10 +364,8 @@ const updateManagerApi = async (req, res) => {
       name,
       email,
       phone,
-      // ...req.body
     };
 
-    console.log("updated fields are ", updatedFields);
     await User.findByIdAndUpdate(managerId, updatedFields);
 
     res.status(200).json({
@@ -445,7 +441,7 @@ const updateSpecialsitApi = async (req, res, next) => {
     console.log("Error in update manager", error);
     res.status(400).json({ status: "error", message: error.message });
   }
-};
+}; 
 
 const deleteManagerApi = async (req, res) => {
   try {
@@ -1233,7 +1229,6 @@ const rejecteditBusinessApi = async (req, res) => {
       });
     }
 
-
     const activefalse = {
       active: false,
     };
@@ -1551,7 +1546,6 @@ const BusinessGetRequestApi = async (req, res) => {
     }).sort({ createdAt: -1 })
       .populate("createdBy");
     console.log("businesses 1223", businesses);
-
 
     const businessDataList = [];
 
