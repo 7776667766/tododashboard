@@ -594,10 +594,7 @@ const registerBusinessApi = async (req, res) => {
       });
     }
 
-    const adminTransaction = await Card.find(
-      user.role === "owner" ? { userId: id } : {}
-    );
-    console.log("adminTransaction", adminTransaction)
+   
 
     const existingSlug = await Business.findOne({ slug: slug });
     if (existingSlug) {
@@ -714,6 +711,10 @@ const registerBusinessApi = async (req, res) => {
         });
       }
     }
+    const adminTransaction = await Card.find(
+      user.role === "owner" ? { userId: id } : {}
+    );
+    console.log("adminTransaction", adminTransaction)
 
     const myBusiness = await Business.create({
       name,
@@ -740,11 +741,10 @@ const registerBusinessApi = async (req, res) => {
       color: Ownerdata.color,
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
-      name: adminTransaction.name,
-      duration: adminTransaction.duration,
-      price:adminTransaction.price,
-      features:adminTransaction.features,
-      status:adminTransaction.status,
+    planName: adminTransaction[0].name,
+      duration: adminTransaction[0].duration,
+      price:adminTransaction[0].price,
+      features:adminTransaction[0].features,
     });
 
 const userMailSend = await sendEmail({
@@ -843,11 +843,10 @@ res.status(200).json({
     bannerImg: Ownerdata.bannerImge,
     color: Ownerdata.color,
     rejectreason: Ownerdata.rejectreason,
-    name: adminTransaction.name,
-    duration: adminTransaction.duration,
-    price:adminTransaction.price,
-    features:adminTransaction.features,
-    status:adminTransaction.status,
+    planName: adminTransaction[0].name,
+    duration: adminTransaction[0].duration,
+    price:adminTransaction[0].price,
+    features:adminTransaction[0].features,
   }),
   message: "Business registered successfully",
 });

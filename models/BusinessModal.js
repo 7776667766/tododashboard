@@ -67,7 +67,7 @@ const businessSchema = new mongoose.Schema({
   // price:adminTransaction.price,
   // features:adminTransaction.features,
   // status:adminTransaction.status,
-  name:{
+  planName:{
     type: String,
   },
 
