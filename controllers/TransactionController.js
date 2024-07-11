@@ -6,7 +6,6 @@ const User = require("../models/UserModel");
 const Plan = require("../models/PlanModel");
 const Card = require("../models/CardModal");
 
-
 const createSubscription = async (customerId, priceId) => {
   const subscription = await stripe.subscriptions.create({
     customer: customerId,
@@ -213,7 +212,6 @@ const getTransactionbyUserId = async (req, res, next) => {
   }
 };
 
-
 const getTransactionbyCardbyUserId = async (req, res, next) => {
   try {
     if (req.user === undefined) {
@@ -254,7 +252,6 @@ const getTransactionbyCardbyUserId = async (req, res, next) => {
   }
 };
 
-
 const addTranstactionWithCreditAmount = async (req, res, next) => {
   try {
     const { userId, planId } = req.body;
@@ -274,7 +271,7 @@ const addTranstactionWithCreditAmount = async (req, res, next) => {
     }
 
     const plan = await Plan.findById(planId);
-    console.log("plan 234", plan)
+    console.log("plan 234", plan);
 
     if (!plan) {
       return res.status(400).json({
@@ -294,7 +291,13 @@ const addTranstactionWithCreditAmount = async (req, res, next) => {
 
     const newTransactionbyCredit = await Card.create({
       userId: user.id,
-      ...plan
+      price: plan.price,
+      duration: plan.duration,
+      name: plan.name,
+      features: plan.features,
+      createdAt: plan.createdAt,
+      price: plan.price,
+      status:plan.status,
     });
 
     if (user.credit) {
@@ -303,11 +306,11 @@ const addTranstactionWithCreditAmount = async (req, res, next) => {
         newTransactionbyCredit,
         message: "Transaction Completed by Credit Amount",
       });
-    }
-    else {
+    } else {
       return res.status(404).json({
         status: "error",
-        message: "This user is not credited yet.Please choose another payment method",
+        message:
+          "This user is not credited yet.Please choose another payment method",
       });
     }
   } catch (error) {
