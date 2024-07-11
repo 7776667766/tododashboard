@@ -13,6 +13,7 @@ const ServiceType = require("../models/Service/ServiceTypeModel");
 const path = require("path");
 const Transaction = require("../models/TransactionModel");
 const { makelyLogo, circleTickImg } = require("../util/assets");
+const Card = require("../models/CardModal");
 
 const addSpecialistApi = async (req, res) => {
   try {
@@ -441,7 +442,7 @@ const updateSpecialsitApi = async (req, res, next) => {
     console.log("Error in update manager", error);
     res.status(400).json({ status: "error", message: error.message });
   }
-}; 
+};
 
 const deleteManagerApi = async (req, res) => {
   try {
@@ -593,6 +594,11 @@ const registerBusinessApi = async (req, res) => {
       });
     }
 
+    const adminTransaction = await Card.find(
+      user.role === "owner" ? { userId: id } : {}
+    );
+    console.log("adminTransaction", adminTransaction)
+
     const existingSlug = await Business.findOne({ slug: slug });
     if (existingSlug) {
       return res.status(400).json({
@@ -630,7 +636,6 @@ const registerBusinessApi = async (req, res) => {
         });
       }
     });
-
 
     const user = await User.findById(id);
     console.log("user email", user.email);
@@ -735,12 +740,17 @@ const registerBusinessApi = async (req, res) => {
       color: Ownerdata.color,
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
+      name: adminTransaction.name,
+      duration: adminTransaction.duration,
+      price:adminTransaction.price,
+      features:adminTransaction.features,
+      status:adminTransaction.status,
     });
 
-    const userMailSend = await sendEmail({
-      email: user.email,
-      subject: "New Business Created Successfully",
-      html: `<!DOCTYPE html>
+const userMailSend = await sendEmail({
+  email: user.email,
+  subject: "New Business Created Successfully",
+  html: `<!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8" />
@@ -796,50 +806,55 @@ const registerBusinessApi = async (req, res) => {
         </body>
       </html>
       `,
-    });
+});
 
-    if (!userMailSend) {
-      console.error("Error sending confirmation emails");
-      return res.status(500).json({
-        status: "error",
-        message: "Error sending confirmation emails",
-      });
-    }
+if (!userMailSend) {
+  console.error("Error sending confirmation emails");
+  return res.status(500).json({
+    status: "error",
+    message: "Error sending confirmation emails",
+  });
+}
 
-    res.status(200).json({
-      status: "success",
-      data: await businessData({
-        _id: myBusiness._id,
-        name: myBusiness.name,
-        email: myBusiness.email,
-        phone: myBusiness.phone,
-        description: myBusiness.description,
-        address: myBusiness.address,
-        socialLinks: myBusiness.socialLinks,
-        businessTiming: myBusiness.businessTiming,
-        profilelogo: myBusiness.ProfileImg,
-        images: myBusiness.images,
-        galleryImg,
-        googleMap: myBusiness.googleMap,
-        slug: myBusiness.slug,
-        fontFamily: myBusiness.fontFamily,
-        reviews: myBusiness.reviews,
-        fontSize: myBusiness.fontSize,
-        ...myBusiness,
-        logo: logoImg,
-        ...Ownerdata,
-        theme: Ownerdata.theme,
-        bannerText: Ownerdata.bannerText,
-        bannerImg: Ownerdata.bannerImge,
-        color: Ownerdata.color,
-        rejectreason: Ownerdata.rejectreason,
-      }),
-      message: "Business registered successfully",
-    });
+res.status(200).json({
+  status: "success",
+  data: await businessData({
+    _id: myBusiness._id,
+    name: myBusiness.name,
+    email: myBusiness.email,
+    phone: myBusiness.phone,
+    description: myBusiness.description,
+    address: myBusiness.address,
+    socialLinks: myBusiness.socialLinks,
+    businessTiming: myBusiness.businessTiming,
+    profilelogo: myBusiness.ProfileImg,
+    images: myBusiness.images,
+    galleryImg,
+    googleMap: myBusiness.googleMap,
+    slug: myBusiness.slug,
+    fontFamily: myBusiness.fontFamily,
+    reviews: myBusiness.reviews,
+    fontSize: myBusiness.fontSize,
+    ...myBusiness,
+    logo: logoImg,
+    ...Ownerdata,
+    theme: Ownerdata.theme,
+    bannerText: Ownerdata.bannerText,
+    bannerImg: Ownerdata.bannerImge,
+    color: Ownerdata.color,
+    rejectreason: Ownerdata.rejectreason,
+    name: adminTransaction.name,
+    duration: adminTransaction.duration,
+    price:adminTransaction.price,
+    features:adminTransaction.features,
+    status:adminTransaction.status,
+  }),
+  message: "Business registered successfully",
+});
   } catch (error) {
-    console.log("Error in register business", error);
-    res.status(400).json({ status: "error", message: error.message });
-  }
+  console.log("Error in register business", error);
+  res.status(400).json({ status: "error", message: error.message });
+}
 };
 
 // for admin panel using owner id according to owner3
@@ -1240,7 +1255,7 @@ const rejecteditBusinessApi = async (req, res) => {
     );
 
 
-    console.log("updatedBusiness",updatedBusiness)
+    console.log("updatedBusiness", updatedBusiness)
 
     const updatedBusinessData = await businessData(updatedBusiness);
 
@@ -2418,6 +2433,11 @@ const businessData = async (businessData) => {
     googleMap: businessData.googleMap,
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
+    name: businessData.name,
+    duration: businessData.duration,
+    price:businessData.price,
+    features:businessData.features,
+    status:businessData.status,
     slug: businessData.slug,
     galleryImg: businessData?.galleryImg?.map(imgFullPath),
     logo: imgFullPath(businessData.logo),
