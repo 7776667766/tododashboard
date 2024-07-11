@@ -1297,11 +1297,12 @@ const AdminEditRequestApi = async (req, res) => {
 
     let logoImg = req.files?.["logo"]?.[0]?.path ?? existingBusiness?.logo;
 
-    // let ProfileImg = [];
-    // if (req?.files && req?.files["profileLogo"])
-    //   req?.files["profileLogo"]?.forEach((file) => {
-    // console.log(file,"file 1302")
-    //   }) ?? existingBusiness?.profileLogo;
+    let ProfileImg = [];
+    if (req?.files && req?.files["profileLogo"])
+      req?.files["profileLogo"]?.forEach((file) => {
+    console.log(file,"file 1302")
+    ProfileImg.push(file.path)
+      }) ?? existingBusiness?.profileLogo;
 
     let galleryImg = [];
 
@@ -1312,7 +1313,7 @@ const AdminEditRequestApi = async (req, res) => {
     } else {
       galleryImg = req.body?.files || [];
     }
-
+console.log('galleryImg',galleryImg)
     let socialLinksData = [];
     try {
       socialLinksData = JSON.parse(req?.body?.socialLinks);
@@ -1343,7 +1344,7 @@ const AdminEditRequestApi = async (req, res) => {
 
     reviewsdata = reviewsdata.map((review, index) => ({
       ...review,
-      // profileLogo: imgFullPath(ProfileImg[index]) || null,
+      profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
     const updatedBusiness = await Business.findByIdAndUpdate(
@@ -1354,7 +1355,7 @@ const AdminEditRequestApi = async (req, res) => {
           businessTiming: businesstimings,
           reviews: reviewsdata,
           socialLinks: socialLinksData,
-          // profilelogo: ProfileImg,
+          profilelogo: ProfileImg,
           logo: logoImg,
         },
       },
@@ -2433,6 +2434,7 @@ const businessData = async (businessData) => {
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
     name: businessData.name,
+    planName: businessData.planName,
     duration: businessData.duration,
     price:businessData.price,
     features:businessData.features,
