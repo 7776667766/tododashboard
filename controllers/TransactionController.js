@@ -4,6 +4,7 @@ const stripe = require("stripe")(
 );
 const User = require("../models/UserModel");
 const Plan = require("../models/PlanModel");
+const Card = require("../models/CardModal");
 
 
 const createSubscription = async (customerId, priceId) => {
@@ -212,6 +213,48 @@ const getTransactionbyUserId = async (req, res, next) => {
   }
 };
 
+
+const getTransactionbyCardbyUserId = async (req, res, next) => {
+  try {
+    if (req.user === undefined) {
+      return res.status(400).json({ status: "error", message: "Invalid user" });
+    }
+    const { id } = req.user;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "admin" && user.role !== "owner") {
+      return res.status(400).json({
+        status: "error",
+        message: "you are not authorzed to find transaction list",
+      });
+    }
+    const adminTransaction = await Card.find(
+      user.role === "owner" ? { userId: id } : {}
+    );
+    if (!adminTransaction) {
+      return res.status(400).json({
+        status: "error",
+        message: "adminTransaction not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      data: adminTransaction,
+    });
+    console.log("adminTracsaction230pro", adminTransaction);
+  } catch (error) {
+    console.log("Error in get transaction by user id", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
+};
+
+
 const addTranstactionWithCreditAmount = async (req, res, next) => {
   try {
     const { userId, planId } = req.body;
@@ -249,10 +292,9 @@ const addTranstactionWithCreditAmount = async (req, res, next) => {
       });
     }
 
-    const newTransactionbyCredit = await Transaction.create({
+    const newTransactionbyCredit = await Card.create({
       userId: user.id,
-      amount: plan.price,
-      duration:plan.duration,
+      ...plan
     });
 
     if (user.credit) {
