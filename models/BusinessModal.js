@@ -62,11 +62,34 @@ const businessSchema = new mongoose.Schema({
   googleMap: {
     type: String,
   },
+  // name: adminTransaction.name,
+  // duration: adminTransaction.duration,
+  // price:adminTransaction.price,
+  // features:adminTransaction.features,
+  // status:adminTransaction.status,
+  name:{
+    type: String,
+  },
 
-  // timeSlots: {
-  //   type: [
-  //     {
-  //       day: String,
+  duration:{
+    type: String,
+  },
+
+  price:{
+    type: String,
+  },
+
+
+  features: {
+    type: [String],
+  },
+
+  status: {
+    type: String,
+    enum: ["active", "inactive"],
+    default: "active",
+  },
+
   //       startTime: String,
   //       endTime: String,
   //       active: Boolean,
