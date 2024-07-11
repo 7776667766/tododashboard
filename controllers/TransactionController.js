@@ -320,4 +320,5 @@ module.exports = {
   addTranstactionWithCreditAmount,
   addTransactionApi,
   getTransactionbyUserId,
+  getTransactionbyCardbyUserId,
 };
