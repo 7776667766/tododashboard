@@ -8,7 +8,6 @@ const saveCardSchema = new mongoose.Schema({
 
   cardname: {
     type: String,
-    required: [true, 'Cardholder Name is required'],
     trim: true,
   },
 
@@ -18,22 +17,18 @@ const saveCardSchema = new mongoose.Schema({
 
   name: {
     type: String,
-    required: [true, "Plan name is required"],
   },
   
   duration: {
     type: String,
-    required: [true, "Plan duration is required"],
   },
 
   price: {
     type: Number,
-    required: [true, "Plan price is required"],
   },
 
   features: {
     type: [String],
-    required: [true, "Features is required"],
   },
 
   isFeatured: {
