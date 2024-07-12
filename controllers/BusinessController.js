@@ -594,8 +594,6 @@ const registerBusinessApi = async (req, res) => {
       });
     }
 
-   
-
     const existingSlug = await Business.findOne({ slug: slug });
     if (existingSlug) {
       return res.status(400).json({
@@ -712,9 +710,9 @@ const registerBusinessApi = async (req, res) => {
       }
     }
     const adminTransaction = await Card.find(
-      user.role === "owner" ? { userId: id } : {}
+      user.role === "owner" ? { userId: id } : {}``
     );
-    console.log("adminTransaction", adminTransaction)
+    console.log("adminTransaction", adminTransaction);
 
     const myBusiness = await Business.create({
       name,
@@ -741,16 +739,16 @@ const registerBusinessApi = async (req, res) => {
       color: Ownerdata.color,
       bannerImg: Ownerdata.bannerImge,
       rejectreason: Ownerdata.rejectreason,
-    planName: adminTransaction[0].name,
-      duration: adminTransaction[0].duration,
-      price:adminTransaction[0].price,
-      features:adminTransaction[0].features,
+      planName: adminTransaction[0]?.name,
+      duration: adminTransaction[0]?.duration,
+      price: adminTransaction[0]?.price,
+      features: adminTransaction[0]?.features,
     });
 
-const userMailSend = await sendEmail({
-  email: user.email,
-  subject: "New Business Created Successfully",
-  html: `<!DOCTYPE html>
+    const userMailSend = await sendEmail({
+      email: user.email,
+      subject: "New Business Created Successfully",
+      html: `<!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8" />
@@ -806,54 +804,54 @@ const userMailSend = await sendEmail({
         </body>
       </html>
       `,
-});
+    });
 
-if (!userMailSend) {
-  console.error("Error sending confirmation emails");
-  return res.status(500).json({
-    status: "error",
-    message: "Error sending confirmation emails",
-  });
-}
+    if (!userMailSend) {
+      console.error("Error sending confirmation emails");
+      return res.status(500).json({
+        status: "error",
+        message: "Error sending confirmation emails",
+      });
+    }
 
-res.status(200).json({
-  status: "success",
-  data: await businessData({
-    _id: myBusiness._id,
-    name: myBusiness.name,
-    email: myBusiness.email,
-    phone: myBusiness.phone,
-    description: myBusiness.description,
-    address: myBusiness.address,
-    socialLinks: myBusiness.socialLinks,
-    businessTiming: myBusiness.businessTiming,
-    profilelogo: myBusiness.ProfileImg,
-    images: myBusiness.images,
-    galleryImg,
-    googleMap: myBusiness.googleMap,
-    slug: myBusiness.slug,
-    fontFamily: myBusiness.fontFamily,
-    reviews: myBusiness.reviews,
-    fontSize: myBusiness.fontSize,
-    ...myBusiness,
-    logo: logoImg,
-    ...Ownerdata,
-    theme: Ownerdata.theme,
-    bannerText: Ownerdata.bannerText,
-    bannerImg: Ownerdata.bannerImge,
-    color: Ownerdata.color,
-    rejectreason: Ownerdata.rejectreason,
-    planName: adminTransaction[0].name,
-    duration: adminTransaction[0].duration,
-    price:adminTransaction[0].price,
-    features:adminTransaction[0].features,
-  }),
-  message: "Business registered successfully",
-});
+    res.status(200).json({
+      status: "success",
+      data: await businessData({
+        _id: myBusiness._id,
+        name: myBusiness.name,
+        email: myBusiness.email,
+        phone: myBusiness.phone,
+        description: myBusiness.description,
+        address: myBusiness.address,
+        socialLinks: myBusiness.socialLinks,
+        businessTiming: myBusiness.businessTiming,
+        profilelogo: myBusiness.ProfileImg,
+        images: myBusiness.images,
+        galleryImg,
+        googleMap: myBusiness.googleMap,
+        slug: myBusiness.slug,
+        fontFamily: myBusiness.fontFamily,
+        reviews: myBusiness.reviews,
+        fontSize: myBusiness.fontSize,
+        ...myBusiness,
+        logo: logoImg,
+        ...Ownerdata,
+        theme: Ownerdata.theme,
+        bannerText: Ownerdata.bannerText,
+        bannerImg: Ownerdata.bannerImge,
+        color: Ownerdata.color,
+        rejectreason: Ownerdata.rejectreason,
+        planName: adminTransaction[0]?.name,
+        duration: adminTransaction[0]?.duration,
+        price: adminTransaction[0]?.price,
+        features: adminTransaction[0]?.features,
+      }),
+      message: "Business registered successfully",
+    });
   } catch (error) {
-  console.log("Error in register business", error);
-  res.status(400).json({ status: "error", message: error.message });
-}
+    console.log("Error in register business", error);
+    res.status(400).json({ status: "error", message: error.message });
+  }
 };
 
 // for admin panel using owner id according to owner3
@@ -900,7 +898,7 @@ const registerCustomBusinessApi = async (req, res) => {
       address,
       slug,
       reviews,
-      ownerId
+      ownerId,
     } = req.body;
 
     if (
@@ -912,7 +910,6 @@ const registerCustomBusinessApi = async (req, res) => {
       !slug ||
       !reviews ||
       !ownerId
-
     ) {
       return res.status(400).json({
         status: "error",
@@ -953,7 +950,7 @@ const registerCustomBusinessApi = async (req, res) => {
       });
     }
 
-    const Ownerdata = await User.findById(ownerId)
+    const Ownerdata = await User.findById(ownerId);
 
     if (!Ownerdata) {
       return res.status(400).json({
@@ -1146,7 +1143,7 @@ const registerCustomBusinessApi = async (req, res) => {
   }
 };
 
-// for admin site when business edit request gets approved 
+// for admin site when business edit request gets approved
 const updateBusinessApi = async (req, res) => {
   console.log("req body 853", req.body);
   try {
@@ -1212,7 +1209,8 @@ const updateBusinessApi = async (req, res) => {
 
     res.status(200).json({
       status: "success",
-      data: updatedBusinessData, updatedBusinessStatus,
+      data: updatedBusinessData,
+      updatedBusinessStatus,
       message: "Business updated successfully",
     });
   } catch (error) {
@@ -1253,11 +1251,9 @@ const rejecteditBusinessApi = async (req, res) => {
       { new: true }
     );
 
-
-    console.log("updatedBusiness", updatedBusiness)
+    console.log("updatedBusiness", updatedBusiness);
 
     const updatedBusinessData = await businessData(updatedBusiness);
-
 
     res.status(200).json({
       status: "success",
@@ -1300,8 +1296,8 @@ const AdminEditRequestApi = async (req, res) => {
     let ProfileImg = [];
     if (req?.files && req?.files["profileLogo"])
       req?.files["profileLogo"]?.forEach((file) => {
-    console.log(file,"file 1302")
-    ProfileImg.push(file.path)
+        console.log(file, "file 1302");
+        ProfileImg.push(file.path);
       }) ?? existingBusiness?.profileLogo;
 
     let galleryImg = [];
@@ -1313,7 +1309,7 @@ const AdminEditRequestApi = async (req, res) => {
     } else {
       galleryImg = req.body?.files || [];
     }
-console.log('galleryImg',galleryImg)
+    console.log("galleryImg", galleryImg);
     let socialLinksData = [];
     try {
       socialLinksData = JSON.parse(req?.body?.socialLinks);
@@ -1437,9 +1433,9 @@ const BusinessEditRequestApi = async (req, res) => {
       galleryImg = req.body?.files || [];
     }
 
-    const slugee = req.body.slug ?? existingBusiness?.slug
+    const slugee = req.body.slug ?? existingBusiness?.slug;
 
-    console.log("slugee", slugee)
+    console.log("slugee", slugee);
     const {
       name,
       email,
@@ -1505,7 +1501,6 @@ const BusinessEditRequestApi = async (req, res) => {
       profileLogo: imgFullPath(ProfileImg[index]) || null,
     }));
 
-
     const existingSlug = await Business.findOne({ slug: slug });
     if (existingSlug) {
       return res.status(400).json({
@@ -1513,7 +1508,6 @@ const BusinessEditRequestApi = async (req, res) => {
         message: "Slug already exists",
       });
     }
-
 
     const myBusiness = await BusinesseditRequest.create({
       businessId,
@@ -1558,7 +1552,8 @@ const BusinessGetRequestApi = async (req, res) => {
   try {
     const businesses = await BusinesseditRequest.find({
       active: true,
-    }).sort({ createdAt: -1 })
+    })
+      .sort({ createdAt: -1 })
       .populate("createdBy");
     console.log("businesses 1223", businesses);
 
@@ -1762,18 +1757,17 @@ const getBusinessByUserIdApi = async (req, res) => {
         });
       }
     } else if (user.role === "admin") {
-
       if (req.body.businessId) {
-        let businessById = await Business.findById(req.body.businessId.trim().replace(/^"+|"+$/g, ''));
+        let businessById = await Business.findById(
+          req.body.businessId.trim().replace(/^"+|"+$/g, "")
+        );
         business = businessById;
-
       }
 
       if (!req.body.businessId) {
         let businessBySlug = await Business.findOne({ slug: "dummy-business" });
         business = businessBySlug;
       }
-
     } else if (user.role === "owner") {
       const owner = await Owner.findOne({ ownerId: id });
 
@@ -2435,9 +2429,9 @@ const businessData = async (businessData) => {
     fontSize: businessData.fontSize,
     planName: businessData.planName,
     duration: businessData.duration,
-    price:businessData.price,
-    features:businessData.features,
-    status:businessData.status,
+    price: businessData.price,
+    features: businessData.features,
+    status: businessData.status,
     slug: businessData.slug,
     galleryImg: businessData?.galleryImg?.map(imgFullPath),
     logo: imgFullPath(businessData.logo),
@@ -2508,7 +2502,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => { };
+const showAllBusinessApi = async (req, res) => {};
 
 module.exports = {
   addSpecialistApi,
