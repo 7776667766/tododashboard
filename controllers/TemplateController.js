@@ -143,8 +143,6 @@ const updateTemplateApi = async (req, res, next) => {
   }
 };
 
-
-
 const deleteTemplateApi = async (req, res, next) => {
   try {
     const { templateId } = req.params;

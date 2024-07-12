@@ -200,8 +200,6 @@ const BuisnessRequestSchema = new mongoose.Schema({
     payment: {
         type: "String"
     },
-
-
 });
 
 module.exports = mongoose.model("BusinesseditRequest" , BuisnessRequestSchema);

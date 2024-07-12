@@ -2433,7 +2433,6 @@ const businessData = async (businessData) => {
     googleMap: businessData.googleMap,
     fontFamily: businessData.fontFamily,
     fontSize: businessData.fontSize,
-    name: businessData.name,
     planName: businessData.planName,
     duration: businessData.duration,
     price:businessData.price,
