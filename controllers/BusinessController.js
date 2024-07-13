@@ -743,6 +743,8 @@ const registerBusinessApi = async (req, res) => {
       duration: adminTransaction[0]?.duration,
       price: adminTransaction[0]?.price,
       features: adminTransaction[0]?.features,
+      createdAt: adminTransaction[0]?.createdAt,
+      status: adminTransaction[0]?.status
     });
 
     const userMailSend = await sendEmail({
@@ -845,6 +847,8 @@ const registerBusinessApi = async (req, res) => {
         duration: adminTransaction[0]?.duration,
         price: adminTransaction[0]?.price,
         features: adminTransaction[0]?.features,
+        createdAt: adminTransaction[0]?.createdAt,
+        status: adminTransaction[0]?.status
       }),
       message: "Business registered successfully",
     });
@@ -2442,6 +2446,8 @@ const businessData = async (businessData) => {
     rejectreason: businessData.rejectreason,
     TransactionDate: businessData.TransactionDate,
     ownerName: businessData.ownerName,
+    createdAt: businessData.createdAt,
+    status: businessData.status
   };
 };
 
@@ -2502,7 +2508,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => {};
+const showAllBusinessApi = async (req, res) => { };
 
 module.exports = {
   addSpecialistApi,
