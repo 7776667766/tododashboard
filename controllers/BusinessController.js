@@ -14,6 +14,7 @@ const path = require("path");
 const Transaction = require("../models/TransactionModel");
 const { makelyLogo, circleTickImg } = require("../util/assets");
 const Card = require("../models/CardModal");
+const Credit = require("../models/creditModal");
 
 const addSpecialistApi = async (req, res) => {
   try {
@@ -712,7 +713,12 @@ const registerBusinessApi = async (req, res) => {
     const adminTransaction = await Card.find(
       user.role === "owner" ? { userId: id } : {}``
     );
-    console.log("adminTransaction", adminTransaction);
+
+    const adminCredit = await Credit.find(
+      user.role === "owner" ? { userId: id } : {}``
+    );
+
+    console.log("adminCredit", adminCredit);
 
     const myBusiness = await Business.create({
       name,
@@ -743,8 +749,8 @@ const registerBusinessApi = async (req, res) => {
       duration: adminTransaction[0]?.duration,
       price: adminTransaction[0]?.price,
       features: adminTransaction[0]?.features,
-      createdAt: adminTransaction[0]?.createdAt,
-      cardStatus: adminTransaction[0]?.status
+      createdAt: adminCredit[0]?.createdAt,
+      cardStatus: adminCredit[0]?.active,
     });
 
     const userMailSend = await sendEmail({
@@ -847,8 +853,8 @@ const registerBusinessApi = async (req, res) => {
         duration: adminTransaction[0]?.duration,
         price: adminTransaction[0]?.price,
         features: adminTransaction[0]?.features,
-        createdAt: adminTransaction[0]?.createdAt,
-        cardStatus: adminTransaction[0]?.status
+        createdAt: adminCredit[0]?.createdAt,
+        cardStatus: adminCredit[0]?.active,
       }),
       message: "Business registered successfully",
     });
@@ -1308,6 +1314,7 @@ const AdminEditRequestApi = async (req, res) => {
 
     if (req?.files && req?.files["files"]) {
       req?.files["files"].forEach((file) => {
+        console.log("gallery images", file);
         galleryImg.push(file.path);
       });
     } else {
@@ -2447,7 +2454,7 @@ const businessData = async (businessData) => {
     TransactionDate: businessData.TransactionDate,
     ownerName: businessData.ownerName,
     createdAt: businessData.createdAt,
-    cardStatus: businessData.cardStatus
+    cardStatus: businessData.cardStatus,
   };
 };
 
@@ -2508,7 +2515,7 @@ const getBusinessByServiceType = async (req, res) => {
   }
 };
 
-const showAllBusinessApi = async (req, res) => { };
+const showAllBusinessApi = async (req, res) => {};
 
 module.exports = {
   addSpecialistApi,
