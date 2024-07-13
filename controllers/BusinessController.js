@@ -744,7 +744,7 @@ const registerBusinessApi = async (req, res) => {
       price: adminTransaction[0]?.price,
       features: adminTransaction[0]?.features,
       createdAt: adminTransaction[0]?.createdAt,
-      status: adminTransaction[0]?.status
+      cardStatus: adminTransaction[0]?.status
     });
 
     const userMailSend = await sendEmail({
@@ -848,7 +848,7 @@ const registerBusinessApi = async (req, res) => {
         price: adminTransaction[0]?.price,
         features: adminTransaction[0]?.features,
         createdAt: adminTransaction[0]?.createdAt,
-        status: adminTransaction[0]?.status
+        cardStatus: adminTransaction[0]?.status
       }),
       message: "Business registered successfully",
     });
@@ -2447,7 +2447,7 @@ const businessData = async (businessData) => {
     TransactionDate: businessData.TransactionDate,
     ownerName: businessData.ownerName,
     createdAt: businessData.createdAt,
-    status: businessData.status
+    cardStatus: businessData.cardStatus
   };
 };
 

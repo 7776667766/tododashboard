@@ -79,15 +79,12 @@ const businessSchema = new mongoose.Schema({
     type: String,
   },
 
-
   features: {
     type: [String],
   },
 
-  status: {
+  cardStatus: {
     type: String,
-    enum: ["active", "inactive"],
-    default: "active",
   },
 
   //       startTime: String,
@@ -239,6 +236,8 @@ const businessSchema = new mongoose.Schema({
     type: String,
   },
 
+  createdAt:{}
+  ,
   rejectreason: {
     type: String,
     default: "payment is not clear",
