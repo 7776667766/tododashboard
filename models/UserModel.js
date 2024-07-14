@@ -4,7 +4,6 @@ const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Name is required"],
     trim: true,
   },
   email: {
@@ -14,35 +13,12 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
-  phone: {
-    code: {
-      type: String,
-    },
-    number: {
-      type: String,
-      trim: true,
-      unique: true,
-    },
-  },
-
-  image: {
-    type: String,
-    default: "/uploads/user-image.jpg",
-    trim: true,
-  },
-  role: {
-    type: String,
-    enum: ["admin", "user", "owner", "manager"],
-    default: "user",
-  },
+  
   password: {
     type: String,
     required: [true, "Password is required"],
     length: [8, "Password must be atleast 8 characters long"],
     trim: true,
-  },
-  credit: {
-    type: Number,
   },
 
   createdAt: {
